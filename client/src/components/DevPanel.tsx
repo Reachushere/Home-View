@@ -67,6 +67,19 @@ export function DevPanel() {
   const [stagingMode, setStagingMode] = useState<boolean>(false);
   const [sandbox, setSandbox] = useState<{ enabled: boolean; source: string; counters: Record<string, number>; recent: any[] } | null>(null);
   const [sandboxBusy, setSandboxBusy] = useState(false);
+  const [initChecklist, setInitChecklist] = useState<{ ready: boolean; checks: Array<{ id: string; label: string; status: 'pass'|'fail'; message: string; fix: string | null }>; generatedAt: string } | null>(null);
+  const [initOverride, setInitOverride] = useState<boolean>(() => {
+    try { return localStorage.getItem('unical_init_override') === '1'; } catch { return false; }
+  });
+  const [initBusy, setInitBusy] = useState(false);
+  const refreshInitChecklist = async () => {
+    setInitBusy(true);
+    try {
+      const r = await fetch('/api/dev/init-checklist');
+      const j = await r.json();
+      setInitChecklist(j);
+    } catch {} finally { setInitBusy(false); }
+  };
   const [fixHist, setFixHist] = useState<any>(null);
   const [upload, setUpload] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
@@ -211,6 +224,7 @@ export function DevPanel() {
     if (tab === "timeline") j("/api/dev/timeline-guard").then(setTimeline).catch(() => setTimeline({ error: "fetch failed" }));
     if (tab === "afterUpload") j(`/api/dev/after-upload-check?sinceMin=${afterMin}`).then(setAfterUpload).catch(() => setAfterUpload({ error: "fetch failed" }));
     j("/api/dev/status").then((s: any) => { setStagingMode(!!s?.stagingMode); if (s?.sandbox) setSandbox(s.sandbox); }).catch(() => {});
+    if (!initChecklist) refreshInitChecklist();
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
@@ -597,10 +611,68 @@ export function DevPanel() {
     finally { setBusy(false); }
   };
 
+  const initBlock = !!initChecklist && !initChecklist.ready && !initOverride;
+
   return (
+    <>
+    {initBlock && (
+      <div data-testid="init-checklist-modal" style={{ position: "fixed", inset: 0, zIndex: 999998, background: "rgba(5,5,10,0.92)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <div style={{ width: "100%", maxWidth: 640, background: "#0f0f17", border: "2px solid #ef4444", borderRadius: 12, padding: 22, color: "#e8e8ec", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <span style={{ background: "#ef4444", color: "#000", padding: "3px 8px", borderRadius: 4, fontSize: 11, fontWeight: 800 }}>BLOCKED</span>
+            <span style={{ fontWeight: 700, fontSize: 14 }}>System Initialization Checklist</span>
+            <span style={{ flex: 1 }} />
+            <button data-testid="button-init-recheck" disabled={initBusy} onClick={refreshInitChecklist} style={{ background: "rgba(96,165,250,0.2)", border: "1px solid rgba(96,165,250,0.5)", color: "#bfdbfe", padding: "3px 10px", borderRadius: 4, cursor: "pointer", fontSize: 11 }}>{initBusy ? "…" : "Re-check"}</button>
+          </div>
+          <div style={{ fontSize: 12, color: "#aaa", marginBottom: 14 }}>
+            Usage is blocked until every required item passes. Fix the failed item(s) below, click <b>Re-check</b>, or override at the bottom (not recommended).
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {initChecklist!.checks.map((c) => {
+              const pass = c.status === "pass";
+              return (
+                <div key={c.id} data-testid={`init-check-${c.id}`} style={{ border: `1px solid ${pass ? "rgba(74,222,128,0.4)" : "rgba(239,68,68,0.5)"}`, borderRadius: 8, padding: "10px 12px", background: pass ? "rgba(74,222,128,0.06)" : "rgba(239,68,68,0.08)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                    <span style={{ background: pass ? "#4ade80" : "#ef4444", color: "#000", padding: "1px 7px", borderRadius: 3, fontSize: 10, fontWeight: 800 }}>{pass ? "PASS" : "FAIL"}</span>
+                    <span style={{ fontWeight: 700, fontSize: 12 }}>{c.label}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#cdcdd2", paddingLeft: 2 }}>{c.message}</div>
+                  {!pass && c.fix && (
+                    <div style={{ marginTop: 6, fontSize: 11, color: "#fde68a", paddingLeft: 2 }}>
+                      <b>Action:</b> {c.fix}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              data-testid="button-init-override"
+              onClick={() => {
+                if (!confirm("Override the initialization checklist?\n\nThis lets you keep using the app even though required checks are failing. You may create bad data, miss uploads, or break automation. Continue?")) return;
+                try { localStorage.setItem('unical_init_override', '1'); } catch {}
+                setInitOverride(true);
+              }}
+              style={{ background: "transparent", border: "1px solid rgba(239,68,68,0.6)", color: "#fca5a5", padding: "5px 12px", borderRadius: 4, cursor: "pointer", fontSize: 11 }}
+            >Override (I understand)</button>
+            <span style={{ flex: 1 }} />
+            <span style={{ fontSize: 10, color: "#666" }}>Generated {new Date(initChecklist!.generatedAt).toLocaleTimeString()}</span>
+          </div>
+        </div>
+      </div>
+    )}
     <div style={panel} data-testid="dev-panel">
       <div style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)" }}>
         <span style={{ flex: 1, fontWeight: 700, color: "#a78bfa" }}>UniCal Dev Panel</span>
+        {initChecklist && !initChecklist.ready && (
+          <button
+            data-testid="button-init-reopen"
+            title="Initialization checklist has failures"
+            onClick={() => { try { localStorage.removeItem('unical_init_override'); } catch {} ; setInitOverride(false); refreshInitChecklist(); }}
+            style={{ marginRight: 8, background: "rgba(239,68,68,0.25)", border: "1px solid #ef4444", color: "#fca5a5", padding: "1px 7px", borderRadius: 3, cursor: "pointer", fontSize: 10, fontWeight: 700 }}
+          >⚠ INIT {initChecklist.checks.filter(c => c.status === 'fail').length} FAIL</button>
+        )}
         {build?.outOfDate && <span title={build.outOfDateWarning} style={{ marginRight: 8, color: "#fbbf24", fontSize: 10 }}>⚠ build stale</span>}
         <button onClick={() => setOpen(false)} data-testid="button-dev-close" style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer", fontSize: 14 }}>×</button>
       </div>
@@ -1296,5 +1368,6 @@ export function DevPanel() {
         </div>
       )}
     </div>
+    </>
   );
 }
