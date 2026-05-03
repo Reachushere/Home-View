@@ -24,6 +24,8 @@ import TickerPage from "@/pages/ticker";
 import SharedLibraryPage from "@/pages/shared-library";
 import EssayEditorPage from "@/pages/essay-editor";
 import MobileApp from "@/pages/mobile-app";
+import StartMyDayPage from "@/pages/start-my-day";
+import StartMyDayButton from "@/components/StartMyDayButton";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
@@ -152,6 +154,7 @@ function Router() {
       <Route path="/mobile/notes" component={MobileNotesPage} />
       <Route path="/code-checker" component={CodeCheckerPage} />
       <Route path="/essay-editor" component={EssayEditorPage} />
+      <Route path="/start-my-day" component={StartMyDayPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -203,6 +206,7 @@ function App() {
         <AccessGate>
           <Toaster />
           <Router />
+          <StartMyDayButton />
         </AccessGate>
       </TooltipProvider>
     </QueryClientProvider>
