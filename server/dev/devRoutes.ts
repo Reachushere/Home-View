@@ -470,6 +470,96 @@ export function registerDevRoutes(app: Express): void {
     res.json({ ok: true, status: getSandboxStatus() });
   });
 
+  // ────────── system initialization checklist ──────────
+  // Hard pre-flight gate. Returns { ready, checks: [{id,label,status,fix}] }
+  // where status ∈ pass|fail. If any check is FAIL the DevPanel blocks usage
+  // until the user fixes the underlying issue OR enables sandbox/test mode.
+  app.get("/api/dev/init-checklist", async (req, res) => {
+    if (!gate(req, res)) return;
+    const checks: any[] = [];
+    const today = new Date();
+
+    // 1. Pi build current
+    try {
+      const bi = buildInfo();
+      const ood = !!(bi as any).outOfDate;
+      checks.push({
+        id: "pi_build_current",
+        label: "Pi build is current",
+        status: ood ? "fail" : "pass",
+        message: ood ? ((bi as any).outOfDateWarning || "client/src is newer than dist") : `Built ${(bi as any).lastBuildAt || "?"}`,
+        fix: ood ? "On Pi: cd ~/Home-View && git pull && npm run build && pm2 restart all" : null,
+      });
+    } catch (e: any) {
+      checks.push({ id: "pi_build_current", label: "Pi build is current", status: "fail", message: `build-info failed: ${e.message}`, fix: "Inspect server/dev/devRoutes.ts buildInfo()" });
+    }
+
+    // 2. OneDrive course folders exist for active semester
+    try {
+      const sem = await activeSemester();
+      let ok = false; let detail = "no active semester";
+      if (sem) {
+        const ods = (await (storage as any).getOneDriveCoursesBySemester?.(sem.id)) || [];
+        ok = Array.isArray(ods) && ods.length > 0;
+        detail = ok ? `${ods.length} OneDrive course folders linked` : "0 OneDrive course folders linked to active semester";
+      }
+      checks.push({
+        id: "onedrive_folders",
+        label: "OneDrive course folders exist",
+        status: ok ? "pass" : "fail",
+        message: detail,
+        fix: ok ? null : "Create the OneDrive course folders for this semester (Courses → New Semester wizard, or manually via OneDrive) and re-link them.",
+      });
+    } catch (e: any) {
+      checks.push({ id: "onedrive_folders", label: "OneDrive course folders exist", status: "fail", message: `check failed: ${e.message}`, fix: "Verify storage.getOneDriveCoursesBySemester is implemented." });
+    }
+
+    // 3. No stuck TTS files
+    try {
+      const allFiles = (await (storage as any).getFiles?.()) || [];
+      const stuck = allFiles.filter((f: any) => f && f.extractedText && Array.isArray(f.chunks) && f.chunks.length > 0 && !f.preparedAt);
+      const ok = stuck.length === 0;
+      checks.push({
+        id: "tts_no_stuck",
+        label: "No stuck TTS files",
+        status: ok ? "pass" : "fail",
+        message: ok ? "TTS queue clean" : `${stuck.length} stuck file(s): ids ${stuck.slice(0, 5).map((f: any) => f.id).join(", ")}`,
+        fix: ok ? null : "POST /api/dev/fix/regen-tts (dryRun first), then POST /api/dev/fix/reset-queue if needed.",
+      });
+    } catch (e: any) {
+      checks.push({ id: "tts_no_stuck", label: "No stuck TTS files", status: "fail", message: `check failed: ${e.message}`, fix: "Check storage.getFiles() availability." });
+    }
+
+    // 4. Semester has started OR sandbox/test mode enabled
+    try {
+      const sem = await activeSemester();
+      const sandboxOn = isSandboxMode();
+      let started = false; let semDetail = "no active semester";
+      if (sem && sem.semesterStartDate) {
+        const start = new Date(sem.semesterStartDate);
+        started = today >= start;
+        semDetail = started
+          ? `Semester started ${start.toISOString().slice(0, 10)}`
+          : `Semester does not start until ${start.toISOString().slice(0, 10)}`;
+      }
+      const ok = started || sandboxOn;
+      checks.push({
+        id: "semester_or_sandbox",
+        label: "Semester has started or sandbox/test mode enabled",
+        status: ok ? "pass" : "fail",
+        message: ok
+          ? (sandboxOn ? `${semDetail} — but sandbox mode is ON, so it's safe.` : semDetail)
+          : `${semDetail}. Live writes would create pre-semester noise.`,
+        fix: ok ? null : "Either wait until the semester starts, or enable sandbox via the SANDBOX banner (Enable button) at the top of DevPanel.",
+      });
+    } catch (e: any) {
+      checks.push({ id: "semester_or_sandbox", label: "Semester has started or sandbox/test mode enabled", status: "fail", message: `check failed: ${e.message}`, fix: "Inspect activeSemester() / sandbox helpers." });
+    }
+
+    const ready = checks.every((c) => c.status === "pass");
+    res.json({ ready, checks, generatedAt: new Date().toISOString() });
+  });
+
   // ────────── layout ──────────
   app.get("/api/dev/layout-map", (req, res) => {
     if (!gate(req, res)) return;
