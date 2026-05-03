@@ -1357,6 +1357,228 @@ export function registerDevRoutes(app: Express): void {
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // ────────── /api/dev/upload-readiness — single PASS/FAIL before bulk PDF upload ──────────
+  app.get("/api/dev/upload-readiness", async (req, res) => {
+    if (!gate(req, res)) return;
+    type Check = { id: string; status: "pass"|"warn"|"fail"; message: string; details?: any; fixAction?: any };
+    const checks: Check[] = [];
+    const push = (c: Check) => checks.push(c);
+    try {
+      // 1. active semester
+      const sem: any = await activeSemester();
+      if (!sem) push({ id: "active_semester", status: "fail", message: "No active semester row.", fixAction: { id: "open_semester_settings", endpoint: "/api/dev/system-map", method: "GET", infoOnly: true, hint: "Dashboard → Settings → Semesters" } });
+      else push({ id: "active_semester", status: "pass", message: `${sem.semesterName || sem.semesterKey} (start ${sem.semesterStartDate})`, details: { id: sem.id, start: sem.semesterStartDate, end: sem.semesterEndDate } });
+
+      // 2. current week
+      const wk = calcWeekFromSemester(sem);
+      if (wk.weekNumber == null) push({ id: "current_week", status: "fail", message: "Cannot calculate current week.", details: { reason: wk.reason } });
+      else if (wk.weekNumber < 1) push({ id: "current_week", status: "fail", message: `weekNumber=${wk.weekNumber} — Cat Lights would refuse to play.`, fixAction: { id: "replay_force_week_1", endpoint: "/api/dev/replay", method: "POST", infoOnly: true, hint: "POST /api/dev/replay {forceWeek:1}" } });
+      else if (wk.weekNumber > 20) push({ id: "current_week", status: "warn", message: `weekNumber=${wk.weekNumber} — past expected range.`, details: { weekNumber: wk.weekNumber } });
+      else push({ id: "current_week", status: "pass", message: `Week ${wk.weekNumber}.` });
+
+      // 3. OneDrive connection
+      let onedriveConnected = false;
+      try { onedriveConnected = isOneDriveConnected(); } catch {}
+      if (!onedriveConnected) push({ id: "onedrive_connection", status: "fail", message: "OneDrive not connected — uploads cannot be detected.", fixAction: { id: "open_onedrive_status", endpoint: "/api/onedrive/status", method: "GET", infoOnly: true } });
+      else push({ id: "onedrive_connection", status: "pass", message: "OneDrive auth active." });
+
+      // 4. course folders + Module/Reading per course (delegates to onedrive-audit logic)
+      let coursesList: any[] = [];
+      try { if (sem) coursesList = (await (storage as any).getOneDriveCoursesBySemester?.((sem as any).id)) || []; } catch {}
+      const folderIssues: any[] = [];
+      for (const c of coursesList) {
+        const code = c.courseCode || c.code || "?";
+        const issues: string[] = [];
+        if (!c.oneDrivePath && !c.folderPath) issues.push("missing oneDrivePath");
+        if (!c.modulePath && !c.moduleFolderPath) issues.push("missing modulePath");
+        if (!c.readingPath && !c.readingFolderPath) issues.push("missing readingPath");
+        if (issues.length) folderIssues.push({ course: code, issues });
+      }
+      if (!coursesList.length) push({ id: "onedrive_folders", status: "fail", message: "No OneDrive courses found for active semester." });
+      else if (folderIssues.length) push({ id: "onedrive_folders", status: "fail", message: `${folderIssues.length}/${coursesList.length} courses missing folders.`, details: { issues: folderIssues }, fixAction: { id: "resync_onedrive", endpoint: "/api/dev/fix/resync-onedrive", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true } });
+      else push({ id: "onedrive_folders", status: "pass", message: `${coursesList.length} courses, all with Module/Reading paths.` });
+
+      // 5. TTS queue health (stuck files)
+      let allFiles: any[] = [];
+      try { allFiles = await storage.getFiles(); } catch {}
+      const stuck = allFiles.filter((f: any) => f.extractedText && (f.totalChunks || 0) > 0 && !f.preparedAt && !f.listenedAt && !f.listened);
+      if (stuck.length > 5) push({ id: "tts_queue", status: "fail", message: `${stuck.length} files have text+chunks but no preparedAt — queue stuck.`, details: { stuckIds: stuck.slice(0, 10).map((f: any) => f.id) }, fixAction: { id: "regen_tts", endpoint: "/api/dev/fix/regen-tts", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true } });
+      else if (stuck.length > 0) push({ id: "tts_queue", status: "warn", message: `${stuck.length} stuck files.`, details: { stuckIds: stuck.map((f: any) => f.id) } });
+      else push({ id: "tts_queue", status: "pass", message: "No stuck files." });
+
+      // 6. flags state
+      const flagsNow = getFlags();
+      const badFlags: string[] = [];
+      if (flagsNow.disableAudioPrepQueue) badFlags.push("disableAudioPrepQueue=ON");
+      if (flagsNow.disableTTS) badFlags.push("disableTTS=ON");
+      if (flagsNow.disableOneDriveSync) badFlags.push("disableOneDriveSync=ON");
+      if (badFlags.length) push({ id: "flags", status: "fail", message: `Runtime flags will block automation: ${badFlags.join(", ")}.`, details: flagsNow, fixAction: { id: "reset_flags", endpoint: "/api/dev/flags", method: "POST", infoOnly: true, hint: "POST /api/dev/flags { disableAudioPrepQueue:false, disableTTS:false, disableOneDriveSync:false }" } });
+      else push({ id: "flags", status: "pass", message: "All runtime flags OFF.", details: flagsNow });
+
+      // 7. recent blocking errors
+      const errs = getRecentErrors().slice(-20);
+      const blockers = errs.filter((e: any) => /audioprep|tts|onedrive|prepared/i.test(JSON.stringify(e)));
+      if (blockers.length > 3) push({ id: "recent_errors", status: "fail", message: `${blockers.length} recent AudioPrep/TTS/OneDrive errors.`, details: { sample: blockers.slice(-3) } });
+      else if (blockers.length) push({ id: "recent_errors", status: "warn", message: `${blockers.length} recent subsystem errors.`, details: { sample: blockers.slice(-3) } });
+      else push({ id: "recent_errors", status: "pass", message: "No recent blocking errors." });
+
+      // 8. disk space (best-effort, non-fatal)
+      let diskPass = true; let diskMsg = "Disk check skipped on this platform.";
+      try {
+        const df = execSync("df -k --output=avail /", { timeout: 2000, encoding: "utf8" }).split("\n")[1] || "0";
+        const availKb = parseInt(df.trim(), 10) || 0;
+        const availMb = Math.floor(availKb / 1024);
+        if (availMb < 500) { diskPass = false; diskMsg = `Only ${availMb} MB free — not enough for TTS audio batch.`; }
+        else diskMsg = `${availMb} MB free.`;
+      } catch {}
+      push({ id: "disk_space", status: diskPass ? "pass" : "fail", message: diskMsg });
+
+      // 9. old-semester backlog
+      let backlog = 0;
+      if (sem?.id && allFiles.length) {
+        const semStart = new Date(sem.semesterStartDate).getTime();
+        backlog = allFiles.filter((f: any) => f.createdAt && new Date(f.createdAt).getTime() < semStart - (180 * 86400000) && !f.listened && !f.listenedAt && !f.preparedAt).length;
+      }
+      if (backlog > 50) push({ id: "old_backlog", status: "warn", message: `${backlog} pre-semester files would re-queue if not filtered.`, details: { count: backlog } });
+      else push({ id: "old_backlog", status: "pass", message: `${backlog} pre-semester files (acceptable).` });
+
+      // 10. build state
+      const bi: any = buildInfo();
+      if (bi?.outOfDate) push({ id: "build_state", status: "warn", message: bi.outOfDateWarning || "Frontend bundle older than client/src.", details: bi, fixAction: { id: "rebuild_pi", endpoint: "/api/dev/fix/rebuild-file-map", method: "POST", infoOnly: true, hint: "ssh pi: cd ~/Home-View && git pull && npm run build && pm2 restart all" } });
+      else push({ id: "build_state", status: "pass", message: `Build ${bi?.bundleHash || "?"} — fresh.` });
+
+      const failCount = checks.filter(c => c.status === "fail").length;
+      const warnCount = checks.filter(c => c.status === "warn").length;
+      const ready = failCount === 0;
+      res.json({
+        ready,
+        verdict: ready ? "SAFE TO UPLOAD" : "DO NOT UPLOAD",
+        summary: ready
+          ? (warnCount ? `Safe with ${warnCount} warning(s).` : "All checks passed.")
+          : `${failCount} blocker(s), ${warnCount} warning(s). Fix before uploading.`,
+        checks,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── /api/dev/timeline-guard — semester correctness diagnostics ──────────
+  app.get("/api/dev/timeline-guard", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const today = new Date();
+      const sem: any = await activeSemester();
+      const issues: any[] = [];
+      let status: "pre"|"active"|"post"|"unknown" = "unknown";
+      if (!sem) {
+        issues.push({ type: "no_active_semester", message: "No active semester row exists.", impact: "automation falls back to CHUM FM", fixAction: { id: "open_semester_settings", infoOnly: true, hint: "Dashboard → Settings → Semesters" } });
+      } else {
+        const start = sem.semesterStartDate ? new Date(sem.semesterStartDate) : null;
+        const end = sem.semesterEndDate ? new Date(sem.semesterEndDate) : null;
+        if (start && today < start) {
+          status = "pre";
+          issues.push({ type: "pre_semester", message: `Today (${today.toISOString().slice(0,10)}) is before semester start (${start.toISOString().slice(0,10)}).`, impact: "automation will fallback — Cat Lights plays CHUM FM" });
+        } else if (end && today > end) {
+          status = "post";
+          issues.push({ type: "post_semester", message: `Today (${today.toISOString().slice(0,10)}) is after semester end (${end.toISOString().slice(0,10)}).`, impact: "automation will fallback unless next semester is activated" });
+        } else {
+          status = "active";
+        }
+        const wk = calcWeekFromSemester(sem);
+        if (wk.weekNumber == null) issues.push({ type: "week_uncomputed", message: "weekNumber could not be computed.", details: { reason: wk.reason } });
+        else if (wk.weekNumber < 1) issues.push({ type: "week_negative", message: `weekNumber=${wk.weekNumber} — Cat Lights refuses.`, impact: "no playback" });
+        else if (wk.weekNumber > 20) issues.push({ type: "week_beyond_range", message: `weekNumber=${wk.weekNumber} exceeds expected 1..20.`, impact: "may queue old material" });
+
+        // Per-course window checks
+        const coursesList: any[] = [];
+        for (let i = 1; i <= 6; i++) {
+          const code = sem[`course${i}Code`];
+          if (!code) continue;
+          const cStart = sem[`course${i}StartDate`] ? new Date(sem[`course${i}StartDate`]) : null;
+          const cEnd = sem[`course${i}EndDate`] ? new Date(sem[`course${i}EndDate`]) : null;
+          const term = sem[`course${i}SpringSummerTerm`] || null;
+          const active = (!cStart || today >= cStart) && (!cEnd || today <= cEnd);
+          coursesList.push({ code, name: sem[`course${i}Name`], term, start: cStart?.toISOString().slice(0,10), end: cEnd?.toISOString().slice(0,10), active });
+          if (term === "second_half" && cStart && today < cStart) issues.push({ type: "second_half_too_early", message: `${code} is second_half but today is before its start (${cStart.toISOString().slice(0,10)}).` });
+          if (term === "first_half" && cEnd && today > cEnd) issues.push({ type: "first_half_overrun", message: `${code} is first_half but today is past its end (${cEnd.toISOString().slice(0,10)}).` });
+          if (cEnd && today > cEnd && !sem[`course${i}Completed`]) issues.push({ type: "course_past_end", message: `${code} ended ${cEnd.toISOString().slice(0,10)} but is not marked completed.` });
+        }
+
+        // Week folder existence check (best-effort)
+        if (wk.weekNumber && wk.weekNumber >= 1) {
+          try {
+            const ods = (await (storage as any).getOneDriveCoursesBySemester?.(sem.id)) || [];
+            for (const c of ods) {
+              const code = c.courseCode || c.code || "?";
+              const modPath = c.modulePath || c.moduleFolderPath;
+              const readPath = c.readingPath || c.readingFolderPath;
+              for (const [type, base] of [["module", modPath], ["reading", readPath]] as const) {
+                if (!base) continue;
+                const expected = `Week ${wk.weekNumber}`;
+                const matches = String(base).toLowerCase().includes(expected.toLowerCase()) || String(base).match(new RegExp(`week\\s*${wk.weekNumber}\\b`, "i"));
+                if (!matches) issues.push({ type: "week_folder_mismatch", message: `${code} ${type} path does not contain "${expected}": ${base}` });
+              }
+            }
+          } catch {}
+        }
+
+        const safe = status === "active" && !issues.some(i => ["week_negative", "week_uncomputed", "no_active_semester"].includes(i.type));
+        return res.json({
+          today: today.toISOString(),
+          semester: sem.semesterName || sem.semesterKey,
+          semesterStart: sem.semesterStartDate,
+          semesterEnd: sem.semesterEndDate,
+          weekNumber: wk.weekNumber,
+          status,
+          courses: coursesList,
+          issues,
+          verdict: safe ? "SAFE TO RUN AUTOMATION" : "DO NOT RUN — timeline mismatch",
+        });
+      }
+      res.json({ today: today.toISOString(), semester: null, status, issues, verdict: "DO NOT RUN — timeline mismatch" });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── /api/dev/after-upload-check — post-upload validation ──────────
+  app.get("/api/dev/after-upload-check", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const sinceMin = Math.min(Math.max(Number(req.query.sinceMin) || 60, 5), 1440);
+      const cutoff = Date.now() - sinceMin * 60000;
+      const files = await storage.getFiles();
+      const recent = files.filter((f: any) => f.createdAt && new Date(f.createdAt).getTime() >= cutoff);
+      const tooLargeMB = 80;
+      const newFilesDetected = recent.map((f: any) => ({
+        id: f.id, name: f.originalName, folder: f.folder, sizeMB: f.size ? Math.round(f.size / 1048576 * 10) / 10 : null,
+        createdAt: f.createdAt,
+        hasText: !!f.extractedText,
+        totalChunks: f.totalChunks || 0,
+        preparedAt: f.preparedAt,
+        preparedAudioPaths: !!f.preparedAudioPaths,
+      }));
+      const filesWithoutText = recent.filter((f: any) => !f.extractedText).map((f: any) => ({ id: f.id, name: f.originalName }));
+      const filesWithoutChunks = recent.filter((f: any) => f.extractedText && (!f.totalChunks || f.totalChunks === 0)).map((f: any) => ({ id: f.id, name: f.originalName }));
+      const filesNotQueued = recent.filter((f: any) => f.extractedText && (f.totalChunks || 0) > 0 && !f.preparedAt).map((f: any) => ({ id: f.id, name: f.originalName }));
+      const queueDepth = files.filter((f: any) => f.extractedText && (f.totalChunks || 0) > 0 && !f.preparedAt && !f.listened && !f.listenedAt).length;
+      const warnings: any[] = [];
+      const tooLarge = recent.filter((f: any) => f.size && f.size > tooLargeMB * 1048576);
+      for (const f of tooLarge) warnings.push({ type: "file_too_large", id: f.id, name: f.originalName, sizeMB: Math.round(f.size / 1048576) });
+      if (recent.length === 0) warnings.push({ type: "no_recent_files", message: `No files created in the last ${sinceMin} min. Did the upload reach the server?` });
+      if (filesWithoutText.length > recent.length / 2) warnings.push({ type: "extraction_lagging", message: `${filesWithoutText.length}/${recent.length} files still have no extracted text.` });
+      if (queueDepth > 50) warnings.push({ type: "queue_high", message: `${queueDepth} total files awaiting TTS — pipeline may be slow.` });
+      res.json({
+        sinceMinutes: sinceMin,
+        newFilesDetected,
+        filesWithoutText,
+        filesWithoutChunks,
+        filesNotQueued,
+        queueDepth,
+        warnings,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // ────────── /api/dev/fix-history ──────────
   app.get("/api/dev/fix-history", (req, res) => {
     if (!gate(req, res)) return;
