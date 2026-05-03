@@ -620,12 +620,20 @@ export function registerDevRoutes(app: Express): void {
       if (tts) return "PROMPT";
       return "UNKNOWN";
     })();
+    // Phase-2-final: human-readable blocker derivation
+    const weekNum = (week?.outputs as any)?.weekNumber ?? (week?.data as any)?.weekNumber ?? null;
+    const branchAction = (branch?.outputs as any)?.action || (branch?.data as any)?.action;
+    let blocker: string | null = null;
+    if (weekNum != null && weekNum < 1) blocker = `weekNumber=${weekNum} — outside active semester window (pre or post-semester)`;
+    else if (branchAction === "CHUM_FALLBACK") blocker = `no unlistened file for week ${weekNum} after OneDrive sync — fell back to CHUM FM`;
+    else if (!branch && !tts) blocker = "flow stopped before branch decision — check trace for HA error or thrown exception";
+    else if (finalAction === "UNKNOWN") blocker = "could not determine finalAction from trace events";
     res.json({
       trigger: get("cat_lights:webhook_received")?.data?.body || null,
       stateParsed: get("cat_lights:state_parsed")?.data || null,
-      semester: (week?.data as any)?.semesterKey || sel?.semester || null,
-      weekNumber: (week?.data as any)?.weekNumber ?? null,
-      initialFileLookup: initial?.data || null,
+      semester: (week?.outputs as any)?.semesterKey || (week?.data as any)?.semesterKey || sel?.semester || null,
+      weekNumber: weekNum,
+      initialFileLookup: initial?.outputs || initial?.data || null,
       decisionPath: slice.map(s => ({
         time: s.time,
         step: s.step,
@@ -635,12 +643,114 @@ export function registerDevRoutes(app: Express): void {
         outputs: s.outputs,
       })),
       fileSelection: sel,
-      tts: tts ? { message: (tts.data as any)?.message, time: tts.time } : null,
+      tts: tts ? { message: (tts.outputs as any)?.message || (tts.data as any)?.message, time: tts.time } : null,
       finalAction,
+      blocker,
       runStartedAt: all[startIdx].time,
       runEndedAt: slice[slice.length - 1]?.time,
       durationMs: slice[slice.length - 1]?.ts - all[startIdx].ts,
     });
+  });
+
+  // ────────── one-command diagnosis ──────────
+  app.get("/api/dev/diagnose", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      // Re-derive flow snapshot inline (avoids HTTP self-call).
+      const all = getSteps();
+      let startIdx = -1;
+      for (let i = all.length - 1; i >= 0; i--) {
+        if (all[i].step === "cat_lights:webhook_received") { startIdx = i; break; }
+      }
+      const slice = startIdx >= 0 ? all.slice(startIdx).filter(s => s.subsystem === "cat_lights") : [];
+      const week = slice.find(s => s.step === "cat_lights:week_calculated");
+      const branch = slice.find(s => s.step === "cat_lights:branch");
+      const tts = slice.find(s => s.step === "cat_lights:tts_started");
+      const weekNum = (week?.outputs as any)?.weekNumber ?? (week?.data as any)?.weekNumber ?? null;
+      const action = (branch?.outputs as any)?.action || (branch?.data as any)?.action;
+
+      // Fetch supporting data
+      const sem: any = await activeSemester();
+      const files: any[] = await storage.getFiles().catch(() => []);
+      const distPath = path.join(PROJECT_ROOT, "dist");
+      const clientSrc = path.join(PROJECT_ROOT, "client", "src");
+      const distMtime = (() => { try { return fs.statSync(distPath).mtimeMs; } catch { return 0; } })();
+      const srcMtime = newestMtime(clientSrc);
+      const buildOutOfDate = !!(distMtime && srcMtime && srcMtime > distMtime);
+
+      // Diagnose
+      let primaryBlocker = "no_blocker_detected";
+      let recommendedNextStep = "system appears healthy";
+      let confidence: "high" | "medium" | "low" = "high";
+      let summary = "Cat Lights flow ran cleanly.";
+
+      if (startIdx < 0) {
+        primaryBlocker = "no_cat_lights_run_captured";
+        recommendedNextStep = "trigger Cat Lights (POST /api/dev/test/cat-lights-on with {confirm:true}) or wait for next HA webhook";
+        confidence = "high";
+        summary = "No Cat Lights webhook has fired since the trace was last cleared. Cannot diagnose without a run.";
+      } else if (!sem) {
+        primaryBlocker = "no_active_semester";
+        recommendedNextStep = "set an active semester via the dashboard settings (storage.getActiveSemesterSettings returned null)";
+        confidence = "high";
+        summary = "Cat Lights cannot calculate a week number without an active semester row.";
+      } else if (weekNum != null && weekNum < 1) {
+        primaryBlocker = `pre_or_post_semester (week=${weekNum})`;
+        recommendedNextStep = `verify semesterStartDate (${sem.semesterStartDate}) matches reality, or wait until semester starts. Use POST /api/dev/replay {forceWeek:1} to test in-semester logic.`;
+        confidence = "high";
+        summary = `weekNumber resolved to ${weekNum} — Cat Lights will fall back to CHUM FM until weekNumber >= 1.`;
+      } else if (action === "CHUM_FALLBACK") {
+        const wkFiles = files.filter(f => f.weekNumber === weekNum);
+        const unlisten = wkFiles.filter(f => !f.listenedAt);
+        const ready = unlisten.filter(f => f.preparedAt && f.preparedAudioPaths);
+        if (wkFiles.length === 0) {
+          primaryBlocker = `no_files_for_week_${weekNum}`;
+          recommendedNextStep = "check OneDrive folder paths via GET /api/dev/onedrive-audit and trigger a sync";
+          summary = `Zero files indexed for week ${weekNum} — OneDrive sync may not have detected the Module/Reading folders.`;
+        } else if (unlisten.length === 0) {
+          primaryBlocker = `all_${wkFiles.length}_files_listened`;
+          recommendedNextStep = `all week ${weekNum} files marked listened — advance the week or unmark a file via the dashboard`;
+          summary = `All ${wkFiles.length} files for week ${weekNum} are already listened. CHUM FM is correct fallback.`;
+        } else if (ready.length === 0) {
+          primaryBlocker = `${unlisten.length}_files_not_prepared`;
+          recommendedNextStep = "AudioPrep hasn't generated audio for these files yet. Check GET /api/dev/tts-ready and ensure AudioPrep queue is running.";
+          summary = `${unlisten.length} unlistened files exist for week ${weekNum} but none have preparedAudioPaths.`;
+        } else {
+          primaryBlocker = "priority_filter_rejected_all_candidates";
+          recommendedNextStep = "inspect findNextFileByPriority — files are ready but the filter excluded them. Check /api/dev/file-map candidates list.";
+          confidence = "medium";
+          summary = `${ready.length} files appear ready but findNextFileByPriority returned null.`;
+        }
+      } else if (action === "PROMPT_FILE" && tts) {
+        summary = `Cat Lights successfully selected a file and started TTS prompt for week ${weekNum}.`;
+        if (buildOutOfDate) {
+          primaryBlocker = "frontend_bundle_stale";
+          recommendedNextStep = "run `npm run build && pm2 restart all` on the Pi — client/src has unbuilt changes";
+          confidence = "medium";
+        }
+      } else if (!branch) {
+        primaryBlocker = "flow_aborted_before_branch";
+        recommendedNextStep = "check GET /api/dev/recent-errors and HA connection — the handler exited before reaching the branch decision";
+        confidence = "medium";
+        summary = "Cat Lights handler started but never reached the file-selection branch.";
+      }
+
+      res.json({
+        summary,
+        primaryBlocker,
+        recommendedNextStep,
+        confidence,
+        snapshot: {
+          weekNumber: weekNum,
+          finalAction: action || (tts ? "PROMPT" : "UNKNOWN"),
+          semesterKey: sem?.semesterKey || null,
+          semesterActive: !!sem,
+          buildOutOfDate,
+          totalFilesInDb: files.length,
+          filesForCurrentWeek: weekNum != null ? files.filter(f => f.weekNumber === weekNum).length : null,
+        },
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
   // ────────── validate latest snapshot ──────────
