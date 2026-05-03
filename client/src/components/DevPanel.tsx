@@ -229,14 +229,26 @@ export function DevPanel() {
       const t = ev.target as HTMLElement;
       const tid = t?.dataset?.testid || '';
       const tag = t?.tagName?.toLowerCase() || '?';
+      const panelEl = document.querySelector('[data-testid="dev-panel"]') as HTMLElement | null;
       const inPanel = !!t?.closest?.('[data-testid="dev-panel"]');
-      if (!inPanel) return;
+      // Also fire diagnostics when the click coords fall inside the panel rect
+      // but the actual event target is OUTSIDE the panel — that means another
+      // overlay is intercepting our clicks.
+      let coordsInPanel = false;
+      if (panelEl) {
+        const r = panelEl.getBoundingClientRect();
+        coordsInPanel = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+      }
+      if (!inPanel && !coordsInPanel) return;
       const stack = document.elementsFromPoint(ev.clientX, ev.clientY);
       const top = stack[0] as HTMLElement | undefined;
       const topTid = top?.dataset?.testid || '';
       const topTag = top?.tagName?.toLowerCase() || '?';
       const match = (top === t) ? 'MATCH' : 'MISMATCH';
-      const line = `PD(${ev.clientX},${ev.clientY}) tgt=<${tag}>${tid?'#'+tid:''} top=<${topTag}>${topTid?'#'+topTid:''} ${match}`;
+      const blocker = (!inPanel && coordsInPanel)
+        ? ` BLOCKED-BY=<${topTag}>${topTid?'#'+topTid:''}`
+        : '';
+      const line = `PD(${ev.clientX},${ev.clientY}) tgt=<${tag}>${tid?'#'+tid:''} top=<${topTag}>${topTid?'#'+topTid:''} ${match}${blocker}`;
       console.log('[WinPD] ' + line);
       pushDiag(line);
     };
@@ -369,7 +381,7 @@ export function DevPanel() {
   if (!open) return null;
 
   const panel: React.CSSProperties = {
-    position: "fixed", left: geom.x, top: geom.y, zIndex: 2147483000,
+    position: "fixed", left: geom.x, top: geom.y, zIndex: 2147483647,
     width: geom.w, height: geom.h, overflow: "hidden",
     background: "rgba(15,15,20,0.96)", color: "#e8e8ec",
     border: "1px solid rgba(120,120,150,0.4)", borderRadius: 10,
