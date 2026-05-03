@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
 import { DevPanel } from "@/components/DevPanel";
 import { l1ToL2Map, previousLevelMap, laterLevelMap } from "./dashboard/courseLevelMaps";
+import { isValidHex, safeHex, shortTermLabel, ttsKeyFor } from "./dashboard/pureHelpers";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import oneDriveLogoPath from "@assets/OneDrive_1776567093048.png";
@@ -3629,7 +3630,7 @@ export default function Dashboard() {
   const [ttsOptOutMap, setTtsOptOutMap] = useState<Record<string, boolean>>(() => {
     try { return JSON.parse(localStorage.getItem('unical_ttsOptOut') || '{}'); } catch { return {}; }
   });
-  const ttsKeyFor = (courseCode: string, week: number, type: 'module' | 'reading') => `${courseCode.replace(/\s/g, '').toUpperCase()}-w${week}-${type}`;
+  // ttsKeyFor moved to ./dashboard/pureHelpers
   const isTtsCounted = (courseCode: string, week: number, type: 'module' | 'reading') => {
     const k = ttsKeyFor(courseCode, week, type);
     if (k in ttsOptOutMap) return ttsOptOutMap[k];
@@ -4413,9 +4414,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
   
-  // Color settings
-  const isValidHex = (v: string) => /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(v);
-  const safeHex = (v: string, fallback: string) => isValidHex(v) ? v : fallback;
+  // Color settings — isValidHex/safeHex moved to ./dashboard/pureHelpers
 
   const [colorSettings, setColorSettings] = useState<{
     boxBackground: string;
@@ -6853,7 +6852,7 @@ export default function Dashboard() {
     });
   };
 
-  const shortTermLabel = (val: string) => val.replace(/^20/, '');
+  // shortTermLabel moved to ./dashboard/pureHelpers
 
   const TermDropdown = ({ id, code, isPrevCompleted }: { id: string; code: string; isPrevCompleted?: boolean }) => {
     const val = getEffectiveTerm(id, code);
