@@ -238,7 +238,64 @@ function appendChangeLog(entry: string) {
   } catch {}
 }
 
+// ────────── server-side redaction (mirrors DevPanel client redaction) ──────────
+// Applied to EVERY /api/dev/* JSON response so direct curl output is also
+// safe to paste into ChatGPT.  Scrubs:
+//   - object keys matching token/secret/password/etc → value replaced with <REDACTED>
+//   - GitHub PATs (ghp_…, github_pat_…)
+//   - email addresses
+//   - long opaque bearer-style tokens (32+ chars, [A-Za-z0-9_-])
+const SECRET_KEY_RE = /(token|secret|apikey|api_key|password|passwd|bearer|authorization|client_secret|refresh_token|access_token|cookie|session|private_key|x-dev-key|graphtoken|ha_token|home_assistant_token|github_personal_access_token)/i;
+const EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+const BEARER_RE = /\b(?:Bearer\s+)?[A-Za-z0-9_-]{32,}\b/g;
+const GH_PAT_RE = /\bghp_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{40,}\b/g;
+// Endpoints that legitimately return long base64-ish payloads where bearer
+// scrubbing would damage useful data — leave their string contents alone but
+// still redact secret-named keys.
+const KEEP_STRINGS_PATHS = [/^\/api\/dev\/file\b/, /^\/api\/dev\/export-code\b/, /^\/api\/dev\/handoff\b/];
+
+function scrubServerValue(v: any, keepStrings: boolean, depth = 0): any {
+  if (v == null || depth > 12) return v;
+  if (typeof v === "string") {
+    if (keepStrings) return v;
+    let s = v;
+    s = s.replace(GH_PAT_RE, "<REDACTED:gh-pat>");
+    s = s.replace(EMAIL_RE, "<REDACTED:email>");
+    if (s.length > 32) s = s.replace(BEARER_RE, m => m.length >= 32 ? "<REDACTED:token>" : m);
+    return s;
+  }
+  if (Array.isArray(v)) return v.map(x => scrubServerValue(x, keepStrings, depth + 1));
+  if (typeof v === "object") {
+    const out: any = {};
+    for (const [k, val] of Object.entries(v)) {
+      out[k] = SECRET_KEY_RE.test(k) ? "<REDACTED>" : scrubServerValue(val, keepStrings, depth + 1);
+    }
+    return out;
+  }
+  return v;
+}
+
+function devRedactionMiddleware(req: any, res: any, next: any) {
+  // Opt-out for callers that need raw data (e.g. an admin script that already
+  // handles its own scrubbing). Not advertised; intentional escape hatch.
+  if (req.query?.__raw === "1" || req.header?.("x-dev-raw") === "1") return next();
+  const keepStrings = KEEP_STRINGS_PATHS.some(re => re.test(req.path));
+  const origJson = res.json.bind(res);
+  res.json = (body: any) => {
+    try {
+      const scrubbed = scrubServerValue(body, keepStrings);
+      res.setHeader("X-Dev-Redacted", "1");
+      return origJson(scrubbed);
+    } catch {
+      return origJson(body);
+    }
+  };
+  next();
+}
+
 export function registerDevRoutes(app: Express): void {
+  app.use("/api/dev", devRedactionMiddleware);
+
   // ────────── system map ──────────
   app.get("/api/dev/system-map", async (req, res) => {
     if (!gate(req, res)) return;
