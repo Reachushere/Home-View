@@ -15,8 +15,42 @@ type TabId =
   | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback" | "fixhist"
   | "upload" | "timeline" | "afterUpload";
 
+// ───── DEV_API_KEY auto-attach ─────
+// Stored in localStorage under `unical:devKey`. Sent as x-dev-key on every dev request.
+// On first 401, prompts once and persists. Never logged or rendered.
+const DEV_KEY_STORAGE = "unical:devKey";
+function getDevKey(): string {
+  try { return localStorage.getItem(DEV_KEY_STORAGE) || ""; } catch { return ""; }
+}
+function setDevKey(k: string) {
+  try { if (k) localStorage.setItem(DEV_KEY_STORAGE, k); else localStorage.removeItem(DEV_KEY_STORAGE); } catch {}
+}
+function promptForDevKeyOnce(): string {
+  if ((promptForDevKeyOnce as any)._inflight) return getDevKey();
+  (promptForDevKeyOnce as any)._inflight = true;
+  try {
+    const entered = window.prompt("Enter DEV_API_KEY for /api/dev/* access:") || "";
+    if (entered) setDevKey(entered);
+    return entered;
+  } finally {
+    setTimeout(() => { (promptForDevKeyOnce as any)._inflight = false; }, 500);
+  }
+}
 const j = async (url: string, init?: RequestInit) => {
-  const r = await fetch(url, init);
+  const isDev = url.startsWith("/api/dev");
+  const headers: Record<string, string> = { ...(init?.headers as any || {}) };
+  if (isDev) {
+    const k = getDevKey();
+    if (k) headers["x-dev-key"] = k;
+  }
+  let r = await fetch(url, { ...init, headers });
+  if (r.status === 401 && isDev) {
+    const entered = promptForDevKeyOnce();
+    if (entered) {
+      headers["x-dev-key"] = entered;
+      r = await fetch(url, { ...init, headers });
+    }
+  }
   const ct = r.headers.get("content-type") || "";
   return ct.includes("json") ? r.json() : r.text();
 };
@@ -143,9 +177,10 @@ export function DevPanel() {
         const cdBox = countdown?.parentElement?.getBoundingClientRect();
         const cdStyle = countdown?.parentElement ? window.getComputedStyle(countdown.parentElement) : null;
         const view = (document.querySelector('[data-testid="view-week"], [data-testid="view-month"]') as HTMLElement | null)?.dataset?.testid?.replace("view-", "") || "unknown";
+        const _devKey = getDevKey();
         await fetch("/api/dev/layout-map", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...(_devKey ? { "x-dev-key": _devKey } : {}) },
           body: JSON.stringify({
             view,
             countdown: { isFixed: cdStyle?.position === "fixed", top: cdBox?.top, height: cdBox?.height },
@@ -601,7 +636,8 @@ export function DevPanel() {
         </button>
         <button data-testid="button-dev-handoff" style={actBtn("#c4b5fd", "rgba(167,139,250,0.18)")} onClick={async () => {
           try {
-            const r = await fetch("/api/dev/handoff?format=text");
+            const _devKey = getDevKey();
+            const r = await fetch("/api/dev/handoff?format=text", { headers: _devKey ? { "x-dev-key": _devKey } : {} });
             const text = await r.text();
             await navigator.clipboard.writeText(text);
             alert(`Handoff copied (${(text.length / 1024).toFixed(1)} KB).`);
