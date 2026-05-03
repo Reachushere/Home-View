@@ -35145,6 +35145,10 @@ export default function Dashboard() {
                       const dayOtherTasks = otherTasks.filter(task => {
                         const taskDueDate = startOfDayET(new Date(task.dueDate));
                         if (isSameDayET(taskDueDate, cellDate)) return true;
+                        // Class-type tasks are single-day events — never span across days
+                        // even if a startDate was set (which would make every Civil War class
+                        // appear on every day from semester start to its actual class date).
+                        if (task.type === 'class') return false;
                         if (task.startDate) {
                           const taskStartDate = startOfDayET(new Date(task.startDate));
                           return cellDate >= taskStartDate && cellDate < taskDueDate;
