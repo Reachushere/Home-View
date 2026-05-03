@@ -11,8 +11,9 @@ Move constant data maps that have no closure dependencies into their own module(
 ### Phase 2 — Pure helper functions
 Move pure utility functions (no React/state/closure deps) currently defined inside the component to `client/src/pages/dashboard/helpers/` (date math, string parsing, ET timezone helpers).
 
-### Phase 3 — Standalone tiny inner components
-Move trivially-extractable inner components (`TermDropdown`, `StrikethroughLabel`, `CourseName`) — those that take 1-3 props and call into a small set of parent functions — to `client/src/pages/dashboard/inline/`. Parent functions get passed in as props.
+### Phase 3 — Standalone tiny inner components *(shipped — commit ad3d8e9d)*
+Moved `TermDropdown`, `StrikethroughLabel`, `CourseName` to `client/src/pages/dashboard/inline/`.
+Each base component takes its closure deps as props; thin in-component wrappers preserve all call sites verbatim.
 
 ### Phase 4 — Dialogs
 Most dialogs are already in `client/src/components/`. Any dialog still inline in `dashboard.tsx` (mobile settings, OneDrive reauth modal, etc.) gets pulled into its own file under `client/src/pages/dashboard/dialogs/`.
