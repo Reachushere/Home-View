@@ -15,8 +15,8 @@ export default function StartMyDayButton() {
       title="Start My Day — pick up where you left off"
       style={{
         position: "fixed",
-        bottom: 20,
-        left: 20,
+        bottom: 50,
+        left: 50,
         zIndex: 2147483646,
         background: "linear-gradient(135deg, #f59e0b, #f97316)",
         color: "#fff",
