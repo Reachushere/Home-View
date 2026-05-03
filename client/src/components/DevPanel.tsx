@@ -229,11 +229,47 @@ export function DevPanel() {
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
 
+  // ── Draggable + resizable panel geometry (persisted) ──
+  type Geom = { x: number; y: number; w: number; h: number };
+  const computeDefaultGeom = (): Geom => {
+    const w = 520, h = Math.min(640, Math.round((typeof window !== "undefined" ? window.innerHeight : 800) * 0.8));
+    const W = typeof window !== "undefined" ? window.innerWidth : 1200;
+    const H = typeof window !== "undefined" ? window.innerHeight : 800;
+    return { x: Math.max(8, W - w - 8), y: Math.max(8, H - h - 36), w, h };
+  };
+  const [geom, setGeom] = useState<Geom>(() => {
+    try { const raw = localStorage.getItem("unical_devpanel_geom"); if (raw) { const g = JSON.parse(raw); if (g && typeof g.x === "number") return g; } } catch {}
+    return computeDefaultGeom();
+  });
+  useEffect(() => { try { localStorage.setItem("unical_devpanel_geom", JSON.stringify(geom)); } catch {} }, [geom]);
+  const dragRef = useRef<{ kind: "move" | "resize"; sx: number; sy: number; g: Geom } | null>(null);
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const d = dragRef.current; if (!d) return;
+      const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+      if (d.kind === "move") {
+        setGeom({ ...d.g, x: Math.max(0, Math.min(window.innerWidth - 80, d.g.x + dx)), y: Math.max(0, Math.min(window.innerHeight - 30, d.g.y + dy)) });
+      } else {
+        setGeom({ ...d.g, w: Math.max(320, Math.min(window.innerWidth - d.g.x, d.g.w + dx)), h: Math.max(220, Math.min(window.innerHeight - d.g.y, d.g.h + dy)) });
+      }
+    };
+    const onUp = () => { dragRef.current = null; document.body.style.userSelect = ""; };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+  }, []);
+  const startDrag = (kind: "move" | "resize") => (e: React.MouseEvent) => {
+    e.preventDefault();
+    dragRef.current = { kind, sx: e.clientX, sy: e.clientY, g: { ...geom } };
+    document.body.style.userSelect = "none";
+  };
+  const resetGeom = () => setGeom(computeDefaultGeom());
+
   if (!open) return null;
 
   const panel: React.CSSProperties = {
-    position: "fixed", right: 8, bottom: 36, zIndex: 99999,
-    width: 520, maxHeight: "80vh", overflow: "hidden",
+    position: "fixed", left: geom.x, top: geom.y, zIndex: 99999,
+    width: geom.w, height: geom.h, overflow: "hidden",
     background: "rgba(15,15,20,0.96)", color: "#e8e8ec",
     border: "1px solid rgba(120,120,150,0.4)", borderRadius: 10,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
@@ -663,8 +699,21 @@ export function DevPanel() {
       </div>
     )}
     <div style={panel} data-testid="dev-panel">
-      <div style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)" }}>
+      <div
+        data-testid="dev-panel-drag-handle"
+        onMouseDown={startDrag("move")}
+        onDoubleClick={resetGeom}
+        title="Drag to move · Double-click to reset position/size"
+        style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)", cursor: "move", userSelect: "none" }}
+      >
+        <span style={{ marginRight: 6, color: "#666", fontSize: 12, lineHeight: 1 }}>⋮⋮</span>
         <span style={{ flex: 1, fontWeight: 700, color: "#a78bfa" }}>UniCal Dev Panel</span>
+        <button
+          data-testid="button-dev-reset-geom"
+          onClick={(e) => { e.stopPropagation(); resetGeom(); }}
+          title="Reset panel position & size"
+          style={{ marginRight: 6, background: "transparent", border: "1px solid rgba(120,120,150,0.4)", color: "#aaa", cursor: "pointer", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}
+        >reset</button>
         {initChecklist && !initChecklist.ready && (
           <button
             data-testid="button-init-reopen"
@@ -1369,6 +1418,12 @@ export function DevPanel() {
           )}
         </div>
       )}
+      <div
+        data-testid="dev-panel-resize-handle"
+        onMouseDown={startDrag("resize")}
+        title="Drag to resize"
+        style={{ position: "absolute", right: 0, bottom: 0, width: 16, height: 16, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 50%, rgba(167,139,250,0.6) 50%)", borderBottomRightRadius: 10 }}
+      />
     </div>
     </>
   );
