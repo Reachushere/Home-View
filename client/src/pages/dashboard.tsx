@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
 import { DevPanel } from "@/components/DevPanel";
+import { l1ToL2Map, previousLevelMap, laterLevelMap } from "./dashboard/courseLevelMaps";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import oneDriveLogoPath from "@assets/OneDrive_1776567093048.png";
@@ -6878,24 +6879,8 @@ export default function Dashboard() {
     );
   };
 
-  const l1ToL2Map: Record<string, string> = {
-    'L1_PPA120': 'L2_PPA120', 'L1_PPA121': 'L2_PPA121',
-    'L1_PPA122': 'L2_PPA122', 'L1_PPA124': 'L2_PPA124',
-  };
-
-  const previousLevelMap: Record<string, string[]> = {
-    'L2_PPA120': ['L1_PPA120'], 'L2_PPA121': ['L1_PPA121'],
-    'L2_PPA122': ['L1_PPA122'], 'L2_PPA124': ['L1_PPA124'],
-    'L3_PPA235': ['L2_PPA235'], 'L3_PPA303': ['L2_PPA303'], 'L3_PPA319': ['L2_PPA319'],
-  };
-
-  const laterLevelMap: Record<string, string[]> = {};
-  Object.entries(previousLevelMap).forEach(([later, earlierIds]) => {
-    earlierIds.forEach(eid => {
-      if (!laterLevelMap[eid]) laterLevelMap[eid] = [];
-      laterLevelMap[eid].push(later);
-    });
-  });
+  // l1ToL2Map, previousLevelMap, laterLevelMap moved to ./dashboard/courseLevelMaps
+  // (Phase 1 of dashboard.tsx refactor — see docs/REFACTOR_DASHBOARD.md)
 
   const isActiveInLaterLevel = (courseId: string): boolean => {
     const laterIds = laterLevelMap[courseId];
