@@ -412,6 +412,28 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
     onCourseFolderRenamed?.();
   };
 
+  // Persist a custom OneDrive path for one of the side-folder cards
+  // (Syllabus / Assignments / Textbook). Uses the same per-course-code
+  // app_state map the health check honours, so saving here flips the
+  // card from red ("No folder") to green on the next health refresh.
+  const setSidePath = async (kind: 'syllabus' | 'assignments' | 'textbook', newPath: string) => {
+    const url = `/api/${kind}/paths`;
+    const body: any = { courseCode: course.code };
+    if (kind === 'syllabus') body.objectPath = newPath;
+    else body.folderPath = newPath;
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const txt = await r.text().catch(() => '');
+      throw new Error(`Save failed: ${txt || r.status}`);
+    }
+    onCourseFolderRenamed?.();
+  };
+
   const renameSemFolder = async (key: 'moduleFolder' | 'readingFolder', newPath: string) => {
     if (!semesterId || !courseSlot) throw new Error('Missing semester/course info');
     const field = key === 'moduleFolder' ? `course${courseSlot}ModuleFolder` : `course${courseSlot}ReadingFolder`;
@@ -627,8 +649,12 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           const TTS_ROW_MIN_H = Math.round(ROW_MIN_H / 2);
           const INTRA_PAIR_GAP = 2;
           const ARM_TOP = TOP_BUS_Y;       // wrapper-relative
+          // Right arm now lands directly on the Reading Folder NodeBox
+          // (right-side chip of the reading row) instead of running past
+          // it down into a pre-read splitter. Stops at the TOP of the
+          // reading row.
           const ARM_BOTTOM_Y =
-            TOP_SPLIT_H + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
+            TOP_SPLIT_H + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_SPLIT_H;
           const ARM_HEIGHT = ARM_BOTTOM_Y - ARM_TOP;
 
           // Each orange-box cell mirrors the Weekly Content Status panel
@@ -779,17 +805,18 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             );
           };
 
-          const orangeBoxStyle = (s: Status): React.CSSProperties => ({
+          const orangeBoxStyle = (s: Status, slim = false): React.CSSProperties => ({
             flex: 1,
             borderRadius: 8,
             border: `1.5px solid ${STATUS_COLOR[s]}aa`,
             background: `linear-gradient(180deg, ${STATUS_COLOR[s]}1f 0%, ${STATUS_COLOR[s]}08 100%)`,
             boxShadow: `0 0 8px ${STATUS_GLOW[s]}`,
-            padding: '6px 8px',
+            padding: slim ? '2px 6px' : '6px 8px',
             display: 'flex',
             gap: 3,
             alignItems: 'stretch',
-            minHeight: ROW_MIN_H - 12,
+            minHeight: slim ? TTS_ROW_MIN_H : (ROW_MIN_H - 12),
+            height: slim ? TTS_ROW_MIN_H : undefined,
           });
 
           return (
@@ -843,7 +870,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   slim
                   testId={`pipeline-module-tts-${course.code.toLowerCase()}`}
                 />
-                <div style={orangeBoxStyle(moduleTtsStatus)} data-testid={`pipeline-module-tts-weeks-${course.code.toLowerCase()}`}>
+                <div style={orangeBoxStyle(moduleTtsStatus, true)} data-testid={`pipeline-module-tts-weeks-${course.code.toLowerCase()}`}>
                   {weekRange.map(w => renderTtsCell(w, courseHealth?.moduleWeeks?.[w], 'module'))}
                 </div>
               </div>
@@ -851,15 +878,10 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               {/* gap between the module pair and the reading pair */}
               <div style={{ height: ROW_GAP }} />
 
-              {/* ───── Pre-reading splitter: H-bus + drop into Reading chip.
-                   Same negative margin trick as the top splitter so its right
-                   end aligns with the arm sitting in the wrapper's gutter. ───── */}
-              <div style={{ position: 'relative', height: PRE_READ_SPLIT_H, margin: '0 -4%' }}>
-                {/* horizontal bus — runs from far left to the arm's gutter */}
-                <div style={{ position: 'absolute', left: '4%', right: 12, top: PRE_READ_BUS_Y, height: 2, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-                {/* drops to Reading chip on the RIGHT (at content right edge) */}
-                <div style={{ position: 'absolute', right: '4%', top: PRE_READ_BUS_Y, width: 2, height: PRE_READ_SPLIT_H - PRE_READ_BUS_Y, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-              </div>
+              {/* Spacer where the pre-reading splitter used to live. The
+                   right arm now lands directly on the Reading Folder
+                   NodeBox below, so no horizontal bus is needed. */}
+              <div style={{ height: PRE_READ_SPLIT_H }} />
 
               {/* ───── Reading row: weeks orange-box on LEFT, chip on RIGHT ───── */}
               <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: ROW_MIN_H }}>
@@ -887,7 +909,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
               {/* ───── Reading TTS strip (slim row, chip on RIGHT). ───── */}
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', minHeight: TTS_ROW_MIN_H, height: TTS_ROW_MIN_H }}>
-                <div style={orangeBoxStyle(readingTtsStatus)} data-testid={`pipeline-reading-tts-weeks-${course.code.toLowerCase()}`}>
+                <div style={orangeBoxStyle(readingTtsStatus, true)} data-testid={`pipeline-reading-tts-weeks-${course.code.toLowerCase()}`}>
                   {weekRange.map(w => renderTtsCell(w, courseHealth?.readingWeeks?.[w], 'reading'))}
                 </div>
                 <NodeBox
@@ -902,31 +924,36 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                 />
               </div>
 
-              {/* ───── Right arm — runs from top splitter H-bus all the way
-                   down past the module row into the pre-reading H-bus,
-                   delivering the "right-turn" branch to the reading row.
-                   Sits in the wrapper's right padding gutter (right: 12px,
-                   wrapper-relative) so it stays OUTSIDE the module row's
-                   orange box and never crosses a week cell. */}
+              {/* ───── Right arm — drops from top H-bus down past the
+                   module row + module TTS strip and lands on the TOP of
+                   the Reading Folder NodeBox (right side chip of the
+                   reading row). Aligned with the NodeBox horizontal
+                   centre (170px wide, sitting flush against the wrapper's
+                   right content edge). */}
               <div style={{
                 position: 'absolute',
-                right: 12,
+                right: 'calc(4% + 85px)',
                 top: ARM_TOP,
                 width: 2,
                 height: ARM_HEIGHT,
                 background: STATUS_COLOR[readingFolderStatus],
                 boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}`,
                 pointerEvents: 'none',
+                transform: 'translateX(-1px)',
               }} />
             </div>
           );
         })()}
 
-        {/* Merge into Sync — short vertical from reading row down to Sync.
-            Right drop matches the right arm at right: 12px (wrapper gutter). */}
+        {/* Merge into Sync — yellow drop ORIGINATES from the TTS · Readings
+            NodeBox (the last stage in the reading pipeline before sync),
+            then turns and runs centre-bottom into the Sync engine. */}
         <div style={{ position: 'relative', height: 18, margin: '4px 0' }}>
-          <div style={{ position: 'absolute', right: 12, top: 0, width: 2, height: 8, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-          <div style={{ position: 'absolute', left: 12, right: 12, top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          {/* drop from TTS · Readings NodeBox bottom edge */}
+          <div style={{ position: 'absolute', right: 'calc(4% + 85px)', top: 0, width: 2, height: 8, background: STATUS_COLOR[readingTtsStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingTtsStatus]}`, transform: 'translateX(-1px)' }} />
+          {/* horizontal bus into the centre */}
+          <div style={{ position: 'absolute', left: '50%', right: 'calc(4% + 85px)', top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          {/* centre vertical into Sync */}
           <div style={{ position: 'absolute', left: '50%', top: 8, width: 2, height: 10, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
@@ -962,8 +989,10 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         {/* Module box anchors LEFT under the 20% wire-drop, Reading box
             anchors RIGHT under the 80% wire-drop, so the verticals from
             the merge bus above land on the box centers — instead of the
-            two boxes bunching together in the middle of the section. */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 calc(20% - 58px)' }}>
+            two boxes bunching together in the middle of the section.
+            Pulled UP 12px so the calendar boxes nestle closer to the
+            sync-engine merge bus instead of drifting down. */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 calc(20% - 58px)', marginTop: -12 }}>
           {([
             { kind: 'module' as const, label: 'Module', bg: modColor, status: calModuleStatus, pct: modulePct, hasFiles: moduleHasFiles, total: totalMod, ready: modTtsReady, testId: `pipeline-calendar-module-${course.code.toLowerCase()}` },
             { kind: 'reading' as const, label: 'Reading', bg: readColor, status: calReadingStatus, pct: readingPct, hasFiles: readingHasFiles, total: totalRead, ready: readTtsReady, testId: `pipeline-calendar-reading-${course.code.toLowerCase()}` },
@@ -1126,9 +1155,18 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         <SectionLabel>Course Materials</SectionLabel>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
-            { key: 'syllabus_folder', label: 'Syllabus', s: sylStatus, Icon: FileText, sub: sylLinked ? 'PDF linked' : sylFolder ? 'Folder ok, no PDF' : 'No folder' },
-            { key: 'assignments_folder', label: 'Assignments Folder', s: asgStatus, Icon: Folder, sub: asgFolder ? 'OneDrive folder ok' : 'Missing folder' },
-            { key: 'textbook_folder', label: 'Textbook Folder', s: tbkStatus, Icon: BookOpen, sub: tbkFolder ? 'OneDrive folder ok' : 'Missing folder' },
+            { key: 'syllabus_folder', kind: 'syllabus' as const, label: 'Syllabus', s: sylStatus, Icon: FileText,
+              sub: sylLinked ? 'PDF linked' : sylFolder ? 'Folder ok, no PDF' : 'No folder',
+              currentPath: courseHealth?.syllabusPath || '',
+              placeholder: '/School/1. TMU/Courses/.../Syllabus' },
+            { key: 'assignments_folder', kind: 'assignments' as const, label: 'Assignments Folder', s: asgStatus, Icon: Folder,
+              sub: asgFolder ? 'OneDrive folder ok' : 'Missing folder',
+              currentPath: courseHealth?.assignmentsPath || '',
+              placeholder: '/School/1. TMU/Courses/.../Assignments' },
+            { key: 'textbook_folder', kind: 'textbook' as const, label: 'Textbook Folder', s: tbkStatus, Icon: BookOpen,
+              sub: tbkFolder ? 'OneDrive folder ok' : 'Missing folder',
+              currentPath: courseHealth?.textbookPath || '',
+              placeholder: '/School/1. TMU/Courses/.../Textbook' },
           ].map(item => (
             <NodeBox
               key={item.label}
@@ -1138,6 +1176,11 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               status={item.s}
               onClick={() => onOpenWizard(item.key)}
               width={170}
+              pencil
+              pencilTitle={`Set OneDrive path for ${item.label}`}
+              pencilInitialValue={item.currentPath}
+              pencilPlaceholder={item.placeholder}
+              onPencilSubmit={(v) => setSidePath(item.kind, v)}
               testId={`pipeline-side-${course.code.toLowerCase()}-${item.label.toLowerCase().replace(/\s/g,'-')}`}
             />
           ))}
