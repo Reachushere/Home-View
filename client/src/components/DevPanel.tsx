@@ -158,12 +158,26 @@ export function DevPanel() {
     return () => { console.error = orig; };
   }, []);
 
-  // Toggle hotkey.
+  // Toggle hotkey + Shift+Alt+Arrows to nudge panel (drag fallback).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")) {
         e.preventDefault();
         setOpen(o => !o);
+        return;
+      }
+      if (e.shiftKey && e.altKey && e.key.startsWith("Arrow")) {
+        e.preventDefault();
+        const step = 20;
+        setGeom(g => {
+          let { x, y } = g;
+          if (e.key === "ArrowLeft") x = Math.max(0, x - step);
+          else if (e.key === "ArrowRight") x = Math.min(window.innerWidth - 80, x + step);
+          else if (e.key === "ArrowUp") y = Math.max(0, y - step);
+          else if (e.key === "ArrowDown") y = Math.min(window.innerHeight - 30, y + step);
+          console.log(`[DevPanel] keyboard nudge ${e.key} -> (${x},${y})`);
+          return { ...g, x, y };
+        });
       }
     };
     window.addEventListener("keydown", onKey);
@@ -753,9 +767,38 @@ export function DevPanel() {
         <span style={{ marginRight: 6, color: "#666", fontSize: 12, lineHeight: 1 }}>⋮⋮</span>
         <span style={{ flex: 1, fontWeight: 700, color: "#a78bfa" }}>UniCal Dev Panel</span>
         <button
+          data-testid="button-dev-probe"
+          onClick={(e) => {
+            e.stopPropagation();
+            try {
+              const handle = document.querySelector('[data-testid="dev-panel-drag-handle"]') as HTMLElement | null;
+              const tabBar = document.querySelector('[data-testid="tab-dev-trace"]') as HTMLElement | null;
+              const copyBtn = document.querySelector('[data-testid="button-dev-copy-debug-pack"]') as HTMLElement | null;
+              const probe = (label: string, el: HTMLElement | null) => {
+                if (!el) { console.log(`[Probe] ${label}: NOT FOUND`); return; }
+                const r = el.getBoundingClientRect();
+                const cx = Math.round(r.left + r.width / 2);
+                const cy = Math.round(r.top + r.height / 2);
+                const stack = document.elementsFromPoint(cx, cy);
+                console.log(`[Probe] ${label} @ (${cx},${cy}) — rect=${JSON.stringify({l:r.left,t:r.top,w:r.width,h:r.height})}`);
+                stack.slice(0, 8).forEach((node, i) => {
+                  const n = node as HTMLElement;
+                  const cs = window.getComputedStyle(n);
+                  console.log(`[Probe]   [${i}] <${n.tagName.toLowerCase()}> testid="${n.dataset?.testid||''}" class="${(n.className||'').toString().slice(0,60)}" pe=${cs.pointerEvents} z=${cs.zIndex} pos=${cs.position}`);
+                });
+              };
+              probe('drag-handle', handle);
+              probe('first-tab (Trace)', tabBar);
+              probe('copy-debug-pack (works)', copyBtn);
+            } catch (err: any) { console.error('[Probe] error', err); }
+          }}
+          title="Log what's blocking drag/tabs (check console)"
+          style={{ marginRight: 6, background: "rgba(251,191,36,0.15)", border: "1px solid rgba(251,191,36,0.6)", color: "#fde68a", cursor: "pointer", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}
+        >probe</button>
+        <button
           data-testid="button-dev-reset-geom"
           onClick={(e) => { e.stopPropagation(); resetGeom(); }}
-          title="Reset panel position & size"
+          title="Reset panel position & size · Shift+Alt+Arrows to nudge 20px"
           style={{ marginRight: 6, background: "transparent", border: "1px solid rgba(120,120,150,0.4)", color: "#aaa", cursor: "pointer", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}
         >reset</button>
         {initChecklist && !initChecklist.ready && (
