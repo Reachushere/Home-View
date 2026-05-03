@@ -242,26 +242,39 @@ export function DevPanel() {
     return computeDefaultGeom();
   });
   useEffect(() => { try { localStorage.setItem("unical_devpanel_geom", JSON.stringify(geom)); } catch {} }, [geom]);
-  const dragRef = useRef<{ kind: "move" | "resize"; sx: number; sy: number; g: Geom } | null>(null);
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const d = dragRef.current; if (!d) return;
-      const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+  const dragRef = useRef<{ kind: "move" | "resize"; sx: number; sy: number; g: Geom; pid: number; el: HTMLElement | null } | null>(null);
+  const startDrag = (kind: "move" | "resize") => (e: React.PointerEvent<HTMLElement>) => {
+    // Don't start a drag from buttons/inputs inside the header
+    const tgt = e.target as HTMLElement;
+    if (tgt && (tgt.closest("button") || tgt.closest("input") || tgt.closest("select") || tgt.closest("textarea") || tgt.closest("a"))) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget;
+    try { el.setPointerCapture(e.pointerId); } catch {}
+    dragRef.current = { kind, sx: e.clientX, sy: e.clientY, g: { ...geom }, pid: e.pointerId, el };
+    document.body.style.userSelect = "none";
+
+    const onMove = (ev: PointerEvent) => {
+      const d = dragRef.current; if (!d || ev.pointerId !== d.pid) return;
+      const dx = ev.clientX - d.sx, dy = ev.clientY - d.sy;
       if (d.kind === "move") {
         setGeom({ ...d.g, x: Math.max(0, Math.min(window.innerWidth - 80, d.g.x + dx)), y: Math.max(0, Math.min(window.innerHeight - 30, d.g.y + dy)) });
       } else {
         setGeom({ ...d.g, w: Math.max(320, Math.min(window.innerWidth - d.g.x, d.g.w + dx)), h: Math.max(220, Math.min(window.innerHeight - d.g.y, d.g.h + dy)) });
       }
     };
-    const onUp = () => { dragRef.current = null; document.body.style.userSelect = ""; };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
-  }, []);
-  const startDrag = (kind: "move" | "resize") => (e: React.MouseEvent) => {
-    e.preventDefault();
-    dragRef.current = { kind, sx: e.clientX, sy: e.clientY, g: { ...geom } };
-    document.body.style.userSelect = "none";
+    const onUp = (ev: PointerEvent) => {
+      const d = dragRef.current; if (!d || ev.pointerId !== d.pid) return;
+      try { d.el && d.el.releasePointerCapture(d.pid); } catch {}
+      dragRef.current = null;
+      document.body.style.userSelect = "";
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
   };
   const resetGeom = () => setGeom(computeDefaultGeom());
 
@@ -701,10 +714,10 @@ export function DevPanel() {
     <div style={panel} data-testid="dev-panel">
       <div
         data-testid="dev-panel-drag-handle"
-        onMouseDown={startDrag("move")}
+        onPointerDown={startDrag("move")}
         onDoubleClick={resetGeom}
         title="Drag to move · Double-click to reset position/size"
-        style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)", cursor: "move", userSelect: "none" }}
+        style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)", cursor: "move", userSelect: "none", touchAction: "none" }}
       >
         <span style={{ marginRight: 6, color: "#666", fontSize: 12, lineHeight: 1 }}>⋮⋮</span>
         <span style={{ flex: 1, fontWeight: 700, color: "#a78bfa" }}>UniCal Dev Panel</span>
@@ -1420,9 +1433,9 @@ export function DevPanel() {
       )}
       <div
         data-testid="dev-panel-resize-handle"
-        onMouseDown={startDrag("resize")}
+        onPointerDown={startDrag("resize")}
         title="Drag to resize"
-        style={{ position: "absolute", right: 0, bottom: 0, width: 16, height: 16, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 50%, rgba(167,139,250,0.6) 50%)", borderBottomRightRadius: 10 }}
+        style={{ position: "absolute", right: 0, bottom: 0, width: 18, height: 18, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 50%, rgba(167,139,250,0.7) 50%)", borderBottomRightRadius: 10, touchAction: "none", zIndex: 10 }}
       />
     </div>
     </>
