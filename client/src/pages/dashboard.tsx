@@ -2,6 +2,9 @@ import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTr
 import { DevPanel } from "@/components/DevPanel";
 import { l1ToL2Map, previousLevelMap, laterLevelMap } from "./dashboard/courseLevelMaps";
 import { isValidHex, safeHex, shortTermLabel, ttsKeyFor } from "./dashboard/pureHelpers";
+import { TermDropdown as TermDropdownBase } from "./dashboard/inline/TermDropdown";
+import { StrikethroughLabel as StrikethroughLabelBase } from "./dashboard/inline/StrikethroughLabel";
+import { CourseName as CourseNameBase } from "./dashboard/inline/CourseName";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import oneDriveLogoPath from "@assets/OneDrive_1776567093048.png";
@@ -6855,29 +6858,15 @@ export default function Dashboard() {
 
   // shortTermLabel moved to ./dashboard/pureHelpers
 
-  const TermDropdown = ({ id, code, isPrevCompleted }: { id: string; code: string; isPrevCompleted?: boolean }) => {
-    const val = getEffectiveTerm(id, code);
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <select
-          value={val}
-          onChange={(e) => setTermOverride(id, e.target.value)}
-          className="no-dim text-[7px]"
-          style={{ background: 'transparent', border: 'none', outline: 'none', textAlign: 'center', cursor: 'pointer', padding: '0 6px 0 0', width: '100%', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' as any, color: '#000000' }}
-          data-testid={`term-select-${id}`}
-        >
-          <option value="">—</option>
-          {termLabelOptions.map(opt => (
-            <option key={opt} value={opt}>{shortTermLabel(opt)}</option>
-          ))}
-        </select>
-        <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '6px', lineHeight: 1, color: '#666' }}>▼</div>
-        {isPrevCompleted && (
-          <div style={{ position: 'absolute', top: '50%', left: '2px', right: '2px', height: '1.5px', backgroundColor: '#cc0000', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-        )}
-      </div>
-    );
-  };
+  // TermDropdown moved to ./dashboard/inline/TermDropdown (Phase 3 — see docs/REFACTOR_DASHBOARD.md)
+  const TermDropdown = (props: { id: string; code: string; isPrevCompleted?: boolean }) => (
+    <TermDropdownBase
+      {...props}
+      getEffectiveTerm={getEffectiveTerm}
+      setTermOverride={setTermOverride}
+      termLabelOptions={termLabelOptions}
+    />
+  );
 
   // l1ToL2Map, previousLevelMap, laterLevelMap moved to ./dashboard/courseLevelMaps
   // (Phase 1 of dashboard.tsx refactor — see docs/REFACTOR_DASHBOARD.md)
@@ -6993,18 +6982,22 @@ export default function Dashboard() {
   const isDropdownRow = (id: string) =>
     /^(LIBERAL|OPEN\d|L2_LIBERAL|L2_OPEN\d|L3_POG\d|L3_LIBERAL\d|L3_OPEN\d)$/.test(id);
 
-  const StrikethroughLabel = ({ id }: { id: string }) => {
-    if (isDropdownRow(id)) return null;
-    if (checkedCourses[id]) return null;
-    if (isSectionFulfilledForCourse(id) || isCourseGreyedOut(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Requirement Met)</span>;
-    if (isActiveInOtherLevel(id)) return <span className="text-[9px]" style={{ textDecoration: 'none', color: '#000000', fontWeight: 'normal' }}> (Prev. Completed)</span>;
-    if (inProgressCourses[id] || isL2InProgressFromL1(id)) return null;
-    return null;
-  };
-  const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
-    const strike = shouldStrikethrough(id);
-    return strike ? <span style={{ textDecoration: 'line-through' }}>{children}</span> : <>{children}</>;
-  };
+  // StrikethroughLabel & CourseName moved to ./dashboard/inline/ (Phase 3 — see docs/REFACTOR_DASHBOARD.md)
+  const StrikethroughLabel = (props: { id: string }) => (
+    <StrikethroughLabelBase
+      {...props}
+      isDropdownRow={isDropdownRow}
+      checkedCourses={checkedCourses}
+      isSectionFulfilledForCourse={isSectionFulfilledForCourse}
+      isCourseGreyedOut={isCourseGreyedOut}
+      isActiveInOtherLevel={isActiveInOtherLevel}
+      inProgressCourses={inProgressCourses}
+      isL2InProgressFromL1={isL2InProgressFromL1}
+    />
+  );
+  const CourseName = (props: { id: string; children: React.ReactNode }) => (
+    <CourseNameBase {...props} shouldStrikethrough={shouldStrikethrough} />
+  );
 
   const { data: allSemesterSettingsEarly } = useQuery<any[]>({
     queryKey: ["/api/semesters"],
