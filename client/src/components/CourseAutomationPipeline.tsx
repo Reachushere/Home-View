@@ -12,10 +12,10 @@ const STATUS_COLOR: Record<Status, string> = {
 };
 
 const STATUS_GLOW: Record<Status, string> = {
-  ok: 'rgba(16,185,129,0.55)',
-  warning: 'rgba(245,158,11,0.55)',
-  error: 'rgba(239,68,68,0.55)',
-  pending: 'rgba(148,163,184,0.45)',
+  ok: 'rgba(16,185,129,0.35)',
+  warning: 'rgba(245,158,11,0.18)',
+  error: 'rgba(239,68,68,0.45)',
+  pending: 'rgba(148,163,184,0.25)',
 };
 
 interface NodeBoxProps {
