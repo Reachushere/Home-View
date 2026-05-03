@@ -12,7 +12,7 @@ type Trace = { time: string; step: string; data?: any; decision?: string; reason
 type FileSel = any;
 type TabId =
   | "trace" | "flow" | "replay" | "validate" | "file"
-  | "build" | "perf" | "flags" | "system" | "layout";
+  | "build" | "perf" | "flags" | "system" | "layout" | "help";
 
 const j = async (url: string, init?: RequestInit) => {
   const r = await fetch(url, init);
@@ -43,6 +43,33 @@ export function DevPanel() {
   const [wizSide, setWizSide] = useState<"" | "frontend" | "backend" | "unknown">("");
   const [wizSince, setWizSince] = useState<"" | "frontend_change" | "backend_change" | "unknown">("");
   const [wizPrompt, setWizPrompt] = useState("");
+
+  // ───── secret/PII redaction (applied to every JSON payload before clipboard) ─────
+  const SECRET_KEY_RE = /(token|secret|apikey|api_key|password|passwd|bearer|authorization|client_secret|refresh_token|access_token|cookie|session|private_key|x-dev-key|graphtoken|ha_token|home_assistant_token|github_personal_access_token)/i;
+  const EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+  const BEARER_RE = /\b(?:Bearer\s+)?[A-Za-z0-9_-]{32,}\b/g;
+  const GH_PAT_RE = /\bghp_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{40,}\b/g;
+  const scrubValue = (v: any): any => {
+    if (v == null) return v;
+    if (typeof v === "string") {
+      let s = v;
+      s = s.replace(GH_PAT_RE, "<REDACTED:gh-pat>");
+      s = s.replace(EMAIL_RE, "<REDACTED:email>");
+      // Only scrub long opaque tokens — keep ordinary words/IDs readable
+      if (s.length > 32) s = s.replace(BEARER_RE, m => m.length >= 32 ? "<REDACTED:token>" : m);
+      return s;
+    }
+    if (Array.isArray(v)) return v.map(scrubValue);
+    if (typeof v === "object") {
+      const out: any = {};
+      for (const [k, val] of Object.entries(v)) {
+        out[k] = SECRET_KEY_RE.test(k) ? "<REDACTED>" : scrubValue(val);
+      }
+      return out;
+    }
+    return v;
+  };
+  const safe = (obj: any) => JSON.stringify(scrubValue(obj), null, 2);
   // Replay form state
   const [rDate, setRDate] = useState("");
   const [rWeek, setRWeek] = useState("");
@@ -129,7 +156,7 @@ export function DevPanel() {
       j("/api/dev/flow-snapshot").then(setFlow).catch(() => {});
       j("/api/dev/diagnose").then(setDiag).catch(() => {});
     }
-    if (tab === "build") j("/api/dev/build-info").then(setBuild).catch(() => {});
+    if (tab === "build" || !build) j("/api/dev/build-info").then(setBuild).catch(() => {});
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
@@ -200,14 +227,14 @@ export function DevPanel() {
           `summary:           ${dx.summary}`,
         ] : []),
         sep,
-        "## /api/dev/status", "```json", JSON.stringify(status, null, 2), "```", sep,
-        "## /api/dev/build-info", "```json", JSON.stringify(binfo, null, 2), "```", sep,
-        "## /api/dev/flow-snapshot (latest Cat Lights run)", "```json", JSON.stringify(snap, null, 2), "```", sep,
-        "## /api/dev/diagnose", "```json", JSON.stringify(dx, null, 2), "```", sep,
-        "## /api/dev/file-map", "```json", JSON.stringify(fmap, null, 2), "```", sep,
-        "## /api/dev/performance", "```json", JSON.stringify(p, null, 2), "```", sep,
-        "## /api/dev/recent-errors", "```json", JSON.stringify(errs, null, 2), "```", sep,
-        "## /api/dev/trace?subsystem=cat_lights", "```json", JSON.stringify(ctrace, null, 2), "```",
+        "## /api/dev/status", "```json", safe(status), "```", sep,
+        "## /api/dev/build-info", "```json", safe(binfo), "```", sep,
+        "## /api/dev/flow-snapshot (latest Cat Lights run)", "```json", safe(snap), "```", sep,
+        "## /api/dev/diagnose", "```json", safe(dx), "```", sep,
+        "## /api/dev/file-map", "```json", safe(fmap), "```", sep,
+        "## /api/dev/performance", "```json", safe(p), "```", sep,
+        "## /api/dev/recent-errors", "```json", safe(errs), "```", sep,
+        "## /api/dev/trace?subsystem=cat_lights", "```json", safe(ctrace), "```",
       ].join("\n");
       await navigator.clipboard.writeText(text);
       alert(`Debug pack copied (${(text.length / 1024).toFixed(1)} KB) — paste into ChatGPT.`);
@@ -318,17 +345,64 @@ export function DevPanel() {
         ...guesses.map(g => `- ${g}`),
         sep,
         "## LAYOUT MAP (visible interactive elements)",
-        "```json", JSON.stringify(layout, null, 2), "```", sep,
+        "```json", safe(layout), "```", sep,
         "## CONSOLE ERRORS (last 20)",
-        consoleErrors.length === 0 ? "(none captured since panel mounted)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+        consoleErrors.length === 0 ? "(none captured since panel mounted)" : "```json\n" + safe(consoleErrors) + "\n```",
         sep,
-        "## /api/dev/build-info", "```json", JSON.stringify(binfo, null, 2), "```", sep,
-        "## /api/dev/recent-errors", "```json", JSON.stringify(errs, null, 2), "```", sep,
+        "## /api/dev/build-info", "```json", safe(binfo), "```", sep,
+        "## /api/dev/recent-errors", "```json", safe(errs), "```", sep,
         "## PROFILE / USER CONTEXT (redacted)",
-        "```json", JSON.stringify(redactProfile(), null, 2), "```",
+        "```json", safe(redactProfile()), "```",
       ].join("\n");
       await navigator.clipboard.writeText(text);
       alert(`Page pack copied (${(text.length / 1024).toFixed(1)} KB).`);
+    } catch (e: any) { alert("Failed: " + e.message); }
+    finally { setBusy(false); }
+  };
+
+  // ───── action: copy MINIMAL ChatGPT prompt (short — no raw JSON) ─────
+  const copyMinimalPrompt = async () => {
+    setBusy(true);
+    try {
+      const [dx, snap, binfo, errs] = await Promise.all([
+        j("/api/dev/diagnose").catch(() => null),
+        j("/api/dev/flow-snapshot").catch(() => null),
+        j("/api/dev/build-info").catch(() => null),
+        j("/api/dev/recent-errors").catch(() => null),
+      ]);
+      const route = window.location.pathname + window.location.search;
+      const summarize = (label: string, obj: any) => {
+        if (!obj) return `- ${label}: (unavailable)`;
+        if (obj.empty) return `- ${label}: empty (${obj.hint || "no data"})`;
+        const keys = Object.keys(obj).slice(0, 5);
+        return `- ${label}: ${keys.map(k => `${k}=${JSON.stringify(scrubValue(obj[k])).slice(0, 60)}`).join(", ")}`;
+      };
+      const recentErrCount = Array.isArray(errs?.errors) ? errs.errors.length : (Array.isArray(errs) ? errs.length : 0);
+      const text = [
+        "=== UNICAL MINIMAL DEBUG ===",
+        `Route: ${route}`,
+        `Time:  ${new Date().toISOString()}`,
+        "",
+        "## DIAGNOSIS",
+        dx ? `${dx.primaryBlocker} (confidence: ${dx.confidence})\n${dx.summary}\n→ ${dx.recommendedNextStep}` : "(diagnose unavailable)",
+        "",
+        "## SUMMARY",
+        `- finalAction: ${snap?.finalAction ?? "—"}`,
+        `- weekNumber:  ${snap?.weekNumber ?? "—"}`,
+        `- blocker:     ${snap?.blocker ?? "(none)"}`,
+        `- build outOfDate: ${binfo?.outOfDate ? "YES" : "no"} · last build: ${binfo?.lastBuildAt ?? "?"}`,
+        `- recent errors: ${recentErrCount}`,
+        "",
+        "## ENDPOINT SUMMARIES (no raw JSON — ask if you need it)",
+        summarize("flow-snapshot", snap),
+        summarize("diagnose", dx),
+        summarize("build-info", binfo),
+        "",
+        "## NEXT STEP",
+        "Tell me what's broken. If you need the full payloads, ask for: Page Pack, Backend Pack, TTS Pack, or OneDrive Pack.",
+      ].join("\n");
+      await navigator.clipboard.writeText(text);
+      alert(`Minimal prompt copied (${(text.length / 1024).toFixed(1)} KB).`);
     } catch (e: any) { alert("Failed: " + e.message); }
     finally { setBusy(false); }
   };
@@ -367,10 +441,10 @@ export function DevPanel() {
         restartRule,
         sep,
         ...Object.entries(fetched).flatMap(([ep, val]) => [
-          `## ${ep}`, "```json", JSON.stringify(val, null, 2), "```", sep,
+          `## ${ep}`, "```json", safe(val), "```", sep,
         ]),
         "## CONSOLE ERRORS (last 20)",
-        consoleErrors.length === 0 ? "(none)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+        consoleErrors.length === 0 ? "(none)" : "```json\n" + safe(consoleErrors) + "\n```",
       ].join("\n");
       await navigator.clipboard.writeText(text);
       alert(`${cfg.title} pack copied (${(text.length / 1024).toFixed(1)} KB).`);
@@ -444,18 +518,18 @@ export function DevPanel() {
         sep,
         "## ENDPOINT SNAPSHOTS",
         ...Object.entries(fetched).flatMap(([ep, val]) => [
-          `### ${ep}`, "```json", JSON.stringify(val, null, 2), "```", "",
+          `### ${ep}`, "```json", safe(val), "```", "",
         ]),
         ...(sections.includes("page-pack") ? [
           "### page layout (visible interactive elements)",
-          "```json", JSON.stringify(captureLayoutSnapshot(), null, 2), "```",
+          "```json", safe(captureLayoutSnapshot()), "```",
         ] : []),
         sep,
         "## CONSOLE ERRORS (last 20)",
-        consoleErrors.length === 0 ? "(none)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+        consoleErrors.length === 0 ? "(none)" : "```json\n" + safe(consoleErrors) + "\n```",
         sep,
         "## PROFILE (redacted)",
-        "```json", JSON.stringify(redactProfile(), null, 2), "```",
+        "```json", safe(redactProfile()), "```",
         sep,
         "## INSTRUCTIONS FOR CHATGPT",
         "1. Diagnose the issue using ONLY the snapshots above.",
@@ -489,6 +563,7 @@ export function DevPanel() {
         <button onClick={() => setTab("flags")} data-testid="tab-dev-flags" style={tabBtn("flags", "Flags")}>Flags</button>
         <button onClick={() => setTab("system")} data-testid="tab-dev-system" style={tabBtn("system", "Sys")}>Sys</button>
         <button onClick={() => setTab("layout")} data-testid="tab-dev-layout" style={tabBtn("layout", "Layout")}>Layout</button>
+        <button onClick={() => setTab("help")} data-testid="tab-dev-help" style={tabBtn("help", "Help")}>?</button>
       </div>
 
       {/* Action button row */}
@@ -505,7 +580,7 @@ export function DevPanel() {
           } catch (e: any) { alert("Failed: " + e.message); }
         }}>Copy Handoff</button>
         <button data-testid="button-dev-status" style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={async () => {
-          try { const r = await j("/api/dev/status"); await navigator.clipboard.writeText(JSON.stringify(r, null, 2)); alert("Status copied."); }
+          try { const r = await j("/api/dev/status"); await navigator.clipboard.writeText(safe(r)); alert("Status copied."); }
           catch (e: any) { alert("Failed: " + e.message); }
         }}>Copy Status</button>
         <button data-testid="button-dev-page-info" style={actBtn("#86efac", "rgba(34,197,94,0.18)")} onClick={async () => {
@@ -520,7 +595,7 @@ export function DevPanel() {
             browserSize: { w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio },
             testIds: containers,
           };
-          try { await navigator.clipboard.writeText(JSON.stringify(info, null, 2)); alert("Page inspector copied."); }
+          try { await navigator.clipboard.writeText(safe(info)); alert("Page inspector copied."); }
           catch (e: any) { alert("Failed: " + e.message); }
         }}>Copy Page</button>
         <button data-testid="button-dev-page-pack" disabled={busy} style={actBtn("#fde68a", "rgba(251,191,36,0.18)")} onClick={copyPagePack}>
@@ -532,7 +607,19 @@ export function DevPanel() {
         <button data-testid="button-dev-pack-backend" disabled={busy} style={actBtn("#a5b4fc", "rgba(129,140,248,0.18)")} onClick={() => copyPresetPack("backend")}>Backend Pack</button>
         <button data-testid="button-dev-pack-tts" disabled={busy} style={actBtn("#fcd34d", "rgba(251,191,36,0.18)")} onClick={() => copyPresetPack("tts")}>TTS Pack</button>
         <button data-testid="button-dev-pack-onedrive" disabled={busy} style={actBtn("#67e8f9", "rgba(34,211,238,0.18)")} onClick={() => copyPresetPack("onedrive")}>OneDrive Pack</button>
+        <button data-testid="button-dev-minimal-prompt" disabled={busy} style={actBtn("#d8b4fe", "rgba(192,132,252,0.18)")} onClick={copyMinimalPrompt}>Minimal Prompt</button>
+        <button data-testid="button-dev-run-smoke" style={actBtn("#fca5a5", "rgba(239,68,68,0.18)")} onClick={async () => { try { await navigator.clipboard.writeText("node scripts/smoke.mjs https://uni-cal.app"); alert("Command copied:\n\nnode scripts/smoke.mjs https://uni-cal.app\n\nRun in a terminal — read-only, safe."); } catch { alert("Copy failed."); } }}>Run Smoke</button>
       </div>
+
+      {/* Last build / restart strip */}
+      {build && (
+        <div data-testid="strip-build-info" style={{ display: "flex", gap: 8, padding: "3px 8px", borderBottom: "1px solid rgba(120,120,150,0.2)", fontSize: 10, color: build.outOfDate ? "#fbbf24" : "#86efac" }}>
+          <span>last build: <b>{build.lastBuildAt ? new Date(build.lastBuildAt).toLocaleString() : "(unknown)"}</b></span>
+          {build.lastBuildAgeSec != null && <span>({Math.round(build.lastBuildAgeSec / 60)} min ago)</span>}
+          <span>· bundle: {build.bundleHash?.slice(0, 8) ?? "—"}</span>
+          {build.outOfDate && <span style={{ marginLeft: "auto" }}>⚠ rebuild required</span>}
+        </div>
+      )}
 
       <div style={{ overflow: "auto", padding: 8, flex: 1 }}>
         {tab === "trace" && (
@@ -714,6 +801,37 @@ export function DevPanel() {
         {tab === "system" && <pre style={codeBlock} data-testid="text-dev-system">{sysMap ? JSON.stringify({ environment: sysMap.environment, semesters: sysMap.semesters, routes: sysMap.routes ? { total: sysMap.routes.total, catFlow: sysMap.routes.catFlow } : null, database: sysMap.database ? { type: sysMap.database.type, tableCount: sysMap.database.tableCount } : null }, null, 2) : "loading…"}</pre>}
 
         {tab === "layout" && <div style={{ color: "#bbb" }}>Layout snapshot is pushed to <code style={{ color: "#93c5fd" }}>/api/dev/layout-map</code> every 3s.</div>}
+
+        {tab === "help" && (
+          <div data-testid="text-dev-help" style={{ color: "#cbd5e1", fontSize: 11, lineHeight: 1.5 }}>
+            <div style={{ color: "#a78bfa", fontWeight: 700, marginBottom: 6 }}>Which button do I click?</div>
+            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px 10px" }}>
+              <b style={{ color: "#fde68a" }}>Page Pack</b><span>Something on the <i>current page</i> looks wrong (visual, missing data, button broken). Captures route, layout, console errors.</span>
+              <b style={{ color: "#f0abfc" }}>Guided Fix</b><span>You don't know what to copy. Answer 4 questions; we pick the right endpoints and write the ChatGPT prompt for you.</span>
+              <b style={{ color: "#a5b4fc" }}>Backend Pack</b><span>API or server-side issue (timeouts, 500s, wrong API response). No UI involved.</span>
+              <b style={{ color: "#fcd34d" }}>TTS Pack</b><span>Audio not playing, wrong file announced, prompt sounds wrong. Includes file-map + tts-ready + cat_lights trace.</span>
+              <b style={{ color: "#67e8f9" }}>OneDrive Pack</b><span>Files missing, sync stuck, course folder not detected. Includes onedrive-audit + file-map.</span>
+              <b style={{ color: "#d8b4fe" }}>Minimal Prompt</b><span>Quick chat — short summary only, no giant JSON. Use this first; ChatGPT will ask for a full pack if needed.</span>
+              <b style={{ color: "#fda4af" }}>Copy Debug Pack</b><span>Generic kitchen-sink — use only when you don't know what's wrong at all.</span>
+              <b style={{ color: "#fca5a5" }}>Run Smoke</b><span>Copies the read-only smoke-test command. Run in a terminal to verify all dev endpoints are alive. No devices triggered.</span>
+            </div>
+            <div style={{ color: "#a78bfa", fontWeight: 700, marginTop: 12, marginBottom: 6 }}>What to paste into ChatGPT</div>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li>Always paste <b>just one</b> pack — never combine.</li>
+              <li>Add a one-line description: <i>"the next-reading card on the dashboard shows the wrong title"</i>.</li>
+              <li>If ChatGPT asks for more data, it'll name a specific <code>/api/dev/*</code> endpoint — open it in a new tab and paste the JSON.</li>
+              <li>All packs auto-redact tokens, emails, OAuth secrets, and bearer tokens before they reach your clipboard.</li>
+            </ul>
+            <div style={{ color: "#a78bfa", fontWeight: 700, marginTop: 12, marginBottom: 6 }}>Build & restart rules</div>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li><b>Frontend changes:</b> <code>cd ~/Home-View && git pull && npm run build && pm2 restart dashboard</code></li>
+              <li><b>Backend changes:</b> <code>cd ~/Home-View && git pull && pm2 restart dashboard</code> (no build)</li>
+              <li>The amber strip above shows when the bundle is older than your latest <code>client/src</code> edit.</li>
+            </ul>
+            <div style={{ color: "#a78bfa", fontWeight: 700, marginTop: 12, marginBottom: 6 }}>Protected systems</div>
+            <div style={{ color: "#fbbf24" }}>Cat Lights handler · OneDrive sync · TTS / AudioPrep · devTrace instrumentation. See <code>docs/MAINTENANCE_PLAYBOOK.md</code>.</div>
+          </div>
+        )}
       </div>
 
       <div style={{ padding: "4px 8px", borderTop: "1px solid rgba(120,120,150,0.3)", color: "#777", fontSize: 9 }}>
