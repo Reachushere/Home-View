@@ -728,7 +728,20 @@ export function DevPanel() {
         </div>
       </div>
     )}
-    <div style={panel} data-testid="dev-panel">
+    <div
+      style={{ ...panel, isolation: "isolate" }}
+      data-testid="dev-panel"
+      onClickCapture={(e) => {
+        const t = e.target as HTMLElement;
+        const tid = t?.dataset?.testid || t?.tagName;
+        console.log("[DevPanel] click reached panel:", tid, t);
+      }}
+      onPointerDownCapture={(e) => {
+        const t = e.target as HTMLElement;
+        const tid = t?.dataset?.testid || t?.tagName;
+        console.log("[DevPanel] pointerdown reached panel:", tid, "buttons=", e.buttons, "type=", e.pointerType);
+      }}
+    >
       <div
         data-testid="dev-panel-drag-handle"
         onPointerDown={startDrag("move")}
@@ -817,8 +830,8 @@ export function DevPanel() {
 
       {/* Tabs row */}
       <div style={{ display: "flex", flexWrap: "wrap", borderBottom: "1px solid rgba(120,120,150,0.3)" }}>
-        <button onClick={() => setTab("trace")} data-testid="tab-dev-trace" style={tabBtn("trace", "Trace")}>Trace ({trace.length})</button>
-        <button onClick={() => setTab("flow")} data-testid="tab-dev-flow" style={tabBtn("flow", "Flow")}>Flow</button>
+        <button type="button" onClick={() => { console.log("[DevPanel] tab click trace"); setTab("trace"); }} data-testid="tab-dev-trace" style={tabBtn("trace", "Trace")}>Trace ({trace.length})</button>
+        <button type="button" onClick={() => { console.log("[DevPanel] tab click flow"); setTab("flow"); }} data-testid="tab-dev-flow" style={tabBtn("flow", "Flow")}>Flow</button>
         <button onClick={() => setTab("replay")} data-testid="tab-dev-replay" style={tabBtn("replay", "Replay")}>Replay</button>
         <button onClick={() => setTab("validate")} data-testid="tab-dev-validate" style={tabBtn("validate", "Validate")}>Validate</button>
         <button onClick={() => setTab("file")} data-testid="tab-dev-file" style={tabBtn("file", "File")}>File</button>
