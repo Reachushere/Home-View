@@ -178,10 +178,63 @@ export function DevPanel() {
           console.log(`[DevPanel] keyboard nudge ${e.key} -> (${x},${y})`);
           return { ...g, x, y };
         });
+        return;
+      }
+      // Shift+Alt+P -> run probe (works even when panel buttons are dead)
+      if (e.shiftKey && e.altKey && (e.key === "P" || e.key === "p")) {
+        e.preventDefault();
+        try {
+          const handle = document.querySelector('[data-testid="dev-panel-drag-handle"]') as HTMLElement | null;
+          const tabBar = document.querySelector('[data-testid="tab-dev-trace"]') as HTMLElement | null;
+          const probeBtn = document.querySelector('[data-testid="button-dev-probe"]') as HTMLElement | null;
+          const copyBtn = document.querySelector('[data-testid="button-dev-copy-debug-pack"]') as HTMLElement | null;
+          const probe = (label: string, el: HTMLElement | null) => {
+            if (!el) { console.log(`[Probe] ${label}: NOT FOUND`); return; }
+            const r = el.getBoundingClientRect();
+            const cx = Math.round(r.left + r.width / 2);
+            const cy = Math.round(r.top + r.height / 2);
+            const stack = document.elementsFromPoint(cx, cy);
+            console.log(`[Probe] ${label} @ (${cx},${cy}) — rect=l${Math.round(r.left)},t${Math.round(r.top)},w${Math.round(r.width)},h${Math.round(r.height)}`);
+            stack.slice(0, 10).forEach((node, i) => {
+              const n = node as HTMLElement;
+              const cs = window.getComputedStyle(n);
+              const id = n.id ? `#${n.id}` : '';
+              const tid = n.dataset?.testid ? ` testid="${n.dataset.testid}"` : '';
+              const cls = (typeof n.className === 'string' ? n.className : '').slice(0, 50);
+              console.log(`[Probe]   [${i}] <${n.tagName.toLowerCase()}>${id}${tid} class="${cls}" pe=${cs.pointerEvents} z=${cs.zIndex} pos=${cs.position}`);
+            });
+          };
+          console.log('===== [Probe] Shift+Alt+P triggered =====');
+          probe('drag-handle (DEAD?)', handle);
+          probe('first-tab Trace (DEAD?)', tabBar);
+          probe('probe-button (DEAD?)', probeBtn);
+          probe('copy-debug-pack (WORKS)', copyBtn);
+          console.log('===== [Probe] done — top [0] is the topmost element =====');
+        } catch (err: any) { console.error('[Probe] error', err); }
+        return;
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // Window-level pointerdown logger — fires for EVERY click anywhere, even if panel buttons are dead.
+    const onWinPD = (ev: PointerEvent) => {
+      const t = ev.target as HTMLElement;
+      const tid = t?.dataset?.testid || '';
+      const tag = t?.tagName?.toLowerCase() || '?';
+      // Only log clicks within the dev panel area to avoid noise
+      const inPanel = !!t?.closest?.('[data-testid="dev-panel"]');
+      const stack = document.elementsFromPoint(ev.clientX, ev.clientY);
+      const top = stack[0] as HTMLElement | undefined;
+      const topTid = top?.dataset?.testid || '';
+      const topTag = top?.tagName?.toLowerCase() || '?';
+      if (inPanel || topTid.includes('dev-')) {
+        console.log(`[WinPD] (${ev.clientX},${ev.clientY}) target=<${tag}>"${tid}" topmost=<${topTag}>"${topTid}" stack=${stack.length} inPanel=${inPanel}`);
+      }
+    };
+    window.addEventListener("pointerdown", onWinPD, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onWinPD, true);
+    };
   }, []);
 
   // Polling + layout snapshot push (only what's universally cheap).
