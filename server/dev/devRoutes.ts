@@ -85,7 +85,7 @@ function safeExec(cmd: string, timeoutMs = 5000): string {
 
 function listAppRoutes(app: Express): { method: string; path: string }[] {
   const routes: { method: string; path: string }[] = [];
-  const stack: any[] = (app as any)?._router?.stack || [];
+  const stack: any[] = (app as any)?._router?.stack || (app as any)?.router?.stack || [];
   const walk = (layers: any[], prefix = "") => {
     for (const l of layers) {
       if (l.route?.path) {
@@ -835,6 +835,53 @@ export function registerDevRoutes(app: Express): void {
           { step: "file_lookup", decision: candidate ? "selected" : "no_file", reason: candidateReason, outputs: { fileId: candidate?.id || null, name: candidate?.originalName || null } },
         ],
         finalAction,
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── rollback INSTRUCTIONS (read-only — does NOT execute git) ──────────
+  app.get("/api/dev/recent-commits", (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const limit = Math.min(parseInt(String(req.query.limit || "15"), 10) || 15, 50);
+      const fmt = "%H%x09%h%x09%cI%x09%an%x09%s";
+      const out = require("child_process")
+        .execSync(`git --no-optional-locks log -n ${limit} --pretty=format:${JSON.stringify(fmt)}`, { cwd: PROJECT_ROOT, encoding: "utf8", timeout: 4000 })
+        .toString().trim();
+      const commits = out.split("\n").filter(Boolean).map((line: string) => {
+        const [sha, short, date, author, ...msg] = line.split("\t");
+        return { sha, short, date, author, message: msg.join("\t") };
+      });
+      const head = commits[0]?.sha || "";
+      const recipe = (target: { sha: string; short: string; message: string }) => ({
+        target,
+        revertOnly: [
+          "# SAFE — creates a new commit that undoes the target. No history rewrite.",
+          `cd ~/Home-View`,
+          `git pull`,
+          `git revert --no-edit ${target.short}`,
+          `git push`,
+          `npm run build && pm2 restart dashboard`,
+        ].join("\n"),
+        rollbackToHere: [
+          "# DESTRUCTIVE — rewrites main to this commit. Anything after is lost.",
+          "# Use only after confirming with user. Requires force-push.",
+          `cd ~/Home-View`,
+          `git fetch origin`,
+          `git reset --hard ${target.short}`,
+          `git push --force-with-lease origin main`,
+          `npm run build && pm2 restart dashboard`,
+        ].join("\n"),
+        warning: target.sha === head
+          ? "This IS HEAD — nothing to rollback to."
+          : `Reverting to ${target.short} will undo ${commits.findIndex(c => c.sha === target.sha)} commit(s) ahead of it.`,
+      });
+      res.json({
+        head,
+        commits,
+        recipes: commits.slice(0, 10).map(recipe),
+        reminder: "After ANY rollback: run `npm run build && pm2 restart dashboard` on the Pi. Then verify with /api/dev/diagnose and node scripts/smoke.mjs.",
+        executionPolicy: "INSTRUCTIONS ONLY — this endpoint never runs git. Copy commands into a Pi terminal yourself.",
       });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
