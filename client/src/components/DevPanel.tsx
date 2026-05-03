@@ -12,7 +12,8 @@ type Trace = { time: string; step: string; data?: any; decision?: string; reason
 type FileSel = any;
 type TabId =
   | "trace" | "flow" | "replay" | "validate" | "file"
-  | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback" | "fixhist";
+  | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback" | "fixhist"
+  | "upload" | "timeline" | "afterUpload";
 
 const j = async (url: string, init?: RequestInit) => {
   const r = await fetch(url, init);
@@ -31,6 +32,10 @@ export function DevPanel() {
   const [diag, setDiag] = useState<any>(null);
   const [stagingMode, setStagingMode] = useState<boolean>(false);
   const [fixHist, setFixHist] = useState<any>(null);
+  const [upload, setUpload] = useState<any>(null);
+  const [timeline, setTimeline] = useState<any>(null);
+  const [afterUpload, setAfterUpload] = useState<any>(null);
+  const [afterMin, setAfterMin] = useState<number>(60);
   const [fixFilterAction, setFixFilterAction] = useState<string>("");
   const [fixFilterMode, setFixFilterMode] = useState<"all"|"dryRun"|"real">("all");
   const [build, setBuild] = useState<any>(null);
@@ -165,6 +170,9 @@ export function DevPanel() {
     if (tab === "build" || !build) j("/api/dev/build-info").then(setBuild).catch(() => {});
     if (tab === "rollback") j("/api/dev/recent-commits").then(setCommits).catch(() => setCommits({ error: "fetch failed" }));
     if (tab === "fixhist") j("/api/dev/fix-history?limit=200").then(setFixHist).catch(() => setFixHist({ error: "fetch failed" }));
+    if (tab === "upload") j("/api/dev/upload-readiness").then(setUpload).catch(() => setUpload({ error: "fetch failed" }));
+    if (tab === "timeline") j("/api/dev/timeline-guard").then(setTimeline).catch(() => setTimeline({ error: "fetch failed" }));
+    if (tab === "afterUpload") j(`/api/dev/after-upload-check?sinceMin=${afterMin}`).then(setAfterUpload).catch(() => setAfterUpload({ error: "fetch failed" }));
     j("/api/dev/status").then((s: any) => setStagingMode(!!s?.stagingMode)).catch(() => {});
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
@@ -581,6 +589,9 @@ export function DevPanel() {
         <button onClick={() => setTab("help")} data-testid="tab-dev-help" style={tabBtn("help", "Help")}>?</button>
         <button onClick={() => setTab("rollback")} data-testid="tab-dev-rollback" style={tabBtn("rollback", "Rollback")}>↶</button>
         <button onClick={() => setTab("fixhist")} data-testid="tab-dev-fixhist" style={tabBtn("fixhist", "FixHist")}>FixHist</button>
+        <button onClick={() => setTab("upload")} data-testid="tab-dev-upload" style={tabBtn("upload", "Upload")}>Upload</button>
+        <button onClick={() => setTab("timeline")} data-testid="tab-dev-timeline" style={tabBtn("timeline", "Timeline")}>Timeline</button>
+        <button onClick={() => setTab("afterUpload")} data-testid="tab-dev-after-upload" style={tabBtn("afterUpload", "After")}>After</button>
       </div>
 
       {/* Action button row */}
@@ -954,6 +965,132 @@ export function DevPanel() {
                       </div>
                     ))}
                 </div>
+              )}
+          </div>
+        )}
+
+        {tab === "upload" && (
+          <div data-testid="text-upload-readiness">
+            <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>
+              <button data-testid="button-upload-refresh" style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => { setUpload(null); j("/api/dev/upload-readiness").then(setUpload).catch(() => setUpload({ error: "fetch failed" })); }}>Refresh</button>
+              {upload?.verdict && (
+                <div data-testid="banner-upload-verdict" style={{ flex: 1, padding: "6px 10px", borderRadius: 6, fontWeight: 800, fontSize: 12, textAlign: "center", background: upload.ready ? "rgba(34,197,94,0.18)" : "rgba(244,63,94,0.18)", border: `2px solid ${upload.ready ? "#22c55e" : "#f43f5e"}`, color: upload.ready ? "#86efac" : "#fda4af" }}>
+                  {upload.verdict}
+                </div>
+              )}
+            </div>
+            {!upload ? <div style={{ color: "#888" }}>loading…</div>
+              : upload.error ? <div style={{ color: "#fda4af" }}>{upload.error}</div>
+              : (
+                <>
+                  <div style={{ color: "#cbd5e1", fontSize: 11, marginBottom: 6 }}>{upload.summary}</div>
+                  {upload.checks?.map((c: any, i: number) => {
+                    const colors: any = { pass: ["#86efac", "#22c55e", "rgba(34,197,94,0.10)"], warn: ["#fde68a", "#f59e0b", "rgba(245,158,11,0.10)"], fail: ["#fda4af", "#f43f5e", "rgba(244,63,94,0.10)"] };
+                    const [tc, bc, bg] = colors[c.status] || colors.warn;
+                    return (
+                      <div key={i} data-testid={`row-upload-check-${c.id}`} style={{ padding: 6, marginBottom: 4, borderRadius: 4, background: bg, borderLeft: `3px solid ${bc}` }}>
+                        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                          <span style={{ color: tc, fontWeight: 700, fontSize: 11, textTransform: "uppercase" }}>{c.status}</span>
+                          <span style={{ color: "#e8e8ec", fontSize: 11 }}>{c.id}</span>
+                        </div>
+                        <div style={{ color: "#cbd5e1", fontSize: 10, marginTop: 2 }}>{c.message}</div>
+                        {c.fixAction && (
+                          <button data-testid={`button-upload-fix-${c.id}`} style={{ ...actBtn("#fde68a", "rgba(251,191,36,0.18)"), marginTop: 4, fontSize: 10 }} onClick={async () => {
+                            const fa = c.fixAction;
+                            if (fa.infoOnly) { alert(`${fa.id}\n\n${fa.hint || "Manual step — see hint."}`); return; }
+                            const url = fa.endpoint + (fa.dryRunSupported ? "?dryRun=1" : "");
+                            try {
+                              const r = await j(url, { method: fa.method || "POST", headers: { "content-type": "application/json" }, body: fa.method === "GET" ? undefined : "{}" });
+                              alert(`Preview ${fa.id}:\n\n${typeof r === "string" ? r : JSON.stringify(r, null, 2).slice(0, 800)}`);
+                            } catch (e: any) { alert("Fix preview failed: " + e.message); }
+                          }}>Fix It (preview)</button>
+                        )}
+                        {c.details && <details style={{ marginTop: 3 }}><summary style={{ cursor: "pointer", color: "#888", fontSize: 9 }}>details</summary><pre style={{ ...codeBlock, fontSize: 9, marginTop: 3 }}>{JSON.stringify(c.details, null, 2)}</pre></details>}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+          </div>
+        )}
+
+        {tab === "timeline" && (
+          <div data-testid="text-timeline-guard">
+            <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+              <button data-testid="button-timeline-refresh" style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => { setTimeline(null); j("/api/dev/timeline-guard").then(setTimeline).catch(() => setTimeline({ error: "fetch failed" })); }}>Refresh</button>
+              {timeline?.verdict && (
+                <div data-testid="banner-timeline-verdict" style={{ flex: 1, padding: "6px 10px", borderRadius: 6, fontWeight: 800, fontSize: 12, textAlign: "center", background: !timeline.issues?.length ? "rgba(34,197,94,0.18)" : "rgba(244,63,94,0.18)", border: `2px solid ${!timeline.issues?.length ? "#22c55e" : "#f43f5e"}`, color: !timeline.issues?.length ? "#86efac" : "#fda4af" }}>
+                  {timeline.verdict}
+                </div>
+              )}
+            </div>
+            {!timeline ? <div style={{ color: "#888" }}>loading…</div>
+              : timeline.error ? <div style={{ color: "#fda4af" }}>{timeline.error}</div>
+              : (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "3px 10px", color: "#cbd5e1", fontSize: 11, marginBottom: 8 }}>
+                    <b style={{ color: "#a78bfa" }}>today</b><span data-testid="text-timeline-today">{timeline.today}</span>
+                    <b style={{ color: "#a78bfa" }}>semester</b><span data-testid="text-timeline-semester">{timeline.semester || "(none)"}</span>
+                    <b style={{ color: "#a78bfa" }}>start / end</b><span>{timeline.semesterStart || "?"} → {timeline.semesterEnd || "?"}</span>
+                    <b style={{ color: "#a78bfa" }}>weekNumber</b><span data-testid="text-timeline-week">{timeline.weekNumber ?? "—"}</span>
+                    <b style={{ color: "#a78bfa" }}>status</b><span data-testid="text-timeline-status">{timeline.status}</span>
+                  </div>
+                  {timeline.courses?.length > 0 && (
+                    <details style={{ marginBottom: 8 }}>
+                      <summary style={{ cursor: "pointer", color: "#a78bfa", fontSize: 11, fontWeight: 700 }}>Courses ({timeline.courses.length})</summary>
+                      <div style={{ marginTop: 4 }}>
+                        {timeline.courses.map((c: any, i: number) => (
+                          <div key={i} data-testid={`row-timeline-course-${c.code}`} style={{ padding: 4, marginBottom: 2, fontSize: 10, color: c.active ? "#86efac" : "#888" }}>
+                            <b>{c.code}</b> {c.name} — {c.term || "full"} — {c.start} → {c.end} {c.active ? "✓ active" : "(inactive)"}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                  {!timeline.issues?.length ? <div style={{ color: "#86efac", fontSize: 11 }}>No timeline issues.</div>
+                    : timeline.issues.map((iss: any, i: number) => (
+                      <div key={i} data-testid={`row-timeline-issue-${i}`} style={{ padding: 6, marginBottom: 4, borderRadius: 4, background: "rgba(244,63,94,0.10)", borderLeft: "3px solid #f43f5e" }}>
+                        <div style={{ color: "#fda4af", fontWeight: 700, fontSize: 11 }}>{iss.type}</div>
+                        <div style={{ color: "#cbd5e1", fontSize: 10, marginTop: 2 }}>{iss.message}</div>
+                        {iss.impact && <div style={{ color: "#fde68a", fontSize: 9, marginTop: 2 }}>impact: {iss.impact}</div>}
+                      </div>
+                    ))}
+                </>
+              )}
+          </div>
+        )}
+
+        {tab === "afterUpload" && (
+          <div data-testid="text-after-upload">
+            <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <label style={{ color: "#888", fontSize: 10 }}>since (min)</label>
+              <input data-testid="input-after-min" type="number" min={5} max={1440} value={afterMin} onChange={e => setAfterMin(Number(e.target.value) || 60)} style={{ ...inp, width: 70 }} />
+              <button data-testid="button-after-refresh" style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => { setAfterUpload(null); j(`/api/dev/after-upload-check?sinceMin=${afterMin}`).then(setAfterUpload).catch(() => setAfterUpload({ error: "fetch failed" })); }}>Refresh</button>
+            </div>
+            {!afterUpload ? <div style={{ color: "#888" }}>loading…</div>
+              : afterUpload.error ? <div style={{ color: "#fda4af" }}>{afterUpload.error}</div>
+              : (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 8, fontSize: 11 }}>
+                    <div data-testid="stat-new-files" style={{ padding: 6, background: "rgba(34,197,94,0.10)", borderRadius: 4 }}><b style={{ color: "#86efac" }}>{afterUpload.newFilesDetected?.length || 0}</b> new files</div>
+                    <div data-testid="stat-queue-depth" style={{ padding: 6, background: "rgba(96,165,250,0.10)", borderRadius: 4 }}><b style={{ color: "#93c5fd" }}>{afterUpload.queueDepth || 0}</b> queued total</div>
+                    <div data-testid="stat-no-text" style={{ padding: 6, background: afterUpload.filesWithoutText?.length ? "rgba(245,158,11,0.10)" : "rgba(34,197,94,0.10)", borderRadius: 4 }}><b style={{ color: afterUpload.filesWithoutText?.length ? "#fde68a" : "#86efac" }}>{afterUpload.filesWithoutText?.length || 0}</b> without text</div>
+                    <div data-testid="stat-not-queued" style={{ padding: 6, background: afterUpload.filesNotQueued?.length ? "rgba(244,63,94,0.10)" : "rgba(34,197,94,0.10)", borderRadius: 4 }}><b style={{ color: afterUpload.filesNotQueued?.length ? "#fda4af" : "#86efac" }}>{afterUpload.filesNotQueued?.length || 0}</b> not queued</div>
+                  </div>
+                  {afterUpload.warnings?.length > 0 && (
+                    <div style={{ marginBottom: 6 }}>
+                      {afterUpload.warnings.map((w: any, i: number) => (
+                        <div key={i} data-testid={`row-after-warning-${i}`} style={{ padding: 4, marginBottom: 3, borderRadius: 4, background: "rgba(245,158,11,0.10)", borderLeft: "3px solid #f59e0b", fontSize: 10, color: "#fde68a" }}>
+                          <b>{w.type}</b> {w.message || JSON.stringify(w)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <details>
+                    <summary style={{ cursor: "pointer", color: "#a78bfa", fontSize: 11, fontWeight: 700 }}>New files ({afterUpload.newFilesDetected?.length || 0})</summary>
+                    <pre style={{ ...codeBlock, fontSize: 9, marginTop: 4 }}>{JSON.stringify(afterUpload.newFilesDetected, null, 2)}</pre>
+                  </details>
+                </>
               )}
           </div>
         )}
