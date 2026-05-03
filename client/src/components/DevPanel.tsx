@@ -56,8 +56,9 @@ const j = async (url: string, init?: RequestInit) => {
   return ct.includes("json") ? r.json() : r.text();
 };
 
-export function DevPanel() {
+export function DevPanel({ plainMode = false }: { plainMode?: boolean } = {}) {
   const [open, setOpen] = useState<boolean>(() => {
+    if (plainMode) return true;
     try { return new URLSearchParams(window.location.search).get("dev") === "1"; } catch { return false; }
   });
   const [trace, setTrace] = useState<Trace[]>([]);
@@ -453,7 +454,16 @@ export function DevPanel() {
 
   if (!open) return null;
 
-  const panel: React.CSSProperties = {
+  const panel: React.CSSProperties = plainMode ? {
+    position: "static", width: "100%", minHeight: "100vh", overflow: "visible",
+    background: "#0f0f14", color: "#e8e8ec",
+    border: "none", borderRadius: 0,
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 13, boxShadow: "none",
+    pointerEvents: "auto",
+    display: "flex", flexDirection: "column",
+    margin: 0, padding: 0,
+  } : {
     position: "fixed", left: geom.x, top: geom.y, zIndex: 2147483647,
     width: geom.w, height: geom.h, overflow: "hidden",
     background: "rgba(15,15,20,0.96)", color: "#e8e8ec",
@@ -845,7 +855,7 @@ export function DevPanel() {
   // that confine z-index and can let other dashboard overlays cover the panel
   // and steal its clicks).
   if (typeof document === "undefined") return null;
-  return createPortal(
+  const body = (
     <>
     {initBlock && (
       <div data-testid="init-checklist-modal" style={{ position: "fixed", inset: 0, zIndex: 2147482000, background: "rgba(5,5,10,0.92)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
@@ -1725,7 +1735,8 @@ export function DevPanel() {
         style={{ position: "absolute", right: 0, bottom: 0, width: 22, height: 22, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 45%, rgba(167,139,250,0.85) 45%)", borderBottomRightRadius: 10, touchAction: "none", zIndex: 10, pointerEvents: "auto" }}
       />
     </div>
-    </>,
-    document.body,
+    </>
   );
+  if (plainMode) return body;
+  return createPortal(body, document.body);
 }
