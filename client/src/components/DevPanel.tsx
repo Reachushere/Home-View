@@ -240,16 +240,19 @@ export function DevPanel() {
         const r = panelEl.getBoundingClientRect();
         coordsInPanel = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
       }
-      if (!inPanel && !coordsInPanel) return;
+      // React-free raw counter — survives even if React state is broken.
+      try {
+        const cur = parseInt(document.body.dataset.pdCount || '0', 10) || 0;
+        document.body.dataset.pdCount = String(cur + 1);
+        document.body.dataset.pdLast = `${ev.clientX},${ev.clientY}|${tag}#${tid}|${inPanel?'IN':'OUT'}`;
+      } catch {}
       const stack = document.elementsFromPoint(ev.clientX, ev.clientY);
       const top = stack[0] as HTMLElement | undefined;
       const topTid = top?.dataset?.testid || '';
       const topTag = top?.tagName?.toLowerCase() || '?';
       const match = (top === t) ? 'MATCH' : 'MISMATCH';
-      const blocker = (!inPanel && coordsInPanel)
-        ? ` BLOCKED-BY=<${topTag}>${topTid?'#'+topTid:''}`
-        : '';
-      const line = `PD(${ev.clientX},${ev.clientY}) tgt=<${tag}>${tid?'#'+tid:''} top=<${topTag}>${topTid?'#'+topTid:''} ${match}${blocker}`;
+      const where = inPanel ? 'IN-PANEL' : (coordsInPanel ? `BLOCKED-BY=<${topTag}>${topTid?'#'+topTid:''}` : 'OUTSIDE');
+      const line = `PD(${ev.clientX},${ev.clientY}) tgt=<${tag}>${tid?'#'+tid:''} top=<${topTag}>${topTid?'#'+topTid:''} ${match} ${where}`;
       console.log('[WinPD] ' + line);
       pushDiag(line);
     };
@@ -924,7 +927,7 @@ export function DevPanel() {
       <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700, flexWrap: "wrap" }}>
           <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
-          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · clicks={clickProofCount} · entries={diagBanner.length} · initBlock={String(initBlock)} · geom={geom.x},{geom.y} {geom.w}×{geom.h} · bodyPE={typeof document!=='undefined' ? (document.body.style.pointerEvents||'(unset)') : '?'}</span>
+          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · TESTclicks={clickProofCount} · entries={diagBanner.length} · rawPD={typeof document!=='undefined' ? (document.body.dataset.pdCount||'0') : '?'} · last={typeof document!=='undefined' ? (document.body.dataset.pdLast||'-') : '?'} · geom={geom.x},{geom.y} {geom.w}×{geom.h}</span>
           <button
             data-testid="button-dev-test-click"
             type="button"
