@@ -278,10 +278,11 @@ const SEMESTER_DATE_RANGES: Array<{ key: string; start: string; end: string }> =
 ];
 
 const semesterActivationMs = (startStr: string): number => {
+  // Each semester goes "active" exactly 4 days before its configured start date
+  // (per Bryn). Used by getCurrentSemKey + the Calendar/Library to start
+  // showing a new semester's content 4 days early.
   const d = new Date(startStr + 'T00:00:00');
-  const dow = d.getDay();
-  const daysBack = (dow + 1) % 7;
-  d.setDate(d.getDate() - daysBack);
+  d.setDate(d.getDate() - 4);
   return d.getTime();
 };
 
