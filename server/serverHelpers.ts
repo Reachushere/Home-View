@@ -224,6 +224,7 @@ export const haCommandQueue: QueuedHACommand[] = [];
 export const HA_QUEUE_MAX_AGE_MS = 5 * 60 * 1000;
 export const HA_QUEUE_MAX_SIZE = 50;
 let haQueueProcessing = false;
+export function isHAQueueProcessing(): boolean { return haQueueProcessing; }
 
 export async function processHACommandQueue(): Promise<void> {
   if (haQueueProcessing || haCommandQueue.length === 0) return;
