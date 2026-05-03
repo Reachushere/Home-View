@@ -223,7 +223,7 @@ function Auth1010Effects() {
       data-allow-1010="1"
       data-testid="dialog-1010-fullscreen-prompt"
       style={{
-        position: 'fixed', inset: 0, zIndex: 2147483647,
+        position: 'fixed', inset: 0, zIndex: 2147482900,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
       }}
