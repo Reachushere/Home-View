@@ -2,6 +2,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import * as fs from 'fs';
 import * as path from 'path';
+import { isSandboxMode, recordSuppressed } from './helpers/sandbox';
 
 const MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
 const ONEDRIVE_SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
@@ -314,7 +315,7 @@ export async function getOneDriveFileContent(itemId: string) {
 }
 
 export async function createOneDriveFolder(parentPath: string, folderName: string): Promise<any> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES"; console.log("[skip] createOneDriveFolder: " + reason); return { skipped: true, reason } as any; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "createOneDriveFolder", { reason }); console.log("[skip] createOneDriveFolder: " + reason); return { skipped: true, reason } as any; }
   const client = await getOneDriveClient();
   try {
     const apiPath = (!parentPath || parentPath === '/')
@@ -336,7 +337,7 @@ export async function createOneDriveFolder(parentPath: string, folderName: strin
 }
 
 export async function renameOneDriveFolder(folderPath: string, newName: string): Promise<{ renamed: boolean; error?: string }> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const error = process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES"; console.log("[skip] renameOneDriveFolder: " + error); return { renamed: false, error }; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "renameOneDriveFolder", { reason }); console.log("[skip] renameOneDriveFolder: " + reason); return { renamed: false, error: reason }; }
   const client = await getOneDriveClient();
   try {
     const encodedPath = encodeURIComponent(folderPath).replace(/%2F/g, '/');
@@ -379,7 +380,7 @@ export async function listOneDriveFolderChildren(folderPath: string): Promise<an
 }
 
 export async function renameOneDriveItem(itemId: string, newName: string): Promise<void> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { console.log("[skip] renameOneDriveItem: " + (process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES")); return; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "renameOneDriveItem", { reason }); console.log("[skip] renameOneDriveItem: " + reason); return; }
   const client = await getOneDriveClient();
   await client.api(`/me/drive/items/${itemId}`).patch({ name: newName });
 }
@@ -430,7 +431,7 @@ export async function getOneDriveItemByPath(path: string): Promise<any> {
 }
 
 export async function createOneDriveTextFile(parentPath: string, fileName: string, content: string): Promise<any> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES"; console.log("[skip] createOneDriveTextFile: " + reason); return { skipped: true, reason } as any; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "createOneDriveTextFile", { reason }); console.log("[skip] createOneDriveTextFile: " + reason); return { skipped: true, reason } as any; }
   const client = await getOneDriveClient();
   try {
     const encodedPath = encodeURIComponent(`${parentPath}/${fileName}`).replace(/%2F/g, '/');
@@ -450,7 +451,7 @@ export async function createOneDriveTextFile(parentPath: string, fileName: strin
 }
 
 export async function uploadOneDriveFile(parentPath: string, fileName: string, fileBuffer: Buffer, contentType: string = 'application/pdf'): Promise<any> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES"; console.log("[skip] uploadOneDriveFile: " + reason); return { skipped: true, reason } as any; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "uploadOneDriveFile", { reason }); console.log("[skip] uploadOneDriveFile: " + reason); return { skipped: true, reason } as any; }
   const accessToken = await getAccessToken();
   try {
     const fullPath = `${parentPath}/${fileName}`;
@@ -483,7 +484,7 @@ export async function uploadOneDriveFile(parentPath: string, fileName: string, f
 }
 
 export async function updateOneDriveFileContent(itemId: string, content: string): Promise<any> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES"; console.log("[skip] updateOneDriveFileContent: " + reason); return { skipped: true, reason } as any; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "updateOneDriveFileContent", { reason }); console.log("[skip] updateOneDriveFileContent: " + reason); return { skipped: true, reason } as any; }
   const client = await getOneDriveClient();
   try {
     const response = await client.api(`/me/drive/items/${itemId}/content`)
@@ -502,6 +503,12 @@ export async function updateOneDriveFileContent(itemId: string, content: string)
 }
 
 export async function moveOneDriveItem(itemId: string, destinationFolderId: string): Promise<void> {
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") {
+    const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES";
+    recordSuppressed("onedrive_write", "moveOneDriveItem", { itemId, destinationFolderId, reason });
+    console.log("[skip] moveOneDriveItem: " + reason);
+    return;
+  }
   const client = await getOneDriveClient();
   await client.api(`/me/drive/items/${itemId}`).patch({
     parentReference: { id: destinationFolderId }
@@ -520,7 +527,7 @@ export async function getOneDriveItemId(path: string): Promise<string | null> {
 }
 
 export async function deleteOneDriveItem(itemId: string): Promise<void> {
-  if (process.env.STAGING_MODE === "1" || process.env.DISABLE_ONEDRIVE_WRITES === "1") { console.log("[skip] deleteOneDriveItem: " + (process.env.STAGING_MODE === "1" ? "staging mode" : "DISABLE_ONEDRIVE_WRITES")); return; }
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") { const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES"; recordSuppressed("onedrive_write", "deleteOneDriveItem", { reason }); console.log("[skip] deleteOneDriveItem: " + reason); return; }
   const client = await getOneDriveClient();
   try {
     await client.api(`/me/drive/items/${itemId}`).delete();
@@ -790,6 +797,12 @@ export async function getOneNotePagesViaApi(notebookDisplayName: string, section
 }
 
 export async function createOneNotePage(notebookDisplayName: string, sectionName: string, title: string, content: string): Promise<{ id: string; title: string } | null> {
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") {
+    const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES";
+    recordSuppressed("onedrive_write", "createOneNotePage", { notebookDisplayName, sectionName, title, reason });
+    console.log("[skip] createOneNotePage: " + reason);
+    return { id: `sandbox-${Date.now()}`, title };
+  }
   const client = await getOneDriveClient();
 
   try {
@@ -827,6 +840,12 @@ ${content.split('\n').map(line => `<p>${line.replace(/</g, '&lt;').replace(/>/g,
 }
 
 export async function deleteOneNotePage(notebookDisplayName: string, sectionName: string, pageTitle: string): Promise<boolean> {
+  if (isSandboxMode() || process.env.DISABLE_ONEDRIVE_WRITES === "1") {
+    const reason = isSandboxMode() ? "sandbox mode" : "DISABLE_ONEDRIVE_WRITES";
+    recordSuppressed("onedrive_write", "deleteOneNotePage", { notebookDisplayName, sectionName, pageTitle, reason });
+    console.log("[skip] deleteOneNotePage: " + reason);
+    return true;
+  }
   const client = await getOneDriveClient();
 
   try {
