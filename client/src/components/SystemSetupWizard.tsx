@@ -157,7 +157,7 @@ export function SystemSetupWizard({ open, onClose, onComplete, colorSettings, ex
   const createFolders = async () => {
     setFolderCreating(true);
     try {
-      const semLabel = semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring & Summer';
+      const semLabel = semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring-Summer';
       for (const course of courses) {
         if (!course.code) continue;
         await fetch('/api/onedrive/create-semester-folders', {
@@ -201,7 +201,7 @@ export function SystemSetupWizard({ open, onClose, onComplete, colorSettings, ex
     setSaving(true);
     try {
       const semKey = (semType === 'winter' ? 'w' : semType === 'fall' ? 'f' : 'ss') + semYear;
-      const semLabel = semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring & Summer';
+      const semLabel = semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring-Summer';
 
       const profilePayload = { firstName, lastName, birthdate: '', timezone, travelTimezone: null, postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '' };
       localStorage.setItem('profileData', JSON.stringify(profilePayload));
@@ -402,7 +402,7 @@ export function SystemSetupWizard({ open, onClose, onComplete, colorSettings, ex
                 <label className="text-[11px] text-white/50 uppercase tracking-wider font-medium mb-1 block">Semester Type</label>
                 <select value={semType} onChange={e => setSemType(e.target.value)} className="w-full text-white text-[14px] px-3 py-2.5 rounded-lg focus:outline-none" style={selectStyle} data-testid="select-setup-semtype">
                   <option value="winter" style={{ color: 'black' }}>Winter</option>
-                  <option value="spring_summer" style={{ color: 'black' }}>Spring & Summer</option>
+                  <option value="spring_summer" style={{ color: 'black' }}>Spring-Summer</option>
                   <option value="fall" style={{ color: 'black' }}>Fall</option>
                 </select>
               </div>
@@ -706,7 +706,7 @@ export function SystemSetupWizard({ open, onClose, onComplete, colorSettings, ex
               </div>
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
                 <Calendar className="w-4 h-4 text-white/50" />
-                <span className="text-[13px] text-white/80">{semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring & Summer'} {semYear}</span>
+                <span className="text-[13px] text-white/80">{semType === 'winter' ? 'Winter' : semType === 'fall' ? 'Fall' : 'Spring-Summer'} {semYear}</span>
                 <Check className="w-3.5 h-3.5 text-emerald-400 ml-auto" />
               </div>
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
