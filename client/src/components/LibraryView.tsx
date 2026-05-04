@@ -1225,6 +1225,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const resizeRef = useRef<{ startX: number; startWidth: number; side: 'left' | 'right'; startPosX: number } | null>(null);
   const rawTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(rawTitle, 80, !!file.displayName && file.displayName !== file.originalName);
+  const _vidName = (file.displayName || file.originalName || '').toLowerCase();
+  const _vidCt = ((file as any).contentType || '').toLowerCase();
+  const isVideoFile = _vidCt.startsWith('video/') || /\.(mp4|m4v|mov|webm)$/i.test(_vidName);
+  const videoResumeSec = Math.max(0, (file as any).lastChunkIndex || 0);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
     queryKey: ['/api/files', file.id, 'annotations'],
@@ -1246,6 +1250,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   }, []);
 
   useEffect(() => {
+    if (isVideoFile) { setLoading(false); return; }
     let cancelled = false;
     const fetchUrl = pdfUrl || `/api/files/${file.id}/download`;
     fetch(fetchUrl)
@@ -2141,7 +2146,34 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 style={{ flex: 1, margin: showModuleIndex ? '0' : '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
               >
                 <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: useNativeViewer ? '0' : '10px', minWidth: '100%', height: useNativeViewer ? '100%' : 'auto', flex: useNativeViewer ? 1 : undefined }}>
-                  {loading ? (
+                  {isVideoFile ? (
+                    <div style={{ width: '100%', height: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                      <video
+                        data-testid="video-player-book"
+                        src={`/api/files/${file.id}/download`}
+                        autoPlay
+                        controls
+                        playsInline
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                        onLoadedMetadata={(e) => {
+                          const v = e.currentTarget;
+                          if (videoResumeSec > 0 && videoResumeSec < v.duration - 2) v.currentTime = videoResumeSec;
+                          v.play().catch(() => {});
+                        }}
+                        onTimeUpdate={(e) => {
+                          const v = e.currentTarget;
+                          const sec = Math.floor(v.currentTime);
+                          if (sec > 0 && sec % 10 === 0) {
+                            fetch(`/api/files/${file.id}/video-progress`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ positionSec: sec, durationSec: Math.floor(v.duration || 0) }),
+                            }).catch(() => {});
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : loading ? (
                     <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
                   ) : !pdfDoc ? (
                     <div style={{ color: '#c62828', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
