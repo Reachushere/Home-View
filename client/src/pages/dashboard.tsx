@@ -28277,27 +28277,46 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="items-center px-2 py-1.5 rounded border hover:border-white/40 cursor-grab transition-all overflow-hidden"
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.15)', background: `linear-gradient(180deg, ${rowGradientColors.start}, ${rowGradientColors.end})`, color: getReadableTextColor(rowGradientColors.start, rowGradientColors.end) }}
+                        className="items-center px-2 py-1.5 rounded border hover:border-white/40 transition-all overflow-hidden"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.15)', background: `linear-gradient(180deg, ${rowGradientColors.start}, ${rowGradientColors.end})`, color: getReadableTextColor(rowGradientColors.start, rowGradientColors.end), touchAction: 'none' }}
                         draggable
                         onDragStart={(e) => {
                           dragCourseRef.current = { code: semCourse.code, fromSemKey: semKey };
-                          e.dataTransfer.effectAllowed = 'move';
+                          try {
+                            e.dataTransfer.setData('text/plain', JSON.stringify({ kind: 'course-row', code: semCourse.code, semKey }));
+                            e.dataTransfer.effectAllowed = 'move';
+                          } catch {}
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = '0.5';
                         }}
                         onDragOver={(e) => {
-                          const drag = dragCourseRef.current;
+                          // Always preventDefault when ANY course-row drag is in
+                          // flight (the ref may not be readable across event
+                          // boundaries on touch devices), then read the payload
+                          // to decide whether to highlight + permit a drop.
+                          let drag = dragCourseRef.current;
+                          if (!drag) {
+                            try {
+                              const raw = e.dataTransfer.getData('text/plain');
+                              if (raw) { const p = JSON.parse(raw); if (p?.kind === 'course-row') drag = { code: p.code, fromSemKey: p.semKey }; }
+                            } catch {}
+                          }
                           if (!drag || drag.fromSemKey !== semKey || drag.code === semCourse.code) return;
                           e.preventDefault();
                           e.stopPropagation();
-                          e.dataTransfer.dropEffect = 'move';
+                          try { e.dataTransfer.dropEffect = 'move'; } catch {}
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = 'inset 0 0 0 2px rgba(96,165,250,0.9)';
                         }}
                         onDragLeave={(e) => {
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = '';
                         }}
                         onDrop={(e) => {
-                          const drag = dragCourseRef.current;
+                          let drag = dragCourseRef.current;
+                          if (!drag) {
+                            try {
+                              const raw = e.dataTransfer.getData('text/plain');
+                              if (raw) { const p = JSON.parse(raw); if (p?.kind === 'course-row') drag = { code: p.code, fromSemKey: p.semKey }; }
+                            } catch {}
+                          }
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = '';
                           if (!drag || drag.fromSemKey !== semKey || drag.code === semCourse.code) return;
                           e.preventDefault();
@@ -28315,6 +28334,15 @@ export default function Dashboard() {
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
+                        <span
+                          className="flex-shrink-0"
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '12px', height: '14px', cursor: 'grab', color: 'rgba(255,255,255,0.55)', marginRight: '-2px' }}
+                          title="Drag to reorder"
+                          onClick={(e) => e.stopPropagation()}
+                          data-testid={`drag-handle-course-${semCourse.code}`}
+                        >
+                          <GripVertical className="w-3 h-3" strokeWidth={2.5} />
+                        </span>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         {isSS && (ssNeedsA || ssNeedsB) ? (
                           <div style={{ display: 'flex', alignItems: 'center', width: '70px', minWidth: '70px', flexShrink: 0 }}>
