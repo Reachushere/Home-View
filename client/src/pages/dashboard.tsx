@@ -15006,7 +15006,7 @@ export default function Dashboard() {
       const courseHealth = expHealth?.courses?.find((ch: any) => ch.code.replace(/\s/g, '').toUpperCase() === codeNorm);
       const getOneDrivePath = (courseCode: string, weekNum?: number) => {
         const yearStr = expandedSemKey.replace(/^(ss|f|w)/, '');
-        const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+        const semType = expandedSemKey.startsWith('ss') ? 'Spring-Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
         const base = `/School/1. TMU/Courses/${yearStr}/${semType}/${courseCode}`;
         return weekNum ? `${base}/Week ${weekNum}` : base;
       };
@@ -28655,7 +28655,7 @@ export default function Dashboard() {
 
                 const getOneDrivePath = (courseCode: string, weekNum?: number) => {
                   const yearStr = expandedSemKey.replace(/^(ss|f|w)/, '');
-                  const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+                  const semType = expandedSemKey.startsWith('ss') ? 'Spring-Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
                   const base = `/School/1. TMU/Courses/${yearStr}/${semType}/${courseCode}`;
                   return weekNum ? `${base}/Week ${weekNum}` : base;
                 };
@@ -28964,7 +28964,7 @@ export default function Dashboard() {
                       {semFlowWizard && (() => {
                         const odPath = getOneDrivePath(semFlowWizard.courseCode);
                         const semYear = expandedSemKey.replace(/^(ss|f|w)/, '');
-                        const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+                        const semType = expandedSemKey.startsWith('ss') ? 'Spring-Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
                         type WizStep = [string, string, string?];
                         const wizardDefs: Record<string, { title: string; steps: WizStep[]; secondary: WizStep[]; testCheck: string }> = {
                           onedrive: { title: 'Fix OneDrive Connection', testCheck: 'oneDriveFolderConfigured', steps: [
