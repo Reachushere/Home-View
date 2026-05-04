@@ -5972,7 +5972,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 bottom: '4px',
                 transform: `translate(${labelRight}px, ${labelShift}px)`,
                 zIndex: 50,
-                left: 'calc(30% + 141px)',
+                left: 'calc(30% + 93px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
