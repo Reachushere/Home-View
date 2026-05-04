@@ -28378,7 +28378,10 @@ export default function Dashboard() {
                               if (coursePositionInSem >= (orderedCodes.length - 1)) return;
                               const below = orderedCodes[coursePositionInSem + 1];
                               if (!below) return;
-                              reorderCourseInSemester(semKey, semCourse.code, below);
+                              // reorderCourseInSemester places `dragged`
+                              // BEFORE `target`. To move semCourse DOWN,
+                              // drag the row below ABOVE semCourse instead.
+                              reorderCourseInSemester(semKey, below, semCourse.code);
                             }}
                             title="Move down"
                             data-testid={`button-move-down-course-${semCourse.code}`}
