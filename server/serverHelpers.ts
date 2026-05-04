@@ -691,7 +691,7 @@ export function buildCourseFolderName(code: string, name: string): string {
 
 export function getSemesterTypeFolder(semType: string | null | undefined): string {
   const t = (semType || 'winter').toLowerCase();
-  if (t.includes('spring') || t.includes('summer')) return 'Spring & Summer';
+  if (t.includes('spring') || t.includes('summer')) return 'Spring-Summer';
   if (t.includes('fall')) return 'Fall';
   return 'Winter';
 }
