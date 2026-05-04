@@ -1719,7 +1719,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
               const semFolderMap: Record<string, string[]> = {
                 'fall': ['Fall'], 'winter': ['Winter'],
-                'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
+                'spring_summer': ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'],
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
@@ -1775,7 +1775,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
               const semFolderMap: Record<string, string[]> = {
                 'fall': ['Fall'], 'winter': ['Winter'],
-                'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
+                'spring_summer': ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'],
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
@@ -3145,7 +3145,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const isSpSu = semKey.startsWith('ss');
         const isFall = semKey.startsWith('f');
         const year = parseInt(semKey.replace(/\D/g, ''));
-        const semFolder = isSpSu ? 'Spring & Summer' : isFall ? 'Fall' : 'Winter';
+        const semFolder = isSpSu ? 'Spring-Summer' : isFall ? 'Fall' : 'Winter';
         const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
 
         let oneDriveFolders: string[] = [];
@@ -3736,7 +3736,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             const semYear = new Date(matchedSem.semesterStartDate as any).getFullYear();
             const semType = (matchedSem.semesterType || 'winter').toLowerCase();
             const semFolderVars = semType.includes('spring') || semType.includes('summer')
-              ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+              ? ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
               : semType.includes('fall') ? ['Fall'] : ['Winter'];
             let semChildren: any[] = [];
             let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
@@ -3947,7 +3947,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const semYear = new Date(matchedSem.semesterStartDate as any).getFullYear();
       const semType = (matchedSem.semesterType || 'winter').toLowerCase();
       const semFolderVars = semType.includes('spring') || semType.includes('summer')
-        ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+        ? ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
         : semType.includes('fall') ? ['Fall'] : ['Winter'];
       let semChildren: any[] = [];
       let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
@@ -4023,7 +4023,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const semType = (semester.semesterType || 'winter').toLowerCase();
       const semYear = semester.semesterName?.match(/\d{4}/)?.[0] || String(new Date().getFullYear());
       const semFolderVars = semType.includes('spring') || semType.includes('summer')
-        ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+        ? ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
         : semType.includes('fall') ? ['Fall'] : ['Winter'];
 
       let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
@@ -4592,7 +4592,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       const semFolderVars = (() => {
         const t = (activeSemester.semesterType || "winter").toLowerCase();
-        if (t.includes("spring") || t.includes("summer")) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes("spring") || t.includes("summer")) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes("fall")) return ['Fall'];
         return ['Winter'];
       })();
@@ -5585,16 +5585,16 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
       const semKeyParam = req.query.semKey as string | undefined;
       const semKeyToDb: Record<string, { type: string; year: string; folder: string }> = {
         'w2025': { type: 'winter', year: '2025', folder: 'Winter' },
-        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring & Summer' },
+        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring-Summer' },
         'f2025': { type: 'fall', year: '2025', folder: 'Fall' },
         'w2026': { type: 'winter', year: '2026', folder: 'Winter' },
-        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring & Summer' },
+        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring-Summer' },
         'f2026': { type: 'fall', year: '2026', folder: 'Fall' },
         'w2027': { type: 'winter', year: '2027', folder: 'Winter' },
-        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring & Summer' },
+        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring-Summer' },
         'f2027': { type: 'fall', year: '2027', folder: 'Fall' },
         'w2028': { type: 'winter', year: '2028', folder: 'Winter' },
-        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring & Summer' },
+        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring-Summer' },
         'f2028': { type: 'fall', year: '2028', folder: 'Fall' },
         'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
       };
@@ -5642,7 +5642,7 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
       await Promise.all(semestersToCheck.map(async ({ semester, year, semFolder }) => {
         const semFolderVariants = (() => {
           const t = (semester?.semesterType || 'winter').toLowerCase();
-          if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+          if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
           if (t.includes('fall')) return ['Fall'];
           return ['Winter'];
         })();
@@ -9665,7 +9665,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
           const year = startDate.getFullYear();
           const isSpSu = (sem.semesterType || '').toLowerCase().includes('spring') || (sem.semesterType || '').toLowerCase().includes('summer');
           const semFolderVariants = isSpSu
-            ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+            ? ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
             : (sem.semesterType || '').toLowerCase().includes('fall') ? ['Fall'] : ['Winter'];
           let basePath = `/School/1. TMU/Courses/${year}/${semFolderVariants[0]}`;
           for (const variant of semFolderVariants) {
@@ -15885,7 +15885,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const year = semDef.year;
 
         const semTypeVariants = (() => {
-          if (semDef.type.includes('spring') || semDef.type.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+          if (semDef.type.includes('spring') || semDef.type.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer'];
           if (semDef.type.includes('fall')) return ['Fall'];
           return ['Winter'];
         })();
@@ -16343,7 +16343,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const year = startDate.getFullYear();
     const isSpSu = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
     const semFolderVariants = isSpSu
-      ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+      ? ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
       : (semesterSettings.semesterType || '').toLowerCase().includes('fall')
         ? ['Fall']
         : ['Winter'];
@@ -22871,16 +22871,16 @@ document.body.removeChild(a);
 
       const semKeyToDb: Record<string, { type: string; year: string; folder: string }> = {
         'w2025': { type: 'winter', year: '2025', folder: 'Winter' },
-        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring & Summer' },
+        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring-Summer' },
         'f2025': { type: 'fall', year: '2025', folder: 'Fall' },
         'w2026': { type: 'winter', year: '2026', folder: 'Winter' },
-        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring & Summer' },
+        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring-Summer' },
         'f2026': { type: 'fall', year: '2026', folder: 'Fall' },
         'w2027': { type: 'winter', year: '2027', folder: 'Winter' },
-        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring & Summer' },
+        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring-Summer' },
         'f2027': { type: 'fall', year: '2027', folder: 'Fall' },
         'w2028': { type: 'winter', year: '2028', folder: 'Winter' },
-        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring & Summer' },
+        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring-Summer' },
         'f2028': { type: 'fall', year: '2028', folder: 'Fall' },
         'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
       };
@@ -22902,7 +22902,7 @@ document.body.removeChild(a);
         const activeSemester = await storage.getActiveSemesterSettings();
         semester = activeSemester || allSemesters[0];
         if (semester) {
-          const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring & Summer' };
+          const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring-Summer' };
           semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
           year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
         }
@@ -22910,7 +22910,7 @@ document.body.removeChild(a);
 
       const semFolderVariants = (() => {
         const t = (semester?.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -23193,12 +23193,12 @@ document.body.removeChild(a);
       if (!semester) {
         return res.json({ success: true, message: 'No semester configured', synced: [] });
       }
-      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring & Summer' };
+      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring-Summer' };
       const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
       const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
       const semFolderVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -23455,14 +23455,14 @@ document.body.removeChild(a);
         year = parseInt(clientYear, 10);
         semType = getSemesterTypeFolder(clientSemType);
         const t = clientSemType.toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) uploadSemVariants.push('Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer');
+        if (t.includes('spring') || t.includes('summer')) uploadSemVariants.push('Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer');
         else if (t.includes('fall')) uploadSemVariants.push('Fall');
         else uploadSemVariants.push('Winter');
       } else {
         const semesterSettings = await storage.getSemesterSchedule();
         semType = getSemesterTypeFolder(semesterSettings?.semesterType);
         const t = (semesterSettings?.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) uploadSemVariants.push('Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer');
+        if (t.includes('spring') || t.includes('summer')) uploadSemVariants.push('Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer');
         else if (t.includes('fall')) uploadSemVariants.push('Fall');
         else uploadSemVariants.push('Winter');
         const startDate = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
@@ -23755,7 +23755,7 @@ document.body.removeChild(a);
       const semesterFolderMap: Record<string, string[]> = {
         'fall': ['Fall'],
         'winter': ['Winter'],
-        'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
+        'spring_summer': ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'],
       };
 
       for (const semester of allSemesters) {
@@ -24122,7 +24122,7 @@ document.body.removeChild(a);
       const year = startDate.getFullYear();
       const semType = (activeSem.semesterType || '').toLowerCase();
       const isSpSu = semType.includes('spring') || semType.includes('summer');
-      const semFolder = isSpSu ? 'Spring & Summer' : semType.includes('fall') ? 'Fall' : 'Winter';
+      const semFolder = isSpSu ? 'Spring-Summer' : semType.includes('fall') ? 'Fall' : 'Winter';
       const coursesBasePath = path.join(LOCAL_ONEDRIVE_PATH, 'School', '1. TMU', 'Courses', String(year), semFolder);
       if (!fs.existsSync(coursesBasePath)) {
         return res.json({ success: false, message: `Semester folder not found: ${coursesBasePath}` });
