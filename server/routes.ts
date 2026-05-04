@@ -9683,8 +9683,13 @@ Always cite which file/document each finding comes from. Be thorough but concise
                 const odNamesInFolder = new Set<string>();
                 if (subFolder) {
                   const subFiles = await listOneDriveItems(subFolder.path);
+                  console.log(`[LibrarySync:Semester] ${course.code} W${folderWeekNum} ${subType}: subfolder="${subFolder.name}" → ${subFiles.length} items`);
                   for (const file of subFiles) {
-                    if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                    if (file.type !== 'file') continue;
+                    const lowerName = file.name.toLowerCase();
+                    const isPdf = lowerName.endsWith('.pdf');
+                    const isVideo = lowerName.endsWith('.mp4') || lowerName.endsWith('.m4v') || lowerName.endsWith('.mov');
+                    if (!isPdf && !isVideo) continue;
                     odNamesInFolder.add(file.name);
                     const key = `${folderName}::${file.name}`;
                     if (existingSet.has(key)) continue;
@@ -9706,10 +9711,11 @@ Always cite which file/document each finding comes from. Be thorough but concise
                         console.log(`[LibrarySync:Semester] Download failed for ${file.name}: ${dlErr.message}`);
                       }
                     }
-                    const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+                    const contentType = isVideo ? (lowerName.endsWith('.mov') ? 'video/quicktime' : 'video/mp4') : 'application/pdf';
+                    const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType, size: file.size || 0, folder: folderName, listened: false });
                     existingSet.add(key);
                     synced++;
-                    if (newFile?.id) {
+                    if (newFile?.id && !isVideo) {
                       try { queueFileForPreparation(newFile.id); } catch {}
                     }
                   }
