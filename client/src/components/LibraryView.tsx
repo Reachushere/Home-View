@@ -6137,6 +6137,25 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'visible' }}>
+                {(() => {
+                  // Non-top shelves use scale(1.5) scaleX(0.84) → effective
+                  // horizontal scale 1.26x. That works up to ~6 weeks but
+                  // pushes week 7-9 off the right edge for Spring/Summer
+                  // courses. Shrink scaleX proportionally when there are
+                  // more than 6 weeks so the row still fits the screen.
+                  // Top shelf is untouched — only middle/lower shelves
+                  // overflowed.
+                  const weekSet = new Set<number>();
+                  courseFiles.forEach(f => {
+                    const m = f.folder?.match(/week-(\d+)/);
+                    if (m) weekSet.add(parseInt(m[1], 10));
+                  });
+                  const weekCount = Math.max(weekSet.size, 1);
+                  const baseOther = 0.84;
+                  const otherX = weekCount > 6
+                    ? Math.max(0.50, baseOther * (6 / weekCount))
+                    : baseOther;
+                  return (
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
@@ -6145,7 +6164,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.86)', transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform: `scale(1.5) scaleX(${otherX})`, transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.86)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
@@ -6206,7 +6225,8 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                     );});
                   })()}
                 </div>
-
+                  );
+                })()}
               </div>
               </div>
             </div>
