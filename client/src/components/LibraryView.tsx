@@ -5,7 +5,7 @@ import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, S
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
-import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
+import shelfBgImage from '@assets/Bookshelf11_1777882349163.png';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
