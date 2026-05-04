@@ -696,7 +696,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           maxHeight: fileType === 'module' ? 'none' : `${isLifted ? liftedTextHeight : maxTextHeight}px`,
           overflow: fileType === 'module' ? 'visible' : 'hidden',
           textOverflow: fileType === 'module' ? undefined : (isLifted ? 'clip' : 'ellipsis'),
-          display: fileType === 'module' ? 'none' : undefined,
           whiteSpace: 'nowrap',
           padding: '4px 0',
           lineHeight: 1.2,
@@ -705,7 +704,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           transition: 'font-size 0.2s ease',
           pointerEvents: 'none',
         }}>
-          {isLifted ? expandedTitle : (fileType === 'reading' ? expandedTitle : title)}
+          {fileType === 'module' ? 'Module' : (isLifted ? expandedTitle : (fileType === 'reading' ? expandedTitle : title))}
         </span>
       )}
       {weekNum && fileType === 'module' && (
