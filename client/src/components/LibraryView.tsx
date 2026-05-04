@@ -6,7 +6,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
 import shelfBgImage from '@assets/Bookshelf11_1777882349163.png';
-import movieIconPath from '@assets/Movie_Icon_1777887451930.png';
+import movieIconPath from '@assets/Movie_Icon2_1777891375631.png';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
@@ -661,17 +661,18 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 
   const vertHandler = interceptClick || onClick;
 
-  // Video files render as a movie-card icon instead of a book spine. The icon's
-  // top white strip becomes the title bar — same click/hover/lift behaviour as
-  // a normal spine, but visually distinct so MP4s read at a glance.
+  // Video files render as a movie-card icon instead of a book spine. All
+  // movie cards are the SAME fixed size regardless of filename length, sit
+  // on the same shelf line as the books (same height), and never grow on
+  // hover/lift — they just translate up like the spines do.
   if (isVideoFile(file)) {
-    const cardWidth = Math.max(60, Math.round(spineWidth * 2.0));
-    const aspect = 508 / 416; // movie icon native aspect (w/h)
-    const cardHeight = isLifted ? bookHeight + 30 : bookHeight;
+    const cardWidth = 52;                       // uniform across every video
+    const aspect = 508 / 416;                   // movie icon native w/h
+    const cardHeight = bookHeight;              // exactly matches book spines
     const iconRenderHeight = Math.min(cardHeight, Math.round(cardWidth / aspect));
-    const titleStripHeightPct = 0.18; // top white box ≈ 18% of icon height
-    const titleStripPx = Math.max(12, Math.round(iconRenderHeight * titleStripHeightPct));
-    const titleFontPx = Math.max(7, Math.min(11, Math.floor(titleStripPx * 0.62)));
+    const titleStripHeightPct = 0.22;           // upper clear band on new icon
+    const titleStripPx = Math.max(10, Math.round(iconRenderHeight * titleStripHeightPct));
+    const titleFontPx = Math.max(7, Math.min(10, Math.floor(titleStripPx * 0.55)));
     return (
       <div
         className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
