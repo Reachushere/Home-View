@@ -2145,7 +2145,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 ref={containerRef}
                 style={{ flex: 1, margin: showModuleIndex ? '0' : '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
               >
-                <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: useNativeViewer ? '0' : '10px', minWidth: '100%', height: useNativeViewer ? '100%' : 'auto', flex: useNativeViewer ? 1 : undefined }}>
+                <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: (useNativeViewer || isVideoFile) ? '0' : '10px', minWidth: '100%', height: (useNativeViewer || isVideoFile) ? '100%' : 'auto', flex: (useNativeViewer || isVideoFile) ? 1 : undefined }}>
                   {isVideoFile ? (
                     <div style={{ width: '100%', height: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
                       <video
