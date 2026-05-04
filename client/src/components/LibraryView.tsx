@@ -3213,6 +3213,24 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           });
         }
       }
+      // Apply user's manual semester course order (set via up/down arrows in
+      // the semester editor). Only applied when it covers every course in
+      // the slot list — otherwise fall back to DB slot order.
+      try {
+        const raw = localStorage.getItem('manualSemesterCourseOrder');
+        if (raw) {
+          const orderMap: Record<string, string[]> = JSON.parse(raw);
+          const order = orderMap[key];
+          if (order && order.length) {
+            const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
+            const orderSet = new Set(order.map(norm));
+            const allCovered = courses.every(c => orderSet.has(norm(c.code)));
+            if (allCovered) {
+              courses.sort((a, b) => order.indexOf(norm(a.code)) - order.indexOf(norm(b.code)));
+            }
+          }
+        }
+      } catch {}
       const isCurrent = i === activeIdx;
       const isFuture = !isCurrent && i > activeIdx;
       const isPast = !isCurrent && activeIdx >= 0 && i < activeIdx;
