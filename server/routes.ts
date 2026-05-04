@@ -9267,10 +9267,33 @@ Always cite which file/document each finding comes from. Be thorough but concise
         const localFileName = mediaUrl.replace('/local/uploads/', '');
         const localPath = pathMod.join(process.cwd(), 'persistent-uploads', localFileName);
         if (fs.existsSync(localPath)) {
-          res.setHeader('Content-Type', file.contentType || 'application/pdf');
+          const stat = fs.statSync(localPath);
+          const totalSize = stat.size;
+          const ct = file.contentType || 'application/pdf';
+          // HTTP Range support — required for TVs/Chromecast/Nest to seek
+          // through MP4s (and lets PDF readers stream large files).
+          const rangeHeader = req.headers.range;
+          res.setHeader('Accept-Ranges', 'bytes');
+          res.setHeader('Content-Type', ct);
           res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(file.originalName || localFileName)}"`);
-          const stream = fs.createReadStream(localPath);
-          stream.pipe(res);
+          if (rangeHeader) {
+            const m = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader);
+            if (m) {
+              const start = m[1] ? parseInt(m[1], 10) : 0;
+              const end = m[2] ? parseInt(m[2], 10) : totalSize - 1;
+              if (isNaN(start) || isNaN(end) || start > end || end >= totalSize) {
+                res.status(416).setHeader('Content-Range', `bytes */${totalSize}`);
+                return res.end();
+              }
+              res.status(206);
+              res.setHeader('Content-Range', `bytes ${start}-${end}/${totalSize}`);
+              res.setHeader('Content-Length', String(end - start + 1));
+              fs.createReadStream(localPath, { start, end }).pipe(res);
+              return;
+            }
+          }
+          res.setHeader('Content-Length', String(totalSize));
+          fs.createReadStream(localPath).pipe(res);
           return;
         } else {
           console.log(`[FileDownload] Local file not found at ${localPath}, will try OneDrive fallback`);
@@ -16684,7 +16707,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             if (!subFolder) continue;
             const subFiles = await listOneDriveItems(subFolder.path);
             for (const file of subFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              if (file.type !== 'file') continue;
+              const lowerName = file.name.toLowerCase();
+              const isPdf = lowerName.endsWith('.pdf');
+              const isVideo = lowerName.endsWith('.mp4') || lowerName.endsWith('.m4v') || lowerName.endsWith('.mov');
+              if (!isPdf && !isVideo) continue;
               const existingFiles = await storage.getFiles();
               const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
               if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
@@ -16695,9 +16722,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               const localFilePath = path.join(localUploadsDir, localFileName);
               fs.writeFileSync(localFilePath, fileBuffer);
               const objectPath = `/local/uploads/${localFileName}`;
-              const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
-              console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName} (saved locally)`);
-              if (newFile?.id) {
+              const contentType = isVideo
+                ? (lowerName.endsWith('.mov') ? 'video/quicktime' : 'video/mp4')
+                : 'application/pdf';
+              const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType, size: file.size, folder: folderName, listened: false });
+              console.log(`${logPrefix} Synced new ${isVideo ? 'video' : 'pdf'}: ${file.name} → ${folderName} (saved locally)`);
+              if (newFile?.id && !isVideo) {
+                // Videos play directly on TV — no TTS prep needed.
                 queueFileForPreparation(newFile.id);
               }
             }
@@ -17234,12 +17265,152 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  function isVideoFile(file: any): boolean {
+    if (!file) return false;
+    const ct = (file.contentType || '').toLowerCase();
+    if (ct.startsWith('video/')) return true;
+    const name = (file.originalName || file.displayName || '').toLowerCase();
+    return name.endsWith('.mp4') || name.endsWith('.m4v') || name.endsWith('.mov');
+  }
+
+  function stopVideoPositionPolling() {
+    if (videoPositionPollTimer) {
+      clearInterval(videoPositionPollTimer);
+      videoPositionPollTimer = null;
+    }
+  }
+
+  // Plays an MP4 on the bathroom TV (video) with audio mirrored to the Nest
+  // speaker. TV is muted so all sound comes from the Nest, matching the PDF
+  // playback experience. Resume position is stored in lastChunkIndex (seconds)
+  // and persisted on stop so the next play continues from the same spot.
+  async function startVideoPlaybackFlow(fileToPlay: any, logPrefix: string): Promise<void> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const appUrl = DEPLOYED_APP_URL;
+    const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
+    const fileName = fileToPlay.displayName || fileToPlay.originalName || 'Unknown video';
+    // For video files we repurpose lastChunkIndex as "current position in
+    // seconds" and totalChunks as "duration in seconds". This keeps progress
+    // bars meaningful without a schema migration.
+    const resumeSec = Math.max(0, fileToPlay.lastChunkIndex || 0);
+    const videoUrl = `${appUrl}/api/files/${fileToPlay.id}/download?auth=${authParam}`;
+
+    catWashTrace('VideoFlow', `STARTING file=${fileName} id=${fileToPlay.id} resumeSec=${resumeSec}`, { logPrefix });
+    console.log(`${logPrefix} [Video] Starting MP4 playback: ${fileName} from ${resumeSec}s`);
+    audioPreparationPaused = true;
+
+    catWashSessionId++;
+    if (catWashPlaybackActive && nestPlaybackAbort) {
+      try { nestPlaybackAbort(); } catch {}
+    }
+    catWashPlaybackActive = true;
+    catWashPlaybackStartedAt = new Date();
+    startToothbrushPolling();
+
+    catWashPlaybackState = {
+      fileId: fileToPlay.id,
+      fileName,
+      chunkIndex: resumeSec, // seconds (used by stop-flow to persist position)
+      totalChunks: fileToPlay.totalChunks || 0,
+      chunks: [],
+      currentWords: [],
+      wordIndex: 0,
+      startedAt: new Date(),
+      chunkStartedAt: new Date(),
+      estimatedChunkDuration: 0,
+      playbackMode: 'video',
+      videoPositionSec: resumeSec,
+      videoStartedAtMs: Date.now(),
+      videoDurationSec: fileToPlay.totalChunks || 0,
+    };
+
+    // Wake TV + Nest, mute TV (audio comes from Nest only).
+    await Promise.allSettled([
+      haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Video TV TurnOn'),
+      haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Video Nest TurnOn'),
+      haServiceCallSafe('media_player/volume_set', { entity_id: CAT_TV_ENTITY, volume_level: 0 }, 'Video TV Mute'),
+      haServiceCallSafe('media_player/volume_mute', { entity_id: CAT_TV_ENTITY, is_volume_muted: true }, 'Video TV MuteFlag'),
+      haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.55 }, 'Video Nest Vol'),
+    ]);
+
+    // Play_media on TV (video) and Nest (audio extracted by Nest from same MP4).
+    const playResults = await Promise.allSettled([
+      haServiceCallSafe('media_player/play_media', {
+        entity_id: CAT_TV_ENTITY,
+        media_content_id: videoUrl,
+        media_content_type: 'video/mp4',
+      }, 'Video TV Play'),
+      haServiceCallSafe('media_player/play_media', {
+        entity_id: NEST_SPEAKER_ENTITY,
+        media_content_id: videoUrl,
+        media_content_type: 'video/mp4',
+      }, 'Video Nest Play'),
+    ]);
+    console.log(`${logPrefix} [Video] play_media dispatched (TV + Nest)`);
+
+    // Seek both to resume position (after a short delay so HA registers the play).
+    if (resumeSec > 0) {
+      await new Promise(r => setTimeout(r, 1500));
+      await Promise.allSettled([
+        haServiceCallSafe('media_player/media_seek', { entity_id: CAT_TV_ENTITY, seek_position: resumeSec }, 'Video TV Seek'),
+        haServiceCallSafe('media_player/media_seek', { entity_id: NEST_SPEAKER_ENTITY, seek_position: resumeSec }, 'Video Nest Seek'),
+      ]);
+      console.log(`${logPrefix} [Video] Seeked both players to ${resumeSec}s`);
+    }
+    catWashPlaybackState.videoStartedAtMs = Date.now();
+
+    // Poll TV state every 5s to track real position. Falls back to wall-clock
+    // accumulation if the TV integration doesn't expose media_position.
+    stopVideoPositionPolling();
+    videoPositionPollTimer = setInterval(async () => {
+      if (!catWashPlaybackActive || !catWashPlaybackState || catWashPlaybackState.playbackMode !== 'video') {
+        stopVideoPositionPolling();
+        return;
+      }
+      try {
+        const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+        const r = await fetch(`${haUrl}/api/states/${CAT_TV_ENTITY}`, { headers: haHeaders });
+        if (r.ok) {
+          const s = await r.json();
+          const mp = Number(s?.attributes?.media_position);
+          const mpUpdated = s?.attributes?.media_position_updated_at;
+          const dur = Number(s?.attributes?.media_duration);
+          if (Number.isFinite(mp)) {
+            // Real reported position (+ time drift since last report).
+            let live = mp;
+            if (mpUpdated) {
+              const driftMs = Date.now() - new Date(mpUpdated).getTime();
+              if (driftMs > 0 && driftMs < 5 * 60_000) live = mp + driftMs / 1000;
+            }
+            catWashPlaybackState.videoPositionSec = Math.max(0, Math.round(live));
+            catWashPlaybackState.chunkIndex = catWashPlaybackState.videoPositionSec;
+            if (Number.isFinite(dur) && dur > 0) {
+              catWashPlaybackState.videoDurationSec = Math.round(dur);
+              catWashPlaybackState.totalChunks = Math.round(dur);
+            }
+            return;
+          }
+        }
+      } catch {}
+      // Fallback: wall-clock since start.
+      const elapsedSec = Math.max(0, Math.round((Date.now() - (catWashPlaybackState.videoStartedAtMs || Date.now())) / 1000));
+      catWashPlaybackState.videoPositionSec = resumeSec + elapsedSec;
+      catWashPlaybackState.chunkIndex = catWashPlaybackState.videoPositionSec;
+    }, 5000);
+  }
+
   async function startConfirmedPlaybackFlow(
     fileToPlay: any,
     logPrefix: string,
     voice: string = "echo",
     confirmationTTS: string | null = null
   ): Promise<void> {
+    // Branch: MP4/video files take a separate path — TV plays video, Nest
+    // mirrors audio. No TTS, no chunking, no tablet pdf-reader.
+    if (isVideoFile(fileToPlay)) {
+      return startVideoPlaybackFlow(fileToPlay, logPrefix);
+    }
+
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const appUrl = DEPLOYED_APP_URL;
     const authParam = encodeURIComponent(process.env.SITE_PASSWORD || '');
@@ -17761,8 +17932,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     startedAt: Date;
     chunkStartedAt: Date;
     estimatedChunkDuration: number;
-    playbackMode?: 'tablet-bluetooth' | 'server-tts';
+    playbackMode?: 'tablet-bluetooth' | 'server-tts' | 'video';
+    videoPositionSec?: number;
+    videoStartedAtMs?: number;
+    videoDurationSec?: number;
   } | null = null;
+  let videoPositionPollTimer: ReturnType<typeof setInterval> | null = null;
 
   let nestPlaybackAbort: (() => void) | null = null;
   let wordAdvanceInterval: ReturnType<typeof setInterval> | null = null;
@@ -18943,21 +19118,72 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     let fileName = catWashPlaybackState?.fileName || '';
     const savedFileId = catWashPlaybackState?.fileId;
+    const isVideoMode = catWashPlaybackState?.playbackMode === 'video';
+
+    // For video: query the TV one last time so the saved position is as fresh
+    // as possible (covers the gap between the last 5s poll and the stop).
+    if (isVideoMode && catWashPlaybackState) {
+      try {
+        const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+        const r = await fetch(`${haUrl}/api/states/${CAT_TV_ENTITY}`, { headers: haHeaders });
+        if (r.ok) {
+          const s = await r.json();
+          const mp = Number(s?.attributes?.media_position);
+          const mpUpdated = s?.attributes?.media_position_updated_at;
+          const dur = Number(s?.attributes?.media_duration);
+          if (Number.isFinite(mp)) {
+            let live = mp;
+            if (mpUpdated) {
+              const driftMs = Date.now() - new Date(mpUpdated).getTime();
+              if (driftMs > 0 && driftMs < 5 * 60_000) live = mp + driftMs / 1000;
+            }
+            catWashPlaybackState.videoPositionSec = Math.max(0, Math.round(live));
+            catWashPlaybackState.chunkIndex = catWashPlaybackState.videoPositionSec;
+            if (Number.isFinite(dur) && dur > 0) {
+              catWashPlaybackState.videoDurationSec = Math.round(dur);
+              catWashPlaybackState.totalChunks = Math.round(dur);
+            }
+          }
+        }
+      } catch {}
+    }
+
     const savedChunk = catWashPlaybackState?.chunkIndex || 0;
+    const savedDuration = catWashPlaybackState?.videoDurationSec || catWashPlaybackState?.totalChunks || 0;
 
     catWashPlaybackActive = false;
     stopWordAdvancement();
-    console.log(`[Nest Stop] catWashPlaybackActive set to FALSE immediately (before goodbye)`);
+    stopVideoPositionPolling();
+    console.log(`[Nest Stop] catWashPlaybackActive set to FALSE immediately (before goodbye), mode=${isVideoMode ? 'video' : 'tts'}`);
 
-    await Promise.allSettled([
-      stopNestSpeaker(),
-      haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Stop HA Voice'),
-    ]);
+    if (isVideoMode) {
+      // Stop TV playback and unmute it for next non-video use.
+      await Promise.allSettled([
+        haServiceCallSafe('media_player/media_stop', { entity_id: CAT_TV_ENTITY }, 'Stop TV Video'),
+        haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Stop Nest Video'),
+        haServiceCallSafe('media_player/volume_mute', { entity_id: CAT_TV_ENTITY, is_volume_muted: false }, 'Unmute TV'),
+        haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Stop HA Voice'),
+      ]);
+    } else {
+      await Promise.allSettled([
+        stopNestSpeaker(),
+        haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Stop HA Voice'),
+      ]);
+    }
 
     if (savedFileId && savedChunk > 0) {
       try {
-        await storage.updateFile(savedFileId, { lastChunkIndex: savedChunk });
-        console.log(`[Nest Stop] Saved progress: file ${savedFileId}, chunk ${savedChunk}`);
+        const updatePayload: any = { lastChunkIndex: savedChunk };
+        if (isVideoMode && savedDuration > 0) {
+          updatePayload.totalChunks = savedDuration;
+          // Mark video as finished if within 5 seconds of the end.
+          if (savedChunk >= savedDuration - 5) {
+            updatePayload.listened = true;
+            updatePayload.lastChunkIndex = 0; // restart from beginning next time
+          }
+        }
+        await storage.updateFile(savedFileId, updatePayload);
+        console.log(`[Nest Stop] Saved progress: file ${savedFileId}, ${isVideoMode ? `videoSec=${savedChunk}/${savedDuration}` : `chunk=${savedChunk}`}`);
       } catch {}
     }
 
