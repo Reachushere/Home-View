@@ -179,6 +179,97 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
+function isVideoFile(file: { contentType?: string | null; originalName?: string | null; displayName?: string | null }): boolean {
+  if (!file) return false;
+  const ct = (file.contentType || '').toLowerCase();
+  if (ct.startsWith('video/')) return true;
+  const name = (file.originalName || file.displayName || '').toLowerCase();
+  return name.endsWith('.mp4') || name.endsWith('.m4v') || name.endsWith('.mov');
+}
+
+// Inline video player overlay. Resumes from file.lastChunkIndex (seconds),
+// throttles position saves to every ~5s, and finalises on close so the
+// bathroom-light cat-wash flow can pick up exactly where the in-library
+// session left off (and vice versa).
+function LibraryVideoPlayer({ file, onClose, onMinimize }: { file: FileRecord; onClose: () => void; onMinimize: () => void }) {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const lastSavedSecRef = React.useRef<number>(file.lastChunkIndex || 0);
+  const durationSecRef = React.useRef<number>(file.totalChunks || 0);
+  const startSec = file.lastChunkIndex || 0;
+  const title = (file.displayName || file.originalName || '').replace(/\.(pdf|mp4|m4v|mov)$/i, '');
+
+  const saveProgress = React.useCallback(async (extra?: Record<string, any>) => {
+    try {
+      const v = videoRef.current;
+      const pos = v ? Math.max(0, Math.round(v.currentTime)) : lastSavedSecRef.current;
+      const dur = v && Number.isFinite(v.duration) ? Math.round(v.duration) : durationSecRef.current;
+      const body: any = { lastChunkIndex: pos, ...(dur > 0 ? { totalChunks: dur } : {}), ...(extra || {}) };
+      await fetch(`/api/files/${file.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      lastSavedSecRef.current = pos;
+    } catch {}
+  }, [file.id]);
+
+  const handleClose = React.useCallback(async () => {
+    const v = videoRef.current;
+    if (v) {
+      const pos = Math.max(0, Math.round(v.currentTime));
+      const dur = Number.isFinite(v.duration) ? Math.round(v.duration) : 0;
+      if (dur > 0 && pos >= dur - 5) {
+        await saveProgress({ listened: true, lastChunkIndex: 0 });
+      } else {
+        await saveProgress();
+      }
+    }
+    onClose();
+  }, [saveProgress, onClose]);
+
+  React.useEffect(() => {
+    return () => {
+      // Best-effort save if user navigates away without clicking close.
+      const v = videoRef.current;
+      if (v && Math.abs(v.currentTime - lastSavedSecRef.current) >= 1) {
+        const pos = Math.max(0, Math.round(v.currentTime));
+        navigator.sendBeacon?.(`/api/files/${file.id}`, new Blob([JSON.stringify({ lastChunkIndex: pos })], { type: 'application/json' }));
+      }
+    };
+  }, [file.id]);
+
+  return (
+    <div data-testid={`video-player-${file.id}`} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}>
+      <div style={{ position: 'absolute', top: 16, left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff', fontSize: 14 }}>
+        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }} title={title}>{title}</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={onMinimize} data-testid={`btn-minimize-video-${file.id}`} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 10px', cursor: 'pointer' }}>—</button>
+          <button onClick={handleClose} data-testid={`btn-close-video-${file.id}`} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+        </div>
+      </div>
+      <video
+        ref={videoRef}
+        src={`/api/files/${file.id}/download`}
+        controls
+        autoPlay
+        playsInline
+        onLoadedMetadata={(e) => {
+          const v = e.currentTarget;
+          if (Number.isFinite(v.duration)) durationSecRef.current = Math.round(v.duration);
+          if (startSec > 0 && startSec < (v.duration || Infinity) - 1) {
+            try { v.currentTime = startSec; } catch {}
+          }
+        }}
+        onTimeUpdate={(e) => {
+          const v = e.currentTarget;
+          const pos = Math.round(v.currentTime);
+          if (Math.abs(pos - lastSavedSecRef.current) >= 5) {
+            saveProgress();
+          }
+        }}
+        onEnded={() => { saveProgress({ listened: true, lastChunkIndex: 0 }); }}
+        style={{ maxWidth: '92vw', maxHeight: '85vh', background: '#000' }}
+      />
+    </div>
+  );
+}
+
 const LIB_NOTE_FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
 const LIB_NOTE_FONT_COLORS = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
@@ -447,7 +538,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const fileType = getFileType(file.folder);
   const bookHeight = fileType === 'module' ? shelfHeight - 24 + 50 : shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
-  const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
   const fullTitle = rawFullTitle;
   const title = truncateSpineTitle(rawFullTitle, 60, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
@@ -1244,7 +1335,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const readerDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const [readerWidth, setReaderWidth] = useState<number | null>(null);
   const resizeRef = useRef<{ startX: number; startWidth: number; side: 'left' | 'right'; startPosX: number } | null>(null);
-  const rawTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const rawTitle = (file.displayName || file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
   const title = truncateSpineTitle(rawTitle, 80, !!file.displayName && file.displayName !== file.originalName);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
@@ -1398,7 +1489,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
               span.style.textDecorationColor = 'rgba(212,175,55,0.55)';
               span.style.textDecorationThickness = '1px';
               span.style.textUnderlineOffset = '2px';
-              span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
+              span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}`;
               span.addEventListener('click', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -2144,7 +2235,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                         onMouseEnter={e => { if (mf) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                         data-testid={`btn-module-index-${num}`}
-                        title={mf ? (mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '') : `Module ${num} — not available`}
+                        title={mf ? (mf.file.displayName || mf.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '') : `Module ${num} — not available`}
                       >
                         <span style={{ width: '20px', height: '20px', borderRadius: '4px', background: mf ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)', color: mf ? '#D4AF37' : 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>
                           {num}
@@ -4086,7 +4177,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                             <span style={{ fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)', flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{r.fileFormat}</span>
                           )}
                           <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
+                            {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
                           </span>
                         </div>
                         <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
@@ -5840,7 +5931,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                         }}>{r.fileFormat}</span>
                       )}
                       <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
+                        {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
                       </span>
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
@@ -6316,6 +6407,19 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           }}
         >
           <div style={{ pointerEvents: 'auto', display: 'contents' }}>
+          {isVideoFile(reader.file) ? (
+            <LibraryVideoPlayer
+              file={reader.file}
+              onClose={() => {
+                setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id));
+                setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
+                queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+              }}
+              onMinimize={() => {
+                setMinimizedReaders(prev => { const next = new Set(prev); next.add(reader.file.id); return next; });
+              }}
+            />
+          ) : (
           <BookReader
             file={reader.file}
             bookColor={reader.color}
@@ -6373,6 +6477,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
               }
             } : undefined}
           />
+          )}
           </div>
         </div>
         );
@@ -6390,7 +6495,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           pointerEvents: 'auto',
         }}>
           {openReaders.filter(r => minimizedReaders.has(r.file.id)).map(reader => {
-            const rawTitle = (reader.file.displayName || reader.file.originalName).replace(/\.pdf$/i, '');
+            const rawTitle = (reader.file.displayName || reader.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
             const shortTitle = rawTitle.length > 25 ? rawTitle.substring(0, 24) + '…' : rawTitle;
             return (
               <div
