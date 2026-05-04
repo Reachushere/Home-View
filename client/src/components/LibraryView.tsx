@@ -5942,14 +5942,14 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             const REF_SHELF_HEIGHT = 170;
             const shelfScale = shelfHeight / REF_SHELF_HEIGHT;
             const shelfCalibrationByCode: Record<string, { row: number; label: number; labelRight?: number }> = {
-              'CPPA122': { row: 48, label: -4, labelRight: 8 },
-              'CFNF400': { row: 103, label: -18, labelRight: 8 },
-              'CASL101': { row: 98, label: -18, labelRight: 8 },
+              'CPPA122': { row: 0, label: -4, labelRight: 8 },
+              'CFNF400': { row: 55, label: -18, labelRight: 8 },
+              'CASL101': { row: 50, label: -18, labelRight: 8 },
             };
             const shelfCalibrationByIndex: { row: number; label: number; labelRight?: number }[] = [
-              { row: 48, label: -4, labelRight: 8 },
-              { row: 103, label: -18, labelRight: 8 },
-              { row: 98, label: -18, labelRight: 8 },
+              { row: 0, label: -4, labelRight: 8 },
+              { row: 55, label: -18, labelRight: 8 },
+              { row: 50, label: -18, labelRight: 8 },
             ];
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
             const calib = shelfCalibrationByCode[codeKey] || shelfCalibrationByIndex[courseIdx] || shelfCalibrationByIndex[shelfCalibrationByIndex.length - 1] || { row: 0, label: 0 };
