@@ -126,7 +126,20 @@ export async function getPdfParser() {
 // CENTRALIZED CONFIGURATION
 // Change these values in ONE place if URLs or devices change.
 // ─────────────────────────────────────────────────────────────────────────
-export const DEPLOYED_APP_URL = process.env.DEPLOYED_APP_URL || (process.env.REPL_ID ? `https://${process.env.REPL_SLUG}--${process.env.REPL_OWNER}.repl.co` : "http://localhost:5000");
+// On the Pi (no REPL_ID env), default to the public uni-cal.app domain.
+// Also REJECT a private-IP value of DEPLOYED_APP_URL — if the env var got
+// set to e.g. http://172.24.x.x:5000, every tablet/TV/Nest URL we generate
+// would point at the LAN IP, which Fire Stick's browser shows as
+// "172.24.1.204:5000" (broken), tablet shows the same, and Nest can't
+// fetch the audio at all.
+const _envAppUrl = process.env.DEPLOYED_APP_URL || '';
+const _envAppUrlIsPrivate = /^https?:\/\/(?:127\.|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.|localhost(?::|$)|0\.0\.0\.0)/i.test(_envAppUrl);
+export const DEPLOYED_APP_URL = (_envAppUrl && !_envAppUrlIsPrivate)
+  ? _envAppUrl
+  : (process.env.REPL_ID ? `https://${process.env.REPL_SLUG}--${process.env.REPL_OWNER}.repl.co` : "https://uni-cal.app");
+if (_envAppUrlIsPrivate) {
+  console.warn(`[Config] DEPLOYED_APP_URL env points to a private IP (${_envAppUrl}) — overriding with public default ${DEPLOYED_APP_URL} so Fire Stick / tablet / Nest URLs stay reachable.`);
+}
 export const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
