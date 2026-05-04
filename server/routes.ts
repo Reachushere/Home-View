@@ -25889,6 +25889,51 @@ document.body.removeChild(a);
     });
   }
 
+  // ────────── Per-week Module / Reading folder path overrides ──────────
+  // Stores user-supplied OneDrive paths keyed by `${courseCode}|${kind}|${week}`
+  // in app_state under `courseWeekFolderPaths`. Lets the user point a single
+  // week at a non-standard location when the auto-derived
+  // `${courseFolderPath}/Week N/${Module|Reading}` path is wrong.
+  app.get("/api/week-folders/paths", async (_req, res) => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, 'courseWeekFolderPaths')).limit(1);
+      const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+      res.json(paths);
+    } catch (err: any) {
+      console.error("Error getting week folder paths:", err);
+      res.json({});
+    }
+  });
+  app.post("/api/week-folders/paths", async (req, res) => {
+    try {
+      const { courseCode, kind, week, folderPath } = req.body || {};
+      if (!courseCode || !kind || !week) {
+        return res.status(400).json({ error: "courseCode, kind, week required" });
+      }
+      if (kind !== 'module' && kind !== 'reading') {
+        return res.status(400).json({ error: "kind must be 'module' or 'reading'" });
+      }
+      const row = await db.select().from(appState).where(eq(appState.key, 'courseWeekFolderPaths')).limit(1);
+      const paths: Record<string, string> = row.length > 0 ? JSON.parse(row[0].value) : {};
+      const key = `${courseCode}|${kind}|${week}`;
+      if (folderPath && typeof folderPath === 'string' && folderPath.trim()) {
+        paths[key] = folderPath.trim();
+      } else {
+        delete paths[key];
+      }
+      const value = JSON.stringify(paths);
+      if (row.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'courseWeekFolderPaths'));
+      } else {
+        await db.insert(appState).values({ key: 'courseWeekFolderPaths', value });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error saving week folder path:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/syllabus/paths", async (req, res) => {
     try {
       const { courseCode, objectPath } = req.body;
