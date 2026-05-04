@@ -15312,8 +15312,22 @@ export default function Dashboard() {
                                           numberOfWeeks={numWeeks}
                                           firstWeek={firstWeek}
                                           lastWeek={lastWeek}
-                                          moduleBoxColor={(c as any).moduleBoxColor || c.color || '#3b82f6'}
-                                          readingBoxColor={(c as any).readingBoxColor || c.color || '#a855f7'}
+                                          moduleBoxColor={(() => {
+                                            const sObj: any = slotMatch?.sem;
+                                            const start = sObj && slot ? sObj[`course${slot}Color`] : null;
+                                            const end = sObj && slot ? sObj[`course${slot}ColorEnd`] : null;
+                                            if (start && end) return `linear-gradient(180deg, ${start} 0%, ${end} 100%)`;
+                                            if (start) return start;
+                                            return (c as any).moduleBoxColor || c.color || '#3b82f6';
+                                          })()}
+                                          readingBoxColor={(() => {
+                                            const sObj: any = slotMatch?.sem;
+                                            const start = sObj && slot ? sObj[`course${slot}Color`] : null;
+                                            const end = sObj && slot ? sObj[`course${slot}ColorEnd`] : null;
+                                            if (start && end) return `linear-gradient(180deg, ${start} 0%, ${end} 100%)`;
+                                            if (start) return start;
+                                            return (c as any).readingBoxColor || c.color || '#a855f7';
+                                          })()}
                                           onOpenWizard={(issueKey, opts) => setSemFlowWizard({ courseCode: c.code, issue: opts?.weekNum ? 'week_upload' : issueKey, step: 0, phase: 'primary', weekNum: opts?.weekNum, uploadType: opts?.uploadType })}
                                           onOpenCourseDetails={() => startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: c.name || '', certKey: c.code, semKey: expandedSemKey, openInEdit: true }))}
                                           onCourseFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
