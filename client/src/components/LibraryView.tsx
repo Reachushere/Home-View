@@ -5875,7 +5875,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           padding: '20px 20px 10px 20px',
           paddingBottom: '80px',
           ...(courseBooks.length > 0
-            ? { display: 'grid', gridTemplateRows: `repeat(${Math.max(courseBooks.length, 1)}, 1fr)` }
+            ? { display: 'grid', gridTemplateRows: `repeat(${Math.max(courseBooks.length, 3)}, 1fr)` }
             : { display: 'flex', flexDirection: 'column' as const, justifyContent: 'center' }),
         }}
       >
