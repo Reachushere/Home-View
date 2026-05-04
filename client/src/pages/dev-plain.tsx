@@ -58,6 +58,25 @@ export default function DevPlainPage() {
     return () => { cancelled = true; };
   }, []);
 
+  const DEV_KEY_STORAGE = "unical:devKey";
+  const getDevKey = () => { try { return localStorage.getItem(DEV_KEY_STORAGE) || ""; } catch { return ""; } };
+  const setDevKey = (k: string) => { try { if (k) localStorage.setItem(DEV_KEY_STORAGE, k); else localStorage.removeItem(DEV_KEY_STORAGE); } catch {} };
+  const fetchDev = async (url: string) => {
+    const isDev = url.startsWith("/api/dev");
+    const headers: Record<string, string> = {};
+    if (isDev) { const k = getDevKey(); if (k) headers["x-dev-key"] = k; }
+    let r = await fetch(url, { credentials: "include", headers });
+    if (r.status === 401 && isDev) {
+      const entered = window.prompt("Enter DEV_API_KEY for /api/dev/* access:") || "";
+      if (entered) {
+        setDevKey(entered);
+        headers["x-dev-key"] = entered;
+        r = await fetch(url, { credentials: "include", headers });
+      }
+    }
+    return r;
+  };
+
   const runSection = async (s: Section, alsoCopy: boolean) => {
     setBusy(s.id);
     setStatus(`fetching ${s.endpoints.length} endpoint(s)…`);
@@ -66,7 +85,7 @@ export default function DevPlainPage() {
     for (const ep of s.endpoints) {
       parts.push(`## ${ep}`);
       try {
-        const r = await fetch(ep, { credentials: "include" });
+        const r = await fetchDev(ep);
         const ct = r.headers.get("content-type") || "";
         const body = ct.includes("json") ? JSON.stringify(await r.json(), null, 2) : await r.text();
         parts.push("```", body, "```");
@@ -133,6 +152,18 @@ export default function DevPlainPage() {
         <h1 style={{ margin: 0, fontSize: 20, color: "#a78bfa" }} data-testid="text-dev-title">UniCal Dev — Plain Mode</h1>
         <span style={{ fontSize: 11, color: "#888" }}>admin (5747) · /dev</span>
         <span style={{ flex: 1 }} />
+        <button
+          type="button"
+          data-testid="button-set-dev-key"
+          onClick={() => {
+            const cur = getDevKey();
+            const entered = window.prompt(`Enter DEV_API_KEY (current: ${cur ? "set ✓" : "not set"})`, cur) ?? "";
+            if (entered === cur) return;
+            setDevKey(entered);
+            setStatus(entered ? "DEV_API_KEY saved" : "DEV_API_KEY cleared");
+          }}
+          style={{ background: "rgba(251,191,36,0.18)", color: "#fde68a", border: "1px solid rgba(251,191,36,0.6)", borderRadius: 4, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "ui-monospace, monospace" }}
+        >Set Dev Key</button>
         <a href="/" style={{ color: "#93c5fd", textDecoration: "none", fontSize: 12, padding: "6px 10px", border: "1px solid rgba(96,165,250,0.4)", borderRadius: 4 }} data-testid="link-home">← back to dashboard</a>
       </div>
 
