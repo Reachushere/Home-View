@@ -17262,9 +17262,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return null;
     }
 
-    const isModule = (f: any) =>
-      f.folder?.toLowerCase().includes('module') ||
-      f.originalName?.toLowerCase().includes('module');
+    const isModule = (f: any) => {
+      if (isVideoFile(f)) return true;
+      const blob = [f.folder, f.originalName, f.displayName, f.objectPath]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return blob.includes('module');
+    };
     const hasAnyUnlistenedModule = allEligible.some(f => isModule(f));
     const eligible = allEligible.filter(f => {
       if (isModule(f)) return true;
@@ -17973,9 +17978,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function orderFilesByCoursePriority(files: any[]): Promise<any[]> {
-    const isModule = (f: any) =>
-      f.folder?.toLowerCase().includes('module') ||
-      f.originalName?.toLowerCase().includes('module');
+    const isModule = (f: any) => {
+      if (isVideoFile(f)) return true;
+      const blob = [f.folder, f.originalName, f.displayName, f.objectPath]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return blob.includes('module');
+    };
 
     const getCourseCode = (f: any): string => {
       const folder = (f.folder || '').toLowerCase();
@@ -19525,7 +19535,19 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   
   async function findNextCatWashFile(storageRef: any, weekNumber: number, excludeFileId?: number) {
     const allFiles = await storageRef.getFiles();
-    const isModuleFile = (f: any) => f.folder?.toLowerCase().includes('module');
+    // Treat videos as modules — lecture videos ARE the module content for
+    // courses like Phil 110, but their folder name doesn't always include
+    // "module" so they were getting passed over (and the picker fell back
+    // to a lower-priority reading). Also check every name-bearing field
+    // for the literal word "module".
+    const isModuleFile = (f: any) => {
+      if (isVideoFile(f)) return true;
+      const blob = [f.folder, f.originalName, f.displayName, f.objectPath]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return blob.includes('module');
+    };
 
     const isPartiallyListened = (f: any) => {
       if (f.listened || f.id === excludeFileId) return false;
