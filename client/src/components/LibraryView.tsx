@@ -5828,7 +5828,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         ref={scrollRef}
         style={{
           position: 'absolute',
-          top: '110px',
+          top: '140px',
           left: 0,
           right: 0,
           bottom: 0,
