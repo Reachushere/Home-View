@@ -3202,6 +3202,26 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           });
         }
       }
+      // Apply manual drag-reorder set on the dashboard's Semesters & Classes
+      // page so library spine order mirrors what the user dragged.
+      try {
+        const rawOrder = localStorage.getItem('manualSemesterCourseOrder');
+        if (rawOrder) {
+          const orderMap = JSON.parse(rawOrder) as Record<string, string[]>;
+          const order = orderMap[key];
+          if (Array.isArray(order) && order.length > 0) {
+            const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
+            courses.sort((a, b) => {
+              const ia = order.indexOf(norm(a.code));
+              const ib = order.indexOf(norm(b.code));
+              if (ia < 0 && ib < 0) return 0;
+              if (ia < 0) return 1;
+              if (ib < 0) return -1;
+              return ia - ib;
+            });
+          }
+        }
+      } catch {}
       const isCurrent = i === activeIdx;
       const isFuture = !isCurrent && i > activeIdx;
       const isPast = !isCurrent && activeIdx >= 0 && i < activeIdx;
