@@ -3844,6 +3844,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           }
         }
 
+        // ────────── Live OneDrive probe for unsynced week files ──────────
+        // The local file index only knows about files the library sync has
+        // pulled in. Bryn frequently drops PDFs into OneDrive Week N/Module
+        // (or Reading) folders directly. Without this probe the WCS boxes
+        // stay red until the next full sync. Walk each week's auto-derived
+        // path inside courseFolderPath and bump the bucket count from the
+        // live listing so the FILE dot turns green immediately.
+        if (courseFolderPath) {
+          try {
+            const { listOneDriveFolderChildren } = await import("./onedrive");
+            // Cache the course folder's children so we don't re-list per week.
+            const courseChildren = await listOneDriveFolderChildren(courseFolderPath).catch(() => [] as any[]);
+            const weekFolderEntries = (courseChildren || []).filter((c: any) => c.folder && /^week[\s_-]*\d+/i.test(c.name || ''));
+            for (let w = 1; w <= numberOfWeeks; w++) {
+              const wf = weekFolderEntries.find((c: any) => {
+                const m = String(c.name).match(/(\d+)/);
+                return m && parseInt(m[1]) === w;
+              });
+              if (!wf) continue;
+              const weekPath = `${courseFolderPath}/${wf.name}`;
+              let weekSubs: any[] = [];
+              try { weekSubs = await listOneDriveFolderChildren(weekPath); } catch { continue; }
+              for (const kind of ['module', 'reading'] as const) {
+                const bucket = kind === 'module' ? moduleWeeks : readingWeeks;
+                if (bucket[w] && bucket[w].count > 0) continue;
+                const sub = (weekSubs || []).find((s: any) => s.folder && new RegExp(`^${kind}`, 'i').test(s.name || ''));
+                if (!sub) continue;
+                try {
+                  const subPath = `${weekPath}/${sub.name}`;
+                  const subFiles = await listOneDriveFolderChildren(subPath);
+                  const fileCount = (subFiles || []).filter((c: any) => !c.folder && /\.(pdf|docx?|pptx?|epub|mp3|mp4|m4a|wav|txt)$/i.test(c.name || '')).length;
+                  if (fileCount > 0) {
+                    if (!bucket[w]) bucket[w] = { count: 0, ttsReady: 0 };
+                    bucket[w].count = fileCount;
+                    if (kind === 'module') totalModules += fileCount;
+                    else totalReadings += fileCount;
+                    totalTtsNeeded += fileCount;
+                  }
+                } catch {}
+              }
+            }
+          } catch (e: any) {
+            console.log(`[Health Check] Live week probe failed for ${code}: ${e?.message}`);
+          }
+        }
+
         courses.push({
           code, name, slotNum: i,
           syllabusLinked: effectiveSyllabusLinked, syllabusPath,
