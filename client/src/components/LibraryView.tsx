@@ -3211,14 +3211,24 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           const order = orderMap[key];
           if (Array.isArray(order) && order.length > 0) {
             const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
-            courses.sort((a, b) => {
-              const ia = order.indexOf(norm(a.code));
-              const ib = order.indexOf(norm(b.code));
-              if (ia < 0 && ib < 0) return 0;
-              if (ia < 0) return 1;
-              if (ib < 0) return -1;
-              return ia - ib;
-            });
+            // Only honor the manual order when it covers every course in
+            // this semester. A partial/stale order would otherwise push
+            // missing courses to the bottom and look like the library
+            // disagrees with the semester box. Falling back to slot order
+            // (course1/2/3) keeps spines aligned with the semester box.
+            const courseCodes = courses.map(c => norm(c.code));
+            const orderSet = new Set(order.map(norm));
+            const allCovered = courseCodes.every(c => orderSet.has(c));
+            if (allCovered) {
+              courses.sort((a, b) => {
+                const ia = order.indexOf(norm(a.code));
+                const ib = order.indexOf(norm(b.code));
+                if (ia < 0 && ib < 0) return 0;
+                if (ia < 0) return 1;
+                if (ib < 0) return -1;
+                return ia - ib;
+              });
+            }
           }
         }
       } catch {}
