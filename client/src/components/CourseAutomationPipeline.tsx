@@ -743,13 +743,77 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
               >
                 {counted && cornerDotWithLabel('tl', ttsOk, 'TTS', `TTS audio ${ttsOk ? 'ready' : `${ttsReadyCnt}/${count}`}`, `dot-tts-${kind}-${course.code.toLowerCase()}-${w}`)}
-                {counted && cornerDotWithLabel('tr', fileOk, 'FILE', fileOk ? `${count} file${count === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-${kind}-${course.code.toLowerCase()}-${w}`)}
+                {/* Pencil at top-right: lets user paste a custom OneDrive
+                    path for THIS week's folder (overrides the auto-derived
+                    {course}/Week N/{Module|Reading} path). */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const labelKind = kind === 'module' ? 'Module' : 'Reading';
+                    const example = `/School/1. TMU/${course.code}/Week ${w}/${labelKind}`;
+                    const v = window.prompt(
+                      `OneDrive path for ${course.code} Week ${w} ${labelKind}\n\n` +
+                      `Example: ${example}\n\n` +
+                      `Paste the full OneDrive path below and click OK.`,
+                      ''
+                    );
+                    if (v === null) return;
+                    const trimmed = v.trim();
+                    if (!trimmed) return;
+                    fetch('/api/week-folders/paths', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({ courseCode: course.code, kind, week: w, folderPath: trimmed }),
+                    })
+                      .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t || `HTTP ${r.status}`); }))
+                      .then(() => {
+                        window.alert(`Saved ${labelKind} W${w}: ${trimmed}\n\nGive it a few seconds, then refresh — the dot should turn green if OneDrive sees the folder.`);
+                        onModuleFolderRenamed?.();
+                        onReadingFolderRenamed?.();
+                      })
+                      .catch((err: any) => window.alert(`Save failed: ${err?.message || err}`));
+                  }}
+                  title={`Set OneDrive path for ${kind === 'module' ? 'Module' : 'Reading'} W${w}`}
+                  data-testid={`pencil-week-${kind}-${course.code.toLowerCase()}-${w}`}
+                  style={{
+                    position: 'absolute', top: 2, right: 2,
+                    background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.35)',
+                    borderRadius: 3, padding: '1px 3px', cursor: 'pointer',
+                    color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center',
+                  }}
+                >
+                  <Pencil style={{ width: 9, height: 9 }} />
+                </button>
                 <div style={{ fontSize: 9, fontWeight: 800, color: '#fff', textAlign: 'center', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, marginTop: 2 }}>
                   {kind === 'module' ? 'Module' : `Reading${rExempt ? '*' : ''}`}
                 </div>
                 <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.85)', textAlign: 'center', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, marginTop: 2, letterSpacing: '0.5px' }}>
                   W{w}
                 </div>
+                {/* FILE dot moved from top-right to bottom-LEFT, sitting
+                    next to the W{n} label area for easier scanning. */}
+                {counted && (
+                  <span
+                    title={fileOk ? `${count} file${count === 1 ? '' : 's'} synced` : 'no file in OneDrive'}
+                    style={{
+                      position: 'absolute', bottom: 2, left: 2,
+                      display: 'flex', alignItems: 'center', gap: 2,
+                    }}
+                  >
+                    <span
+                      data-testid={`dot-file-${kind}-${course.code.toLowerCase()}-${w}`}
+                      style={{
+                        width: 6, height: 6, borderRadius: '50%',
+                        background: fileOk ? '#10b981' : '#ef4444',
+                        boxShadow: `0 0 4px ${fileOk ? '#10b981' : '#ef4444'}, 0 0 2px ${fileOk ? '#10b981' : '#ef4444'}`,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span style={{ fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, letterSpacing: '0.3px' }}>FILE</span>
+                  </span>
+                )}
                 {setTtsCounted && useToggle(counted, () => setTtsCounted(w, kind, !counted), `pipeline-toggle-tts-${kind}-${course.code.toLowerCase()}-${w}`)}
               </div>
             );
