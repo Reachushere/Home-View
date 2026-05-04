@@ -15925,6 +15925,100 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   checkAndActivateSemester();
   setInterval(checkAndActivateSemester, 60 * 60 * 1000);
 
+  // ───────────────────────────────────────────────────────────────────
+  // TTS audio sweeper. Every TTS chunk is written to
+  // dist/public/tts-audio/<id>-<Date.now()>.mp3 and never overwritten,
+  // which means every replay/lookahead/rate-limit retry leaves a fresh
+  // mp3 on disk. On the Pi this fills the boot partition (Bryn hit
+  // ENOSPC during `npm run build`). Sweep anything older than 24h on
+  // startup and then every hour. Live playback only needs the file for
+  // the duration of the chunk, so a 24h window is very safe.
+  // ───────────────────────────────────────────────────────────────────
+  async function sweepOldTtsAudio(): Promise<void> {
+    try {
+      const ttsDir = path.join(process.cwd(), 'dist', 'public', 'tts-audio');
+      if (!fs.existsSync(ttsDir)) return;
+      const cutoffMs = Date.now() - (24 * 60 * 60 * 1000);
+      const entries = fs.readdirSync(ttsDir);
+      let removed = 0;
+      let bytesFreed = 0;
+      for (const name of entries) {
+        if (!name.endsWith('.mp3')) continue;
+        const full = path.join(ttsDir, name);
+        try {
+          const st = fs.statSync(full);
+          if (st.mtimeMs < cutoffMs) {
+            bytesFreed += st.size;
+            fs.unlinkSync(full);
+            removed++;
+          }
+        } catch {}
+      }
+      if (removed > 0) {
+        console.log(`[TtsSweep] Removed ${removed} stale mp3 files (${(bytesFreed / 1024 / 1024).toFixed(1)} MB freed)`);
+      }
+    } catch (e: any) {
+      console.error(`[TtsSweep] Error: ${e.message}`);
+    }
+  }
+  sweepOldTtsAudio();
+  setInterval(sweepOldTtsAudio, 60 * 60 * 1000);
+
+  // ───────────────────────────────────────────────────────────────────
+  // End-of-semester movie cleanup. For any semester that ended more
+  // than 7 days ago, delete every video file in that semester's course
+  // folders that has been fully watched (listened=true OR within 30s
+  // of the recorded duration). Bryn watches the PHIL movies once and
+  // never revisits them, so they shouldn't squat on Pi disk for years
+  // after the term wraps.
+  // ───────────────────────────────────────────────────────────────────
+  async function cleanupFinishedSemesterMovies(): Promise<void> {
+    try {
+      const semesters = await storage.getAllSemesterSettings();
+      if (!semesters || semesters.length === 0) return;
+      const now = Date.now();
+      const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+      const allFiles = await storage.getFiles();
+      const norm = (s: string) => (s || '').replace(/\s/g, '').toUpperCase();
+      let totalDeleted = 0;
+      for (const sem of semesters) {
+        const endDate = (sem as any).semesterEndDate ? new Date((sem as any).semesterEndDate) : null;
+        if (!endDate || isNaN(endDate.getTime())) continue;
+        if (now < endDate.getTime() + oneWeekMs) continue;
+        const courseCodes: string[] = [];
+        for (let j = 1; j <= 6; j++) {
+          const c = norm(((sem as any)[`course${j}Code`] || '').toString());
+          if (c) courseCodes.push(c);
+        }
+        if (courseCodes.length === 0) continue;
+        for (const f of allFiles) {
+          if (!isVideoFile(f)) continue;
+          const folderUp = norm(f.folder || '');
+          const matchesCourse = courseCodes.some(cc => folderUp.includes(cc));
+          if (!matchesCourse) continue;
+          const dur = (f as any).totalChunks || 0;
+          const pos = (f as any).lastChunkIndex || 0;
+          const fullyWatched = !!(f as any).listened || (dur > 0 && pos >= dur - 30);
+          if (!fullyWatched) continue;
+          try {
+            await storage.deleteFile(f.id);
+            totalDeleted++;
+            console.log(`[MovieCleanup] Deleted finished movie "${f.originalName}" (folder=${f.folder}, semester=${(sem as any).semesterName})`);
+          } catch (e: any) {
+            console.error(`[MovieCleanup] Failed to delete file ${f.id}: ${e.message}`);
+          }
+        }
+      }
+      if (totalDeleted > 0) {
+        console.log(`[MovieCleanup] Removed ${totalDeleted} fully-watched videos from ended semesters`);
+      }
+    } catch (e: any) {
+      console.error(`[MovieCleanup] Error: ${e.message}`);
+    }
+  }
+  cleanupFinishedSemesterMovies();
+  setInterval(cleanupFinishedSemesterMovies, 24 * 60 * 60 * 1000);
+
   async function monitorOneDriveFolderRenames(): Promise<void> {
     try {
       const { listOneDriveFolderChildren, checkOneDriveFolderExists } = await import("./onedrive");
