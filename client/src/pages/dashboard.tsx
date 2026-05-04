@@ -3809,6 +3809,16 @@ export default function Dashboard() {
     const order = manualSemesterCourseOrder[semKey];
     if (!order || order.length === 0) return list;
     const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
+    // Only apply the manual order when it covers EVERY course in the
+    // current list. A partial/stale order (e.g. ['CECN210'] left over from
+    // an old drag) used to push the missing courses to the bottom, which
+    // looked like "the calendar order doesn't match the semester box".
+    // Falling back to the incoming slot order when the saved order is
+    // incomplete keeps the source-of-truth alignment with course1/2/3.
+    const listCodes = list.map(l => norm(l.code));
+    const orderSet = new Set(order.map(norm));
+    const allCovered = listCodes.every(c => orderSet.has(c));
+    if (!allCovered) return list;
     return [...list].sort((a, b) => {
       const ia = order.indexOf(norm(a.code));
       const ib = order.indexOf(norm(b.code));
@@ -3838,9 +3848,15 @@ export default function Dashboard() {
         if (c) dbCodes.push(c);
       }
     }
-    const baseCodes = (manualSemesterCourseOrder[semKey] && manualSemesterCourseOrder[semKey].length)
-      ? manualSemesterCourseOrder[semKey].slice()
-      : Array.from(new Set([...dbCodes.map(norm), ...assigned.map(c => norm(c.code))]));
+    // Start from the union of (prev manual order) ∪ (DB slot codes) ∪
+    // (assigned codes) — and ALWAYS append any current slot/assigned code
+    // that's missing from the prior order. This guarantees the saved order
+    // covers every course currently in the semester so applyManualOrder
+    // (which now requires full coverage) actually takes effect.
+    const prev = (manualSemesterCourseOrder[semKey] || []).slice();
+    const allCurrent = Array.from(new Set([...dbCodes.map(norm), ...assigned.map(c => norm(c.code))]));
+    const baseCodes = prev.length ? prev.slice() : [];
+    for (const c of allCurrent) if (!baseCodes.includes(c)) baseCodes.push(c);
     const di = baseCodes.indexOf(dn);
     let ti = baseCodes.indexOf(tn);
     if (di >= 0) baseCodes.splice(di, 1);
