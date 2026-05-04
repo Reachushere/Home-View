@@ -17179,6 +17179,15 @@ export default function Dashboard() {
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
             return { ...t, classDiffDays: Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
           });
+        // Hard cap: never show more than 3 lines in the countdown bar.
+        // The render order is nextPrep (optional) -> next -> flaggedSoon -> classSoon,
+        // so consume the budget in that order.
+        const MAX_COUNTDOWN_LINES = 3;
+        const usedByPrepAndNext = (nextPrep ? 1 : 0) + (next ? 1 : 0);
+        let remaining = Math.max(0, MAX_COUNTDOWN_LINES - usedByPrepAndNext);
+        const flaggedSoonCapped = flaggedSoon.slice(0, remaining);
+        remaining = Math.max(0, remaining - flaggedSoonCapped.length);
+        const classSoonCapped = classSoon.slice(0, remaining);
         return (
           <div
             className="font-raleway"
@@ -17294,7 +17303,7 @@ export default function Dashboard() {
                     </div>
                   );
                 })()}
-                {flaggedSoon.map(ft => (
+                {flaggedSoonCapped.map(ft => (
                   <div
                     key={`flag-${ft.id}`}
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
@@ -17318,7 +17327,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 ))}
-                {classSoon.map(ct => {
+                {classSoonCapped.map(ct => {
                   const ctCourse = ct.courseName ? coursesData.courses.find(c => ct.courseName!.includes(c.name.split(' - ')[0])) : null;
                   const ctColor = ctCourse?.colorEnd || ctCourse?.color || 'rgb(0, 180, 0)';
                   return (
