@@ -2165,6 +2165,43 @@ export default function PDFReaderPage() {
     return 'linear-gradient(180deg, rgba(10, 30, 60, 0.88) 0%, rgba(30, 60, 100, 0.78) 100%)';
   })();
 
+  const _vidName = (file?.displayName || file?.originalName || rawFileName || '').toLowerCase();
+  const _vidCt = ((file as any)?.contentType || '').toLowerCase();
+  const isVideoFile = _vidCt.startsWith('video/') || /\.(mp4|m4v|mov)$/i.test(_vidName);
+  if (fileId && isVideoFile && file) {
+    const videoSrc = `/api/files/${fileId}/download`;
+    const resumeSec = Math.max(0, (file as any).lastChunkIndex || 0);
+    return (
+      <div data-testid="video-player-page" style={{ position: 'fixed', inset: 0, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+        <video
+          data-testid="video-player"
+          src={videoSrc}
+          autoPlay
+          controls
+          playsInline
+          muted={false}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+          onLoadedMetadata={(e) => {
+            const v = e.currentTarget;
+            if (resumeSec > 0 && resumeSec < v.duration - 2) v.currentTime = resumeSec;
+            v.play().catch(() => {});
+          }}
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget;
+            const sec = Math.floor(v.currentTime);
+            if (catWashFollow && fileId && sec % 10 === 0) {
+              fetch(`/api/files/${fileId}/video-progress`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ positionSec: sec, durationSec: Math.floor(v.duration || 0) }),
+              }).catch(() => {});
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col relative overflow-hidden" style={{ height: '100dvh' }}>
       <img src={tmuBgPath} alt="" className="absolute inset-0 w-full h-full object-cover" />
