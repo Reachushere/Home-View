@@ -34601,8 +34601,8 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '4px solid #1976d2' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
-                            borderRight: isSameDayET(day, new Date()) ? '3px solid rgba(25,118,210,0.6)' : undefined,
+                            borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
+                            borderRight: undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
                             minWidth: 0,
