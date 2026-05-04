@@ -16783,6 +16783,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`[AudioPrep] ===== Preparing file ${fileId}: ${file.originalName} =====`);
       const startTime = Date.now();
 
+      if (isVideoFile(file)) {
+        console.log(`[AudioPrep] File ${fileId} (${file.originalName}) is a video — no TTS prep needed, video plays directly when picked`);
+        return;
+      }
+
       let text = await extractFileText(file);
       if (!text || text.length < 20) {
         console.log(`[AudioPrep] No usable text extracted from ${file.originalName} — skipping`);
@@ -18921,6 +18926,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function extractFileText(file: any): Promise<string | null> {
     try {
+      if (isVideoFile(file)) {
+        console.log(`[ExtractText] Skipping video file ${file.originalName} — videos play directly, no TTS extraction`);
+        return null;
+      }
       if (file.extractedText) {
         console.log(`[ExtractText] Using cached text for ${file.originalName} (${file.extractedText.length} chars)`);
         return file.extractedText;
