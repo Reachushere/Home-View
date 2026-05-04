@@ -5,7 +5,7 @@ import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, S
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
-import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
+import shelfBgImage from '@assets/Bookshelf11_1777898870194.png';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
@@ -3300,7 +3300,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
       if (files && files.length > 0) {
         sortFiles(files);
         result.push({ course, files });
-      } else if (syllabusPaths[course.code]) {
+      } else {
         result.push({ course, files: [] });
       }
     });
@@ -5932,7 +5932,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 bottom: '4px',
                 transform: `translate(${labelRight}px, ${labelShift}px)`,
                 zIndex: 50,
-                left: 'calc(30% + 141px)',
+                left: 'calc(30% + 53px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
