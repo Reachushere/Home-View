@@ -3241,3 +3241,25 @@ input[type="date"].date-black-text::-webkit-calendar-picker-indicator {
   z-index: 100 !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.95) !important;
 }
+
+/* ContentEditable note editors (dashboard homework notes box + library
+   floating note) — Tailwind's preflight zeroes list-style and padding on
+   ul/ol, which made the toolbar Bullet/Numbered buttons appear broken
+   (they inserted the markup but the marker was invisible). Re-enable
+   default list rendering scoped to those two editors. */
+[data-testid="blank-canvas-notes"] ul,
+[data-testid="lib-note-editor"] ul {
+  list-style: disc outside;
+  padding-left: 1.5em;
+  margin: 0.25em 0;
+}
+[data-testid="blank-canvas-notes"] ol,
+[data-testid="lib-note-editor"] ol {
+  list-style: decimal outside;
+  padding-left: 1.75em;
+  margin: 0.25em 0;
+}
+[data-testid="blank-canvas-notes"] li,
+[data-testid="lib-note-editor"] li {
+  margin: 0.1em 0;
+}
