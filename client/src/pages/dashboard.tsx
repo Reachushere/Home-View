@@ -15314,19 +15314,15 @@ export default function Dashboard() {
                                           lastWeek={lastWeek}
                                           moduleBoxColor={(() => {
                                             const sObj: any = slotMatch?.sem;
-                                            const start = sObj && slot ? sObj[`course${slot}Color`] : null;
-                                            const end = sObj && slot ? sObj[`course${slot}ColorEnd`] : null;
-                                            if (start && end) return `linear-gradient(180deg, ${start} 0%, ${end} 100%)`;
-                                            if (start) return start;
-                                            return (c as any).moduleBoxColor || c.color || '#3b82f6';
+                                            return (sObj && slot ? sObj[`course${slot}ModuleBoxColor`] : null)
+                                              || (c as any).moduleBoxColor
+                                              || '#3b82f6';
                                           })()}
                                           readingBoxColor={(() => {
                                             const sObj: any = slotMatch?.sem;
-                                            const start = sObj && slot ? sObj[`course${slot}Color`] : null;
-                                            const end = sObj && slot ? sObj[`course${slot}ColorEnd`] : null;
-                                            if (start && end) return `linear-gradient(180deg, ${start} 0%, ${end} 100%)`;
-                                            if (start) return start;
-                                            return (c as any).readingBoxColor || c.color || '#a855f7';
+                                            return (sObj && slot ? sObj[`course${slot}ReadingBoxColor`] : null)
+                                              || (c as any).readingBoxColor
+                                              || '#a855f7';
                                           })()}
                                           onOpenWizard={(issueKey, opts) => setSemFlowWizard({ courseCode: c.code, issue: opts?.weekNum ? 'week_upload' : issueKey, step: 0, phase: 'primary', weekNum: opts?.weekNum, uploadType: opts?.uploadType })}
                                           onOpenCourseDetails={() => startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: c.name || '', certKey: c.code, semKey: expandedSemKey, openInEdit: true }))}
