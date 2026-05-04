@@ -17330,9 +17330,59 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     };
 
     // Wake TV + Nest, mute TV (audio comes from Nest only).
+    // The Samsung TV WoL alone is unreliable (Bryn reported audio played on
+    // Nest but TV never turned on) — Samsung needs HDMI-CEC from the Fire
+    // Stick to wake. Mirror the PDF flow's Fire-Stick-first wake sequence.
     await Promise.allSettled([
-      haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Video TV TurnOn'),
+      haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Video TV TurnOn (WoL)'),
       haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Video Nest TurnOn'),
+    ]);
+    try {
+      const haHdrs = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      let fireStickState = 'unknown';
+      try {
+        const fsResp = await fetch(`${haUrl}/api/states/${FIRE_STICK_ADB_ENTITY}`, { headers: haHdrs });
+        if (fsResp.ok) {
+          const fsData = await fsResp.json();
+          fireStickState = fsData?.state || 'unknown';
+        }
+      } catch {}
+      console.log(`${logPrefix} [Video] Fire Stick state: ${fireStickState}`);
+      const fsOff = fireStickState === 'off' || fireStickState === 'standby' || fireStickState === 'unavailable' || fireStickState === 'idle';
+      if (fsOff) {
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            await haServiceCall('media_player/turn_on', { entity_id: FIRE_STICK_ADB_ENTITY }, `Video FireStick TurnOn ${attempt}`);
+            console.log(`${logPrefix} [Video] Fire Stick turn_on OK (attempt ${attempt}) — CEC should wake Samsung TV`);
+            break;
+          } catch (e: any) {
+            console.error(`${logPrefix} [Video] Fire Stick turn_on attempt ${attempt}/3 failed: ${e.message}`);
+            if (attempt < 3) await new Promise(r => setTimeout(r, 2500));
+          }
+        }
+      }
+      try {
+        await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'Video FireStick WAKEUP');
+      } catch {}
+      // Give CEC a moment, then re-check Samsung TV and re-fire WoL if still off.
+      await new Promise(r => setTimeout(r, 6000));
+      try {
+        const tvResp = await fetch(`${haUrl}/api/states/${CAT_TV_ENTITY}`, { headers: haHdrs });
+        if (tvResp.ok) {
+          const tvData = await tvResp.json();
+          const tvState = tvData?.state || 'unknown';
+          console.log(`${logPrefix} [Video] Samsung TV state after CEC wake: ${tvState}`);
+          if (tvState !== 'on' && tvState !== 'playing' && tvState !== 'idle' && tvState !== 'paused') {
+            await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_TV_ENTITY }, 'Video TV WoL retry');
+            await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_WAKEUP' }, 'Video FireStick WAKEUP retry').catch(() => {});
+            await new Promise(r => setTimeout(r, 4000));
+          }
+        }
+      } catch {}
+    } catch (e: any) {
+      console.warn(`${logPrefix} [Video] TV wake sequence error (continuing): ${e.message}`);
+    }
+    await Promise.allSettled([
       haServiceCallSafe('media_player/volume_set', { entity_id: CAT_TV_ENTITY, volume_level: 0 }, 'Video TV Mute'),
       haServiceCallSafe('media_player/volume_mute', { entity_id: CAT_TV_ENTITY, is_volume_muted: true }, 'Video TV MuteFlag'),
       haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.55 }, 'Video Nest Vol'),
