@@ -28184,7 +28184,7 @@ export default function Dashboard() {
                     return now <= w2026End && ['CPPA122', 'CFNF400', 'CASL101'].includes(code.toUpperCase().replace(/\s/g, ''));
                   };
 
-                  const renderCourseRow = (semCourse: { code: string; name: string; fullName?: string; period: string }, semKey: string, totalInSem: number, coursePositionInSem: number = 0) => {
+                  const renderCourseRow = (semCourse: { code: string; name: string; fullName?: string; period: string }, semKey: string, totalInSem: number, coursePositionInSem: number = 0, orderedCodes: string[] = []) => {
                     const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
                     const currentCourse = currentCoursesMap.get(codeNorm);
                     const pastEntry = allPastEntries.get(codeNorm);
@@ -28343,6 +28343,40 @@ export default function Dashboard() {
                         >
                           <GripVertical className="w-3 h-3" strokeWidth={2.5} />
                         </span>
+                        <div className="flex-shrink-0" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', marginLeft: '-2px', marginRight: '2px' }}>
+                          <button
+                            type="button"
+                            disabled={coursePositionInSem <= 0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (coursePositionInSem <= 0) return;
+                              const above = orderedCodes[coursePositionInSem - 1];
+                              if (!above) return;
+                              reorderCourseInSemester(semKey, semCourse.code, above);
+                            }}
+                            title="Move up"
+                            data-testid={`button-move-up-course-${semCourse.code}`}
+                            style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '3px', padding: 0, width: '14px', height: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: coursePositionInSem <= 0 ? 'not-allowed' : 'pointer', opacity: coursePositionInSem <= 0 ? 0.3 : 1, color: 'rgba(255,255,255,0.85)' }}
+                          >
+                            <ChevronUp className="w-2.5 h-2.5" strokeWidth={3} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={coursePositionInSem >= (orderedCodes.length - 1)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (coursePositionInSem >= (orderedCodes.length - 1)) return;
+                              const below = orderedCodes[coursePositionInSem + 1];
+                              if (!below) return;
+                              reorderCourseInSemester(semKey, semCourse.code, below);
+                            }}
+                            title="Move down"
+                            data-testid={`button-move-down-course-${semCourse.code}`}
+                            style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '3px', padding: 0, width: '14px', height: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: coursePositionInSem >= (orderedCodes.length - 1) ? 'not-allowed' : 'pointer', opacity: coursePositionInSem >= (orderedCodes.length - 1) ? 0.3 : 1, color: 'rgba(255,255,255,0.85)' }}
+                          >
+                            <ChevronDown className="w-2.5 h-2.5" strokeWidth={3} />
+                          </button>
+                        </div>
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
                         {isSS && (ssNeedsA || ssNeedsB) ? (
                           <div style={{ display: 'flex', alignItems: 'center', width: '70px', minWidth: '70px', flexShrink: 0 }}>
@@ -28847,35 +28881,11 @@ export default function Dashboard() {
                                 })()}
                               </div>
                               <div className="p-1.5 space-y-1 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-                                {[...sem.courses].sort((a, b) => {
-                                  const isSSSem = sem.key.startsWith('ss');
-                                  const getPri = (code: string) => {
-                                    if (isSSSem) {
-                                      const va = draftCoursePlayPriority[`${sem.key}:${code}:A`] ?? coursePlayPriority[`${sem.key}:${code}:A`] ?? 0;
-                                      const vb = draftCoursePlayPriority[`${sem.key}:${code}:B`] ?? coursePlayPriority[`${sem.key}:${code}:B`] ?? 0;
-                                      return Math.min(va || 999, vb || 999) === 999 ? 0 : Math.min(va || 999, vb || 999);
-                                    }
-                                    return draftCoursePlayPriority[`${sem.key}:${code}`] ?? coursePlayPriority[`${sem.key}:${code}`] ?? 0;
-                                  };
-                                  const getSubSession = (code: string): string => {
-                                    if (!isSSSem) return '';
-                                    const va = draftCoursePlayPriority[`${sem.key}:${code}:A`] ?? coursePlayPriority[`${sem.key}:${code}:A`] ?? 0;
-                                    const vb = draftCoursePlayPriority[`${sem.key}:${code}:B`] ?? coursePlayPriority[`${sem.key}:${code}:B`] ?? 0;
-                                    if ((va || 999) <= (vb || 999)) return 'A';
-                                    return 'B';
-                                  };
-                                  const pa = getPri(a.code);
-                                  const pb = getPri(b.code);
-                                  if (pa === 0 && pb === 0) return 0;
-                                  if (pa === 0) return 1;
-                                  if (pb === 0) return -1;
-                                  if (pa !== pb) return pa - pb;
-                                  const sa = getSubSession(a.code);
-                                  const sb = getSubSession(b.code);
-                                  if (sa === 'A' && sb === 'B') return -1;
-                                  if (sa === 'B' && sb === 'A') return 1;
-                                  return 0;
-                                }).map((c, idx) => renderCourseRow(c, sem.key, sem.courses.length, idx))}
+                                {(() => {
+                                  const ordered = applyManualOrder(sem.key, sem.courses as any[]);
+                                  const orderedCodes = ordered.map((c: any) => c.code);
+                                  return ordered.map((c: any, idx: number) => renderCourseRow(c, sem.key, ordered.length, idx, orderedCodes));
+                                })()}
                                 {sem.courses.length === 0 && <div className="text-[9px] text-white/40 text-center py-3">No courses yet</div>}
                               </div>
                             </div>
