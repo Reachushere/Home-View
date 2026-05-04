@@ -16373,12 +16373,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (!codeWithNum) return 999;
 
     const abSuffix = (await isInSpringSummerHalfA()) ? 'A' : 'B';
-    const plainKey = codeWithNum;
-    if (plainKey in DEFAULT_COURSE_PRIORITY) {
-      const pri = DEFAULT_COURSE_PRIORITY[plainKey];
-      console.log(`[CoursePri] ${codeWithNum} matched DEFAULT key="${plainKey}" → priority ${pri}`);
-      return pri;
-    }
+    // NOTE: do NOT short-circuit to DEFAULT_COURSE_PRIORITY here — that bypasses
+    // the user-customised priorities loaded from disk into coursePlayPriority
+    // (which already has defaults merged in as a fallback). Bryn set PHIL=1A
+    // and Econ=1B in the UI; the old short-circuit forced Econ=1 (default) and
+    // PHIL=2 (default), so the bathroom prompt offered Econ first.
     for (const [key, priority] of Object.entries(coursePlayPriority)) {
       const parts = key.split(':');
       let keyCode: string;
@@ -19040,17 +19039,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[ExtractText] PDF extracted ${textContent.length} chars from ${file.originalName} (${pageTexts.length} pages)`);
       }
 
-      if (textContent.trim().length < 100 && (ext === 'pdf' || !ext)) {
-        console.log(`[ExtractText] Text too short (${textContent.trim().length} chars), attempting OCR for ${file.originalName}`);
+      // Measure REAL extracted text — pageTexts joined with the XPGBRKX sentinel
+      // can fool a naive textContent.trim().length check (15 empty pages → 105
+      // chars of just sentinels). That's how the bathroom-TTS bug surfaced as
+      // "Page 1, Page 2, Page 3..." with no content. Use the per-page sum.
+      const realTextLen = pageTexts.reduce((s, p) => s + (p || '').trim().length, 0);
+      if (realTextLen < 100 && (ext === 'pdf' || !ext)) {
+        console.log(`[ExtractText] Real text too short (${realTextLen} chars across ${pageTexts.length} pages — likely image-only PDF), attempting OCR for ${file.originalName}`);
         try {
           const ocrText = await ocrExtractFromPdf(buffer, file.originalName);
-          if (ocrText && ocrText.trim().length > textContent.trim().length) {
+          if (ocrText && ocrText.trim().length > realTextLen) {
             console.log(`[ExtractText] OCR extracted ${ocrText.length} chars for ${file.originalName}`);
             textContent = ocrText;
             pageTexts = [textContent];
+          } else {
+            // OCR also produced nothing — mark this file extraction-failed so
+            // the bathroom picker skips it instead of "playing" page numbers.
+            console.warn(`[ExtractText] OCR yielded no useful text for ${file.originalName} — marking extraction-failed so it won't be picked for playback`);
+            try { extractionFailedFileIds.add(file.id); } catch {}
+            return null;
           }
         } catch (ocrErr: any) {
           console.error(`[ExtractText] OCR failed for ${file.originalName}: ${ocrErr.message}`);
+          try { extractionFailedFileIds.add(file.id); } catch {}
+          return null;
         }
       }
 
