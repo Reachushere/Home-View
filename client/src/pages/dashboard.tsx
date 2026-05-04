@@ -28060,28 +28060,32 @@ export default function Dashboard() {
                         data-testid={`school-course-${semCourse.code}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
-                        {isSS ? (
+                        {isSS && (ssNeedsA || ssNeedsB) ? (
                           <div style={{ display: 'flex', alignItems: 'center', width: '70px', minWidth: '70px', flexShrink: 0 }}>
-                            <PrioritySelect
-                              priorityKey={priorityKeyA}
-                              initialValue={currentPriorityA}
-                              totalInSem={totalInSem}
-                              draftRef={draftCoursePlayPriorityRef}
-                              courseCode={semCourse.code}
-                              usedValues={getUsedForSuffix('A')}
-                              onPriorityChange={handlePriorityChange}
-                              suffix="A"
-                            />
-                            <PrioritySelect
-                              priorityKey={priorityKeyB}
-                              initialValue={currentPriorityB}
-                              totalInSem={totalInSem}
-                              draftRef={draftCoursePlayPriorityRef}
-                              courseCode={semCourse.code}
-                              usedValues={getUsedForSuffix('B')}
-                              onPriorityChange={handlePriorityChange}
-                              suffix="B"
-                            />
+                            {ssNeedsA && (
+                              <PrioritySelect
+                                priorityKey={priorityKeyA}
+                                initialValue={currentPriorityA}
+                                totalInSem={totalInSem}
+                                draftRef={draftCoursePlayPriorityRef}
+                                courseCode={semCourse.code}
+                                usedValues={getUsedForSuffix('A')}
+                                onPriorityChange={handlePriorityChange}
+                                suffix="A"
+                              />
+                            )}
+                            {ssNeedsB && (
+                              <PrioritySelect
+                                priorityKey={priorityKeyB}
+                                initialValue={currentPriorityB}
+                                totalInSem={totalInSem}
+                                draftRef={draftCoursePlayPriorityRef}
+                                courseCode={semCourse.code}
+                                usedValues={getUsedForSuffix('B')}
+                                onPriorityChange={handlePriorityChange}
+                                suffix="B"
+                              />
+                            )}
                           </div>
                         ) : (
                           <PrioritySelect
