@@ -629,7 +629,7 @@ async function pollStatus(timeout){
 
       const semTypeVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -761,7 +761,7 @@ async function pollStatus(timeout){
 
       const semTypeVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -892,7 +892,7 @@ async function pollStatus(timeout){
       const isSpSuRename = (semester.semesterType || '').toLowerCase().includes('spring') || (semester.semesterType || '').toLowerCase().includes('summer');
       const semFolderVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -1005,7 +1005,7 @@ async function pollStatus(timeout){
       const year = semester.semesterYear || new Date().getFullYear();
       const cleanupSemVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -1180,7 +1180,7 @@ async function pollStatus(timeout){
 
       const now = new Date();
       const currentYear = now.getFullYear();
-      const semesterTypes = ['Winter', 'Spring & Summer', 'Fall'];
+      const semesterTypes = ['Winter', 'Spring-Summer', 'Fall'];
       const existingKeys = new Set(
         (allSemesters || []).map((s: any) => {
           const semType = getSemesterTypeFolder(s.semesterType);
@@ -1224,7 +1224,7 @@ async function pollStatus(timeout){
 
       const now = new Date();
       const currentYear = now.getFullYear();
-      const semesterTypes = ['Winter', 'Spring & Summer', 'Fall'];
+      const semesterTypes = ['Winter', 'Spring-Summer', 'Fall'];
       const existingKeys = new Set(
         (allSemesters || []).map((s: any) => {
           const semType = getSemesterTypeFolder(s.semesterType);
@@ -1298,7 +1298,7 @@ async function pollStatus(timeout){
 
       const renameWeekSemVariants = (() => {
         const t = (targetSemester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
