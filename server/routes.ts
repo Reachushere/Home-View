@@ -3580,6 +3580,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const assignmentsPaths: Record<string, string> = assignmentsRow.length ? JSON.parse(assignmentsRow[0].value || '{}') : {};
       const textbookRow = await db.select().from(appState).where(eq(appState.key, 'courseTextbookPaths')).limit(1);
       const textbookPaths: Record<string, string> = textbookRow.length ? JSON.parse(textbookRow[0].value || '{}') : {};
+      // Per-week Module/Reading folder path overrides (set from the
+      // pencil on each W# cell in the automation pipeline). Keys are
+      // `${courseCode}|${kind}|${week}`.
+      const weekFolderRow = await db.select().from(appState).where(eq(appState.key, 'courseWeekFolderPaths')).limit(1);
+      const weekFolderPaths: Record<string, string> = weekFolderRow.length ? JSON.parse(weekFolderRow[0].value || '{}') : {};
 
       const courses: {
         code: string;
@@ -3667,6 +3672,43 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             }
             totalTtsNeeded++;
           }
+        }
+
+        // ────────── Honor per-week folder path overrides ──────────
+        // For any week that the user has manually pointed at a custom
+        // OneDrive folder, list that folder and use its real file count
+        // (PDFs / docs / pptx / etc.) so the FILE dot turns green even
+        // before the next library sync picks up the new path.
+        try {
+          const { listOneDriveFolderChildren } = await import("./onedrive");
+          const codeKeys = [code, code.toUpperCase(), cleanCode];
+          for (let w = 1; w <= numberOfWeeks; w++) {
+            for (const kind of ['module', 'reading'] as const) {
+              let overridePath: string | null = null;
+              for (const ck of codeKeys) {
+                const k = `${ck}|${kind}|${w}`;
+                if (weekFolderPaths[k]) { overridePath = weekFolderPaths[k]; break; }
+              }
+              if (!overridePath) continue;
+              const bucket = kind === 'module' ? moduleWeeks : readingWeeks;
+              if (bucket[w] && bucket[w].count > 0) continue; // already counted via local index
+              try {
+                const children = await listOneDriveFolderChildren(overridePath);
+                const fileCount = (children || []).filter((c: any) => !c.folder && /\.(pdf|docx?|pptx?|epub|mp3|mp4|m4a|wav|txt)$/i.test(c.name || '')).length;
+                if (fileCount > 0) {
+                  if (!bucket[w]) bucket[w] = { count: 0, ttsReady: 0 };
+                  bucket[w].count = fileCount;
+                  if (kind === 'module') totalModules += fileCount;
+                  else totalReadings += fileCount;
+                  totalTtsNeeded += fileCount;
+                }
+              } catch (e: any) {
+                console.log(`[Health Check] Week-folder override probe failed for ${code} ${kind} W${w}: ${e?.message}`);
+              }
+            }
+          }
+        } catch (e: any) {
+          console.log(`[Health Check] Week-folder override loop failed for ${code}:`, e?.message);
         }
 
         const moduleFolderKey = `course${i}ModuleFolder`;
