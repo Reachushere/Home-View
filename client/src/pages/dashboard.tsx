@@ -33333,7 +33333,8 @@ export default function Dashboard() {
                     const isDayAfterToday = startOfDayET(day) > stableToday && !isDayToday;
                     const isDayBeforeToday = !isDayToday && startOfDayET(day) < stableToday;
                     const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
-                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.75) : dimColor(course.bg, 0.375);
+                    const courseRowBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(courseRowBaseBg, 0.75) : dimColor(courseRowBaseBg, 0.375);
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
