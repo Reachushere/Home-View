@@ -848,6 +848,22 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   pencilTitle="Update OneDrive path for weekly module folders"
                   pencilInitialValue={moduleFolder || ''}
                   pencilPlaceholder="/path/to/module/root"
+                  onPencilClick={() => {
+                    const cur = moduleFolder || '';
+                    const v = window.prompt(
+                      `OneDrive path for Module Folder root (${course.code})\n\n` +
+                      `Example: /School/1. TMU/${course.code}/Week N/Module\n\n` +
+                      `Current: ${cur || '(none)'}\n\n` +
+                      `Paste the full OneDrive path below and click OK.`,
+                      cur
+                    );
+                    if (v === null) return;
+                    const trimmed = v.trim();
+                    if (!trimmed || trimmed === cur) return;
+                    renameSemFolder('moduleFolder', trimmed)
+                      .then(() => window.alert(`Saved Module Folder path: ${trimmed}`))
+                      .catch((e: any) => window.alert(`Save failed: ${e?.message || e}`));
+                  }}
                   onPencilSubmit={(v) => renameSemFolder('moduleFolder', v)}
                   onClick={() => onOpenWizard('module_folder' as any)}
                   width={170}
@@ -900,6 +916,22 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   pencilTitle="Update OneDrive path for weekly reading folders"
                   pencilInitialValue={readingFolder || ''}
                   pencilPlaceholder="/path/to/reading/root"
+                  onPencilClick={() => {
+                    const cur = readingFolder || '';
+                    const v = window.prompt(
+                      `OneDrive path for Reading Folder root (${course.code})\n\n` +
+                      `Example: /School/1. TMU/${course.code}/Week N/Reading\n\n` +
+                      `Current: ${cur || '(none)'}\n\n` +
+                      `Paste the full OneDrive path below and click OK.`,
+                      cur
+                    );
+                    if (v === null) return;
+                    const trimmed = v.trim();
+                    if (!trimmed || trimmed === cur) return;
+                    renameSemFolder('readingFolder', trimmed)
+                      .then(() => window.alert(`Saved Reading Folder path: ${trimmed}`))
+                      .catch((e: any) => window.alert(`Save failed: ${e?.message || e}`));
+                  }}
                   onPencilSubmit={(v) => renameSemFolder('readingFolder', v)}
                   onClick={() => onOpenWizard('reading_folder' as any)}
                   width={170}
@@ -1214,6 +1246,22 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               pencilTitle={`Set OneDrive path for ${item.label}`}
               pencilInitialValue={item.currentPath}
               pencilPlaceholder={item.placeholder}
+              onPencilClick={() => {
+                const cur = item.currentPath || '';
+                const v = window.prompt(
+                  `OneDrive path for ${item.label} (${course.code})\n\n` +
+                  `Example: ${item.placeholder}\n\n` +
+                  `Current: ${cur || '(none)'}\n\n` +
+                  `Paste the full OneDrive path below and click OK.`,
+                  cur
+                );
+                if (v === null) return;
+                const trimmed = v.trim();
+                if (!trimmed || trimmed === cur) return;
+                setSidePath(item.kind, trimmed)
+                  .then(() => window.alert(`Saved ${item.label}: ${trimmed}\n\nGive it a few seconds, then refresh — the dot should turn green if OneDrive sees the folder.`))
+                  .catch((e: any) => window.alert(`Save failed for ${item.label}: ${e?.message || e}`));
+              }}
               onPencilSubmit={(v) => setSidePath(item.kind, v)}
               testId={`pipeline-side-${course.code.toLowerCase()}-${item.label.toLowerCase().replace(/\s/g,'-')}`}
             />
