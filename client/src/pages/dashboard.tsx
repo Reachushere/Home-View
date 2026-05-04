@@ -339,6 +339,152 @@ function getKnownCourseCodes(): string[] {
   }
 }
 
+// Calendar-launched video player. Mirrors the BookReaderOverlay book-spine
+// frame, but uses a native HTML5 <video> element (with built-in pause / scrub /
+// volume) instead of the PDF iframe. Resumes from the file's saved
+// lastChunkIndex (seconds), saves position every 5s + on close, marks the file
+// listened when watched to within 5s of the end, and offers a "Cast to TV"
+// button that triggers the same TV+Nest broadcast flow the bathroom uses.
+function CalendarVideoOverlay({ fileId, courseCode, title, color, resumeSec, durationSec, onClose }: { fileId: number; courseCode: string; title: string; color: string; resumeSec: number; durationSec: number; onClose: () => void }) {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const lastSavedSecRef = React.useRef<number>(resumeSec || 0);
+  const durationSecRef = React.useRef<number>(durationSec || 0);
+  const [casting, setCasting] = React.useState(false);
+  const [stopping, setStopping] = React.useState(false);
+  const cleanTitle = (title || '').replace(/\.(pdf|mp4|m4v|mov)$/i, '');
+
+  const saveProgress = React.useCallback(async (extra?: Record<string, any>) => {
+    try {
+      const v = videoRef.current;
+      const pos = v ? Math.max(0, Math.round(v.currentTime)) : lastSavedSecRef.current;
+      const dur = v && Number.isFinite(v.duration) ? Math.round(v.duration) : durationSecRef.current;
+      const body: any = { lastChunkIndex: pos, ...(dur > 0 ? { totalChunks: dur } : {}), ...(extra || {}) };
+      await fetch(`/api/files/${fileId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      lastSavedSecRef.current = pos;
+    } catch {}
+  }, [fileId]);
+
+  const handleClose = React.useCallback(async () => {
+    const v = videoRef.current;
+    if (v) {
+      try { v.pause(); } catch {}
+      const pos = Math.max(0, Math.round(v.currentTime));
+      const dur = Number.isFinite(v.duration) ? Math.round(v.duration) : 0;
+      if (dur > 0 && pos >= dur - 5) {
+        await saveProgress({ listened: true, lastChunkIndex: 0 });
+      } else {
+        await saveProgress();
+      }
+    }
+    onClose();
+  }, [saveProgress, onClose]);
+
+  const handleCastToTV = React.useCallback(async () => {
+    setCasting(true);
+    try {
+      const v = videoRef.current;
+      if (v) {
+        try { v.pause(); } catch {}
+        await saveProgress();
+      }
+      const r = await fetch(`/api/files/${fileId}/play-on-tv`, { method: 'POST' });
+      if (!r.ok) throw new Error(await r.text().catch(() => 'failed'));
+    } catch (e) {
+      console.error('[Calendar Cast] failed', e);
+    } finally {
+      setCasting(false);
+    }
+  }, [fileId, saveProgress]);
+
+  const handleStopTV = React.useCallback(async () => {
+    setStopping(true);
+    try { await fetch(`/api/cat-wash/stop`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepOpen: false }) }); } catch {}
+    setStopping(false);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      const v = videoRef.current;
+      if (v && Math.abs(v.currentTime - lastSavedSecRef.current) >= 1) {
+        const pos = Math.max(0, Math.round(v.currentTime));
+        try { navigator.sendBeacon?.(`/api/files/${fileId}`, new Blob([JSON.stringify({ lastChunkIndex: pos })], { type: 'application/json' })); } catch {}
+      }
+    };
+  }, [fileId]);
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 999998, backgroundColor: 'rgba(0,0,0,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      data-testid="video-overlay"
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+      onKeyDown={(e) => { if (e.key === 'Escape') handleClose(); }}
+      tabIndex={-1}
+      ref={(el) => el?.focus()}
+    >
+      <div style={{ display: 'flex', width: '92vw', height: '88vh', maxWidth: '1800px', maxHeight: '900px', filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.6))' }}>
+        <div style={{ width: '32px', flexShrink: 0, background: `linear-gradient(90deg, ${color} 0%, rgba(0,0,0,0.5) 45%, ${color} 85%, rgba(0,0,0,0.3) 100%)`, borderRadius: '6px 0 0 6px', boxShadow: 'inset -4px 0 12px rgba(0,0,0,0.4), 4px 0 8px rgba(0,0,0,0.2)', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-90deg)', color: '#D4AF37', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 3px rgba(0,0,0,0.6)', opacity: 0.8 }}>{courseCode}</div>
+        </div>
+        <div style={{ flex: 1, backgroundColor: '#111', borderRadius: '0 8px 8px 0', overflow: 'hidden', position: 'relative', boxShadow: '6px 6px 24px rgba(0,0,0,0.4)' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '36px', background: 'linear-gradient(180deg, rgba(180,140,80,0.20) 0%, rgba(180,140,80,0.08) 100%)', borderBottom: '1px solid rgba(180,140,80,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px 0 16px', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>{courseCode}</span>
+              <span style={{ fontSize: '10px', color: '#d6c79e', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cleanTitle}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={handleCastToTV}
+                disabled={casting}
+                style={{ background: casting ? 'rgba(100,200,255,0.15)' : 'rgba(100,200,255,0.30)', border: '1px solid rgba(100,200,255,0.4)', borderRadius: '4px', padding: '4px 10px', cursor: casting ? 'wait' : 'pointer', fontSize: '9px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                data-testid="video-cast-tv"
+                title="Play this video on the living-room TV with audio mirrored to the Nest"
+              >{casting ? 'Casting…' : 'Cast to TV'}</button>
+              <button
+                onClick={handleStopTV}
+                disabled={stopping}
+                style={{ background: 'rgba(255,80,80,0.25)', border: '1px solid rgba(255,80,80,0.4)', borderRadius: '4px', padding: '4px 10px', cursor: stopping ? 'wait' : 'pointer', fontSize: '9px', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                data-testid="video-stop-tv"
+                title="Stop any active TV / Nest playback"
+              >{stopping ? 'Stopping…' : 'Stop TV'}</button>
+              <button
+                onClick={handleClose}
+                style={{ background: 'rgba(0,0,0,0.25)', border: 'none', borderRadius: '4px', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#fff' }}
+                data-testid="video-close"
+              >×</button>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', top: '36px', left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+            <video
+              ref={videoRef}
+              src={`/api/files/${fileId}/download`}
+              controls
+              autoPlay
+              playsInline
+              onLoadedMetadata={(e) => {
+                const v = e.currentTarget;
+                if (Number.isFinite(v.duration)) durationSecRef.current = Math.round(v.duration);
+                if (resumeSec > 0 && resumeSec < (v.duration || Infinity) - 1) {
+                  try { v.currentTime = resumeSec; } catch {}
+                }
+              }}
+              onTimeUpdate={(e) => {
+                const v = e.currentTarget;
+                const pos = Math.round(v.currentTime);
+                if (Math.abs(pos - lastSavedSecRef.current) >= 5) {
+                  saveProgress();
+                }
+              }}
+              onEnded={() => { saveProgress({ listened: true, lastChunkIndex: 0 }); }}
+              style={{ maxWidth: '100%', maxHeight: '100%', background: '#000' }}
+              data-testid="video-element"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -1200,6 +1346,7 @@ export default function Dashboard() {
     if (val) setForceDesktop(true);
     setBookReaderOverlayRaw(val);
   }, []);
+  const [videoOverlay, setVideoOverlay] = useState<{ fileId: number; courseCode: string; title: string; color: string; resumeSec: number; durationSec: number } | null>(null);
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
   const [hwFileTooltip, setHwFileTooltip] = useState<{ key: string; text: string; x: number; y: number } | null>(null);
@@ -15666,6 +15813,18 @@ export default function Dashboard() {
             </div>
           </div>
         </div>,
+        document.body
+      )}
+      {videoOverlay && createPortal(
+        <CalendarVideoOverlay
+          fileId={videoOverlay.fileId}
+          courseCode={videoOverlay.courseCode}
+          title={videoOverlay.title}
+          color={videoOverlay.color}
+          resumeSec={videoOverlay.resumeSec}
+          durationSec={videoOverlay.durationSec}
+          onClose={() => { setVideoOverlay(null); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); }}
+        />,
         document.body
       )}
       {/* Background photo layer - always shown when set, behind overlay */}
@@ -33850,10 +34009,33 @@ export default function Dashboard() {
                       const unreadFile = filesForType.find(f => !f.listened);
                       const targetFile = unreadFile || filesForType[0];
                       if (targetFile) {
+                        const tfName = (targetFile.displayName || targetFile.originalName || '').toLowerCase();
+                        const tfCt = ((targetFile as any).contentType || '').toLowerCase();
+                        const isVideo = tfCt.startsWith('video/') || tfName.endsWith('.mp4') || tfName.endsWith('.m4v') || tfName.endsWith('.mov');
+                        const fileName = targetFile.displayName || targetFile.originalName || fileType;
+                        if (isVideo) {
+                          setBookAnimState({
+                            isOpen: true,
+                            courseCode,
+                            title: fileName,
+                            color: courseHexColor,
+                            onDone: () => {
+                              setBookAnimState(null);
+                              setVideoOverlay({
+                                fileId: targetFile.id as any,
+                                courseCode,
+                                title: fileName,
+                                color: courseHexColor,
+                                resumeSec: (targetFile as any).lastChunkIndex || 0,
+                                durationSec: (targetFile as any).totalChunks || 0,
+                              });
+                            },
+                          });
+                          return;
+                        }
                         const readerUrl = targetFile.objectPath?.startsWith('http')
                           ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(targetFile.objectPath || '')}&name=${encodeURIComponent(targetFile.displayName || targetFile.originalName)}&autoplay=1`
                           : `/pdf-reader/${targetFile.id}?autoplay=1`;
-                        const fileName = targetFile.displayName || targetFile.originalName || fileType;
                         setBookAnimState({
                           isOpen: true,
                           courseCode,
