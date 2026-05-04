@@ -449,11 +449,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const fullTitle = rawFullTitle;
-  const title = truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
+  const title = truncateSpineTitle(rawFullTitle, 60, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
   const maxTextHeight = bookHeight - 56;
   const liftedTextHeight = maxTextHeight + 30;
   const expandedFontSize = Math.max(4, Math.min(10, Math.floor(liftedTextHeight / (expandedTitle.length * 0.85))));
+  const fittedTitleFontSize = Math.max(6, Math.min(13, Math.floor(maxTextHeight / Math.max(1, title.length * 0.58))));
 
   const cleanedExpanded = truncateSpineTitle(fullTitle, 80, !!file.displayName && file.displayName !== file.originalName);
   const singleLineFits = cleanedExpanded.length * 0.85 * 7 <= liftedTextHeight;
@@ -536,17 +537,9 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
             color: 'rgba(255,255,255,0.85)',
             textShadow: '0 1px 2px rgba(0,0,0,0.7)',
           }}>R</span>
-          <span style={{
-            fontSize: '5px',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.65)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-            letterSpacing: '0.2px',
-            whiteSpace: 'nowrap',
-          }}>Reading</span>
         </div>
         <span style={{
-          fontSize: '10px',
+          fontSize: `${Math.max(7, Math.min(13, Math.floor((horizBookWidth - 40) / Math.max(1, title.length * 0.55))))}px`,
           fontWeight: 600,
           color: '#ffffff',
           textShadow: '0 1px 2px rgba(0,0,0,0.7)',
@@ -651,16 +644,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           }}>
             R
           </span>
-          <span style={{
-            fontSize: '5px',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.65)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-            letterSpacing: '0.2px',
-            whiteSpace: 'nowrap',
-          }}>
-            Reading
-          </span>
         </div>
       )}
       <span
@@ -709,7 +692,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : '10px'),
+          fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : `${fittedTitleFontSize}px`),
           fontWeight: 700,
           color: '#e8dcc4',
           textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
