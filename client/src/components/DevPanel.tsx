@@ -167,7 +167,9 @@ export function DevPanel({ plainMode = false }: { plainMode?: boolean } = {}) {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")) {
         e.preventDefault();
-        setOpen(o => !o);
+        // Bryn wants Ctrl+Shift+D to open the full /dev page (DevPlainPage),
+        // not this floating panel overlay (which she finds non-functional).
+        try { window.location.href = "/dev"; } catch {}
         return;
       }
       if (e.shiftKey && e.altKey && e.key.startsWith("Arrow")) {
