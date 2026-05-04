@@ -688,7 +688,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: fileType === 'module' ? '13px' : `${isLifted ? expandedFontSize : Math.max(5, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.78))))}px`,
+          fontSize: fileType === 'module' ? '13px' : `${isLifted ? expandedFontSize : (fileType === 'reading' ? Math.max(3, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.62)))) : Math.max(5, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.78)))))}px`,
           fontWeight: 700,
           color: '#e8dcc4',
           textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
@@ -5828,7 +5828,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         ref={scrollRef}
         style={{
           position: 'absolute',
-          top: '140px',
+          top: '144px',
           left: 0,
           right: 0,
           bottom: 0,
