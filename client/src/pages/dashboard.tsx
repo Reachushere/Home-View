@@ -3795,6 +3795,60 @@ export default function Dashboard() {
     saveSemesterAssignments(updated);
   };
   const dragCourseRef = useRef<{ code: string; fromSemKey: string } | null>(null);
+  const [manualSemesterCourseOrder, setManualSemesterCourseOrder] = useState<Record<string, string[]>>(() => {
+    const saved = localStorage.getItem('manualSemesterCourseOrder');
+    if (saved) { try { return JSON.parse(saved); } catch {} }
+    return {};
+  });
+  const saveManualSemesterCourseOrder = (order: Record<string, string[]>) => {
+    setManualSemesterCourseOrder(order);
+    localStorage.setItem('manualSemesterCourseOrder', JSON.stringify(order));
+    saveDegreeToServer('manualSemesterCourseOrder', order);
+  };
+  const applyManualOrder = <T extends { code: string }>(semKey: string, list: T[]): T[] => {
+    const order = manualSemesterCourseOrder[semKey];
+    if (!order || order.length === 0) return list;
+    const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
+    return [...list].sort((a, b) => {
+      const ia = order.indexOf(norm(a.code));
+      const ib = order.indexOf(norm(b.code));
+      if (ia < 0 && ib < 0) return 0;
+      if (ia < 0) return 1;
+      if (ib < 0) return -1;
+      return ia - ib;
+    });
+  };
+  const reorderCourseInSemester = (semKey: string, draggedCode: string, targetCode: string) => {
+    const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
+    const dn = norm(draggedCode);
+    const tn = norm(targetCode);
+    if (!dn || !tn || dn === tn) return;
+    const assigned = semesterCourseAssignments[semKey] || [];
+    const dbSem = (allSemesterSettingsRef.current || []).find((s: any) => {
+      const yearMatch = (s.semesterName || '').match(/\d{4}/);
+      const semYear = yearMatch ? yearMatch[0] : '';
+      const t = s.semesterType || '';
+      const k = t.startsWith('spring_summer') ? `ss${semYear}` : t === 'fall' ? `f${semYear}` : t === 'winter' ? `w${semYear}` : '';
+      return k === semKey;
+    });
+    const dbCodes: string[] = [];
+    if (dbSem) {
+      for (let i = 1; i <= 6; i++) {
+        const c = ((dbSem as any)[`course${i}Code`] || '').trim();
+        if (c) dbCodes.push(c);
+      }
+    }
+    const baseCodes = (manualSemesterCourseOrder[semKey] && manualSemesterCourseOrder[semKey].length)
+      ? manualSemesterCourseOrder[semKey].slice()
+      : Array.from(new Set([...dbCodes.map(norm), ...assigned.map(c => norm(c.code))]));
+    const di = baseCodes.indexOf(dn);
+    let ti = baseCodes.indexOf(tn);
+    if (di >= 0) baseCodes.splice(di, 1);
+    ti = baseCodes.indexOf(tn);
+    if (ti < 0) baseCodes.push(dn);
+    else baseCodes.splice(ti, 0, dn);
+    saveManualSemesterCourseOrder({ ...manualSemesterCourseOrder, [semKey]: baseCodes });
+  };
   const [courseFolderLinks, setCourseFolderLinks] = useState<Record<string, { weeksPath?: string; modulePath?: string; readingPath?: string }>>(() => {
     const saved = localStorage.getItem('courseFolderLinks');
     if (saved) { try { return JSON.parse(saved); } catch {} }
@@ -6452,6 +6506,13 @@ export default function Dashboard() {
           setSemesterCourseAssignments(prev => {
             const merged = { ...prev, ...data.semesterCourseAssignments };
             localStorage.setItem('semesterCourseAssignments', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.manualSemesterCourseOrder) {
+          setManualSemesterCourseOrder(prev => {
+            const merged = { ...prev, ...data.manualSemesterCourseOrder };
+            localStorage.setItem('manualSemesterCourseOrder', JSON.stringify(merged));
             return merged;
           });
         }
@@ -28049,6 +28110,26 @@ export default function Dashboard() {
                           e.dataTransfer.effectAllowed = 'move';
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = '0.5';
                         }}
+                        onDragOver={(e) => {
+                          const drag = dragCourseRef.current;
+                          if (!drag || drag.fromSemKey !== semKey || drag.code === semCourse.code) return;
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.dataTransfer.dropEffect = 'move';
+                          if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = 'inset 0 0 0 2px rgba(96,165,250,0.9)';
+                        }}
+                        onDragLeave={(e) => {
+                          if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = '';
+                        }}
+                        onDrop={(e) => {
+                          const drag = dragCourseRef.current;
+                          if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.boxShadow = '';
+                          if (!drag || drag.fromSemKey !== semKey || drag.code === semCourse.code) return;
+                          e.preventDefault();
+                          e.stopPropagation();
+                          reorderCourseInSemester(semKey, drag.code, semCourse.code);
+                          dragCourseRef.current = null;
+                        }}
                         onDragEnd={(e) => {
                           if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = '1';
                           dragCourseRef.current = null;
@@ -32695,7 +32776,7 @@ export default function Dashboard() {
                       }
                     }
                   }
-                  const courses = dbSemForKey ? dbCourses : assignedCourses;
+                  const courses = applyManualOrder(semKey, (dbSemForKey ? dbCourses : assignedCourses) as any[]);
                   for (const sc of courses) {
                     if (!sc.code) continue;
                     const codeNorm = sc.code.replace(/\s/g, '').toUpperCase();
@@ -32777,39 +32858,11 @@ export default function Dashboard() {
                   }
                 }
                 activeSemKeysRef.current = [...new Set(allDisplayCourses.map(c => c._semKey).filter(Boolean))];
-                const filteredCourses = [...allDisplayCourses].sort((a, b) => {
-                  const getCode = (c: any) => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
-                  const getSemKey = (c: any) => c._semKey || '';
-                  const semKeyA = getSemKey(a);
-                  const semKeyB = getSemKey(b);
-                  const getPri = (semKey: string, code: string) => {
-                    const direct = coursePlayPriority[`${semKey}:${code}`];
-                    if (direct && direct > 0) return direct;
-                    const withA = coursePlayPriority[`${semKey}:${code}:A`];
-                    if (withA && withA > 0) return withA;
-                    const withB = coursePlayPriority[`${semKey}:${code}:B`];
-                    if (withB && withB > 0) return withB;
-                    return 0;
-                  };
-                  const priA = getPri(semKeyA, getCode(a));
-                  const priB = getPri(semKeyB, getCode(b));
-                  if (priA === 0 && priB === 0) return 0;
-                  if (priA === 0) return 1;
-                  if (priB === 0) return -1;
-                  if (priA !== priB) return priA - priB;
-                  const getSubSess = (semKey: string, code: string): string => {
-                    if (!semKey.startsWith('ss')) return '';
-                    const va = coursePlayPriority[`${semKey}:${code}:A`] ?? 0;
-                    const vb = coursePlayPriority[`${semKey}:${code}:B`] ?? 0;
-                    if ((va || 999) <= (vb || 999)) return 'A';
-                    return 'B';
-                  };
-                  const ssA = getSubSess(semKeyA, getCode(a));
-                  const ssB = getSubSess(semKeyB, getCode(b));
-                  if (ssA === 'A' && ssB === 'B') return -1;
-                  if (ssA === 'B' && ssB === 'A') return 1;
-                  return 0;
-                });
+                // Calendar row order follows the manual drag-reorder of course
+                // rows in the Semesters & Classes page (insertion order from
+                // allDisplayCourses, which was built per-semKey using
+                // applyManualOrder). Playback priority no longer drives this.
+                const filteredCourses = [...allDisplayCourses];
                 const allKnownCodes = [
                   ...Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase()),
                   ...allDisplayCourses.map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || ''),
