@@ -17373,8 +17373,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (!file) return false;
     const ct = (file.contentType || '').toLowerCase();
     if (ct.startsWith('video/')) return true;
-    const name = (file.originalName || file.displayName || '').toLowerCase();
-    return name.endsWith('.mp4') || name.endsWith('.m4v') || name.endsWith('.mov');
+    // Check ALL name-bearing fields (not just originalName/displayName) —
+    // OneDrive sync sometimes leaves contentType null AND strips the
+    // extension off displayName, but objectPath always carries the real
+    // storage path with the extension intact. Without this, an mp4 module
+    // gets routed to /pdf-reader/{id} and the TV shows a blank PDF page.
+    const VIDEO_EXTS = ['.mp4', '.m4v', '.mov', '.mkv', '.webm', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.3gp'];
+    const candidates = [file.originalName, file.displayName, file.objectPath, file.folder]
+      .filter(Boolean)
+      .map((s: string) => s.toLowerCase());
+    for (const c of candidates) {
+      for (const ext of VIDEO_EXTS) {
+        if (c.endsWith(ext) || c.includes(`${ext}?`) || c.includes(`${ext}/`)) return true;
+      }
+    }
+    return false;
   }
 
   function stopVideoPositionPolling() {
