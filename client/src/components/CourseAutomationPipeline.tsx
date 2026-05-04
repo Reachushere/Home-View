@@ -927,23 +927,54 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                 />
               </div>
 
-              {/* ───── Right arm — drops from top H-bus down past the
-                   module row + module TTS strip and lands on the TOP of
-                   the Reading Folder NodeBox (right side chip of the
-                   reading row). Aligned with the NodeBox horizontal
-                   centre (170px wide, sitting flush against the wrapper's
-                   right content edge). */}
-              <div style={{
-                position: 'absolute',
-                right: 'calc(4% + 85px)',
-                top: ARM_TOP,
-                width: 2,
-                height: ARM_HEIGHT,
-                background: STATUS_COLOR[readingFolderStatus],
-                boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}`,
-                pointerEvents: 'none',
-                transform: 'translateX(-1px)',
-              }} />
+              {/* ───── Right arm — drops down OUTSIDE the cards in the
+                   right-gutter (so it never cuts through a week cell like
+                   W7), then bends LEFT and drops into the TOP of the
+                   Reading Folder NodeBox (right-side chip, 170px wide,
+                   centre is 4% + 85px from wrapper right edge). ───── */}
+              {(() => {
+                const COLOR = STATUS_COLOR[readingFolderStatus];
+                const GLOW = STATUS_GLOW[readingFolderStatus];
+                const BEND_Y = ARM_TOP + ARM_HEIGHT - PRE_READ_SPLIT_H - 2;
+                return (
+                  <>
+                    {/* vertical drop in the right-gutter */}
+                    <div style={{
+                      position: 'absolute',
+                      right: 12,
+                      top: ARM_TOP,
+                      width: 2,
+                      height: BEND_Y - ARM_TOP + 2,
+                      background: COLOR,
+                      boxShadow: `0 0 6px ${GLOW}`,
+                      pointerEvents: 'none',
+                    }} />
+                    {/* horizontal turn into the chip centre */}
+                    <div style={{
+                      position: 'absolute',
+                      right: 12,
+                      top: BEND_Y,
+                      height: 2,
+                      width: 'calc(4% + 85px - 12px)',
+                      background: COLOR,
+                      boxShadow: `0 0 6px ${GLOW}`,
+                      pointerEvents: 'none',
+                    }} />
+                    {/* short drop into Reading Folder chip top */}
+                    <div style={{
+                      position: 'absolute',
+                      right: 'calc(4% + 85px)',
+                      top: BEND_Y,
+                      width: 2,
+                      height: PRE_READ_SPLIT_H + 2,
+                      background: COLOR,
+                      boxShadow: `0 0 6px ${GLOW}`,
+                      pointerEvents: 'none',
+                      transform: 'translateX(-1px)',
+                    }} />
+                  </>
+                );
+              })()}
             </div>
           );
         })()}
