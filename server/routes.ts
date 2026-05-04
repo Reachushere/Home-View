@@ -25880,7 +25880,78 @@ document.body.removeChild(a);
   app.get("/api/syllabus/paths", async (_req, res) => {
     try {
       const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
-      const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+      const paths: Record<string, string> = row.length > 0 ? JSON.parse(row[0].value) : {};
+      // Merge OneDrive-discovered Syllabus PDFs for courses in the active
+      // semester so the in-reader "Syllabus" button works without requiring a
+      // manual upload to object storage.
+      try {
+        const cacheKey = '__syllabusPathsOdCache';
+        const g: any = globalThis as any;
+        const cached = g[cacheKey];
+        if (cached && Date.now() - cached.t < 5 * 60 * 1000) {
+          for (const [k, v] of Object.entries(cached.paths || {})) {
+            if (!paths[k] && !paths[(k as string).toUpperCase()]) paths[k] = v as string;
+          }
+        } else {
+          const { listOneDriveFolderChildren } = await import("./onedrive");
+          const sem = await db.select().from(semesterSettings).where(eq(semesterSettings.isActive, true)).limit(1);
+          const matchedSem: any = sem[0];
+          if (matchedSem) {
+            const semYear = new Date(matchedSem.semesterStartDate).getFullYear();
+            const semType = String(matchedSem.semesterType || 'winter').toLowerCase();
+            const semFolderVars = semType.includes('spring') || semType.includes('summer')
+              ? ['Spring-Summer', 'Spring_Summer', 'Spring Summer']
+              : semType.includes('fall') ? ['Fall'] : ['Winter'];
+            let semBasePath = '';
+            let semChildren: any[] = [];
+            for (const v of semFolderVars) {
+              const tryPath = `/School/1. TMU/Courses/${semYear}/${v}`;
+              try { semChildren = await listOneDriveFolderChildren(tryPath); semBasePath = tryPath; break; } catch {}
+            }
+            const ssBuckets = (semType.includes('spring') || semType.includes('summer'))
+              ? (semChildren || []).filter((f: any) => f.folder && /^(Spring|Summer)\s*-/.test(f.name))
+              : [];
+            const candidateParents: { path: string; children: any[] }[] = [];
+            if (ssBuckets.length > 0) {
+              for (const b of ssBuckets) {
+                try {
+                  const bp = `${semBasePath}/${b.name}`;
+                  candidateParents.push({ path: bp, children: await listOneDriveFolderChildren(bp) });
+                } catch {}
+              }
+            } else if (semBasePath) {
+              candidateParents.push({ path: semBasePath, children: semChildren || [] });
+            }
+            const odPaths: Record<string, string> = {};
+            for (let i = 1; i <= 6; i++) {
+              const code = String(matchedSem[`course${i}Code`] || '').trim();
+              if (!code) continue;
+              for (const cp of candidateParents) {
+                const matches = cp.children.filter((f: any) => f.folder && f.name.toUpperCase().startsWith(code.toUpperCase()));
+                const m = matches.length > 1 ? matches.sort((a: any, b: any) => a.name.length - b.name.length)[0] : matches[0];
+                if (!m) continue;
+                try {
+                  const courseFolderPath = `${cp.path}/${m.name}`;
+                  const subs = await listOneDriveFolderChildren(courseFolderPath);
+                  const sylSub = (subs || []).find((s: any) => s.folder && s.name.toLowerCase().startsWith('syllabus'));
+                  if (!sylSub) break;
+                  const sylFolder = `${courseFolderPath}/${sylSub.name}`;
+                  const sylKids = await listOneDriveFolderChildren(sylFolder);
+                  const sylPdf = (sylKids || []).find((f: any) => !f.folder && /\.pdf$/i.test(f.name || ''));
+                  if (sylPdf) odPaths[code.toUpperCase()] = `${sylFolder}/${sylPdf.name}`;
+                } catch {}
+                break;
+              }
+            }
+            g[cacheKey] = { t: Date.now(), paths: odPaths };
+            for (const [k, v] of Object.entries(odPaths)) {
+              if (!paths[k] && !paths[k.toLowerCase()]) paths[k] = v;
+            }
+          }
+        }
+      } catch (e: any) {
+        console.log('[Syllabus Paths] OneDrive merge failed:', e?.message);
+      }
       res.json(paths);
     } catch (err: any) {
       console.error("Error getting syllabus paths:", err);
@@ -26004,6 +26075,25 @@ document.body.removeChild(a);
     try {
       const objectPath = req.query.path as string;
       if (!objectPath) return res.status(400).json({ error: "path required" });
+
+      // OneDrive path (e.g. /School/1. TMU/Courses/2026/.../Syllabus/foo.pdf)
+      if (objectPath.startsWith('/School/') || objectPath.startsWith('/Documents/')) {
+        const { getAccessToken } = await import('./onedrive');
+        const accessToken = await getAccessToken();
+        const encoded = encodeURIComponent(objectPath).replace(/%2F/g, '/');
+        const odRes = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:${encoded}:/content`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          redirect: 'follow',
+        });
+        if (!odRes.ok) {
+          console.error(`[Syllabus View] OneDrive fetch ${odRes.status} for ${objectPath}`);
+          return res.status(odRes.status).json({ error: 'OneDrive fetch failed' });
+        }
+        const arrayBuf = await odRes.arrayBuffer();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline');
+        return res.send(Buffer.from(arrayBuf));
+      }
 
       if (objectPath.startsWith('/local-uploads/')) {
         const fs = await import("fs");
