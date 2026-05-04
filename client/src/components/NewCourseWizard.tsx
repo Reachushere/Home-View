@@ -200,7 +200,7 @@ export function NewCourseWizard({ onSave, onClose, existingSemesterType, existin
     if (data.semesterType === 'fall') defaultPath += '/Fall';
     else if (data.semesterType === 'winter') defaultPath += '/Winter';
     else if (data.semesterType === 'spring_summer') {
-      defaultPath += '/Spring & Summer';
+      defaultPath += '/Spring-Summer';
       if (data.springSummerTerm === 'first_half') defaultPath += '/Spring - First Half';
       else if (data.springSummerTerm === 'second_half') defaultPath += '/Summer - Second Half';
       else if (data.springSummerTerm === 'full') defaultPath += '/Full';
