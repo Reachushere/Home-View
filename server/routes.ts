@@ -19079,6 +19079,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[ExtractText] Inserted ${pageNum} page markers for file ${file.id}`);
       }
 
+      // SANITY CHECK: if cleaning + filtering wiped all real body content but
+      // left page markers behind, do NOT cache or play this file — otherwise
+      // the bathroom TTS reads "[Page 1] [Page 2] [Page 3]…" out loud (which
+      // is exactly what just happened to Bryn's Econ Module 1 PDF). Strip the
+      // page markers and check the remainder; if <100 chars of real text, mark
+      // extraction-failed so the picker skips it instead of playing nothing.
+      const bodyOnly = cleanedText.replace(/\[Page\s+\d+\]/g, '').trim();
+      if (bodyOnly.length < 100) {
+        console.warn(`[ExtractText] Cleaned text for ${file.originalName} is essentially empty (${bodyOnly.length} chars of body, ${cleanedText.length} total incl. page markers) — marking extraction-failed so bathroom TTS doesn't read page numbers out loud`);
+        try { extractionFailedFileIds.add(file.id); } catch {}
+        // Also clear any previously-cached bad extraction so a future code
+        // change can re-extract from scratch.
+        try { await storage.updateFile(file.id, { extractedText: '', totalChunks: 0 }); } catch {}
+        return null;
+      }
+
       if (cleanedText && file.id) {
         try {
           const chunks = Math.ceil(cleanedText.length / CHUNK_SIZE);
