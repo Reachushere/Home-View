@@ -19550,10 +19550,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     };
 
     const getCourseCodeForFile = (f: any): string => {
-      const folder = (f.folder || '').toLowerCase();
-      const name = (f.originalName || '').toLowerCase();
-      const match = folder.match(/([a-z]{3,5}\s?\d{3})/i) || name.match(/([a-z]{3,5}\s?\d{3})/i);
-      return match ? match[1].toUpperCase().replace(/\s/g, '') : 'UNKNOWN';
+      // Check ALL name-bearing fields. OneDrive sync sometimes only carries
+      // the code in the objectPath or displayName, not the folder.
+      const sources = [f.folder, f.originalName, f.displayName, f.objectPath]
+        .filter(Boolean)
+        .map((s: string) => s.toLowerCase());
+      for (const s of sources) {
+        const m = s.match(/([a-z]{3,5}\s?\d{3})/i);
+        if (m) return m[1].toUpperCase().replace(/\s/g, '');
+      }
+      return 'UNKNOWN';
     };
 
     const w = weekNumber;
@@ -19574,13 +19580,31 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const inActiveSemester = (f: any): boolean => {
       if (!activeCourseCodes) return true;
       const code = getCourseCodeForFile(f);
-      // Files MUST have a detectable course code that belongs to the current
-      // semester. Stray non-academic files (e.g. a random "how to split your
-      // code" PDF synced into a non-course folder) used to leak through when
-      // we allowed UNKNOWN — that's how a non-Phil PDF got picked instead of
-      // the Phil module video. Reject anything we can't tag to a real course.
-      if (code === 'UNKNOWN') return false;
-      return activeCourseCodes.has(code);
+      // Match active course codes both directly AND by suffix — semester
+      // settings often store "CPHL110" while OneDrive folders use just
+      // "PHL110" (or vice-versa). Allowing a 4-or-more char suffix match
+      // covers both, without letting random 3-letter junk through.
+      if (code !== 'UNKNOWN') {
+        for (const ac of activeCourseCodes) {
+          if (ac === code) return true;
+          if (ac.length >= 5 && code.length >= 4 && (ac.endsWith(code) || code.endsWith(ac))) return true;
+        }
+      }
+      // Last-chance: search every name-bearing field for any active course
+      // code as a substring (handles oddly-named folders/files where the
+      // code regex above failed entirely).
+      const blob = [f.folder, f.originalName, f.displayName, f.objectPath]
+        .filter(Boolean)
+        .join(' ')
+        .toUpperCase()
+        .replace(/\s/g, '');
+      for (const ac of activeCourseCodes) {
+        if (blob.includes(ac)) return true;
+        if (ac.length >= 5 && blob.includes(ac.replace(/^C/, ''))) return true;
+      }
+      // Truly unrecognizable — reject so stray non-course PDFs (e.g. "how
+      // to split your code") don't leak in.
+      return false;
     };
     const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w && inActiveSemester(f));
     const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
