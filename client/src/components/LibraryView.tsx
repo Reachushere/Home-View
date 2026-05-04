@@ -6,6 +6,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
 import shelfBgImage from '@assets/Bookshelf11_1777882349163.png';
+import movieIconPath from '@assets/Movie_Icon_1777887451930.png';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
@@ -659,6 +660,108 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   }
 
   const vertHandler = interceptClick || onClick;
+
+  // Video files render as a movie-card icon instead of a book spine. The icon's
+  // top white strip becomes the title bar — same click/hover/lift behaviour as
+  // a normal spine, but visually distinct so MP4s read at a glance.
+  if (isVideoFile(file)) {
+    const cardWidth = Math.max(60, Math.round(spineWidth * 2.0));
+    const aspect = 508 / 416; // movie icon native aspect (w/h)
+    const cardHeight = isLifted ? bookHeight + 30 : bookHeight;
+    const iconRenderHeight = Math.min(cardHeight, Math.round(cardWidth / aspect));
+    const titleStripHeightPct = 0.18; // top white box ≈ 18% of icon height
+    const titleStripPx = Math.max(12, Math.round(iconRenderHeight * titleStripHeightPct));
+    const titleFontPx = Math.max(7, Math.min(11, Math.floor(titleStripPx * 0.62)));
+    return (
+      <div
+        className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
+        onClick={vertHandler}
+        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); vertHandler(); }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          width: `${cardWidth}px`,
+          minWidth: '40px',
+          height: `${cardHeight}px`,
+          cursor: 'pointer',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          flexShrink: 0,
+          alignSelf: 'flex-end',
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
+          transition: 'transform 0.2s ease, filter 0.2s ease',
+          transform: isLifted ? 'translateY(-12px)' : 'none',
+          filter: isSelected ? 'drop-shadow(0 0 12px rgba(212,175,55,0.6))' : (isLifted ? 'drop-shadow(0 8px 18px rgba(0,0,0,0.55))' : 'drop-shadow(1px 1px 3px rgba(0,0,0,0.35))'),
+          ...(extraMarginLeft ? { marginLeft: `${extraMarginLeft}px` } : {}),
+        }}
+        title={file.displayName || file.originalName}
+        data-testid={`book-spine-${file.id}`}
+      >
+        <div style={{ position: 'relative', width: `${cardWidth}px`, height: `${iconRenderHeight}px` }}>
+          <img
+            src={movieIconPath}
+            alt={(file.displayName || file.originalName || 'Movie').replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
+            draggable={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          />
+          {/* Title text inside the top white box of the film icon */}
+          <div style={{
+            position: 'absolute',
+            top: '4.5%',
+            left: '6%',
+            right: '23%',
+            height: `${titleStripPx}px`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            paddingLeft: '4px',
+            paddingRight: '4px',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}>
+            <span style={{
+              fontSize: `${titleFontPx}px`,
+              fontWeight: 700,
+              color: '#000',
+              fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              width: '100%',
+              lineHeight: 1.1,
+            }} title={fullTitle}>
+              {isLifted ? expandedTitle : title}
+            </span>
+          </div>
+          <span
+            onClick={(e) => { e.stopPropagation(); onRename(file); }}
+            style={{
+              position: 'absolute',
+              top: '2px',
+              right: '2px',
+              cursor: 'pointer',
+              fontSize: '9px',
+              color: 'rgba(0,0,0,0.55)',
+              zIndex: 5,
+              lineHeight: 1,
+              padding: '1px 3px',
+            }}
+            data-testid={`btn-rename-book-${file.id}`}
+          >✎</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
