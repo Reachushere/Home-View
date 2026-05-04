@@ -17950,7 +17950,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const combinedName = `${origName} ${dispName}`;
     const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || combinedName.match(/([a-z]{3,5}\s?\d{3})/i);
     const courseCode = codeMatch ? codeMatch[1].toUpperCase().replace(/\s/g, '') : '';
-    const spokenName = TTS_COURSE_NAMES[courseCode] || '';
+    const spokenName = TTS_COURSE_NAMES[courseCode] || courseCode || '';
     const isModule = folder.includes('module') || origName.includes('module') || dispName.includes('module');
     const fileType = isModule ? 'Module' : 'Reading';
     if (spokenName) {
@@ -19561,9 +19561,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const inActiveSemester = (f: any): boolean => {
       if (!activeCourseCodes) return true;
       const code = getCourseCodeForFile(f);
-      // Files with a detectable course code must belong to the current
-      // semester. Files with no detectable code are allowed through.
-      if (code === 'UNKNOWN') return true;
+      // Files MUST have a detectable course code that belongs to the current
+      // semester. Stray non-academic files (e.g. a random "how to split your
+      // code" PDF synced into a non-course folder) used to leak through when
+      // we allowed UNKNOWN — that's how a non-Phil PDF got picked instead of
+      // the Phil module video. Reject anything we can't tag to a real course.
+      if (code === 'UNKNOWN') return false;
       return activeCourseCodes.has(code);
     };
     const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w && inActiveSemester(f));
