@@ -991,11 +991,23 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     if (classInfo.isClass && startTime && endTime) {
       const classDedup = `${classInfo.courseCode}||${dateKey}||${startTime}`;
       const allExistingTasks = await storage.getTasks();
+      // Robust dedup: match by code OR by course name appearing in either
+      // courseName/title — the canonical class task created from semester
+      // settings often uses the friendly display name (e.g. "Philosophy of
+      // Religion") with NO code prefix, so the previous split('-')[0] check
+      // never matched and we kept importing duplicates from GCal.
+      const codeLc = classInfo.courseCode.toLowerCase();
+      const fullNameLc = (courseNameMap.get(classInfo.courseCode) || '').toLowerCase();
       const alreadyHasClass = allExistingTasks.some(t => {
         if (t.type !== 'class' || t.isCompleted) return false;
-        const tCode = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
         const tDate = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
-        return tCode === classInfo.courseCode && tDate === dateKey && t.eventStartTime === startTime;
+        if (tDate !== dateKey) return false;
+        if (t.eventStartTime !== startTime) return false;
+        const cn = (t.courseName || '').toLowerCase();
+        const ti = (t.title || '').toLowerCase();
+        if (cn.includes(codeLc) || ti.includes(codeLc)) return true;
+        if (fullNameLc && (cn.includes(fullNameLc) || ti.includes(fullNameLc))) return true;
+        return false;
       });
       if (alreadyHasClass) {
         skipped++;
