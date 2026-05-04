@@ -535,15 +535,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
             fontWeight: 800,
             color: 'rgba(255,255,255,0.85)',
             textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-          }}>R</span>
-          <span style={{
-            fontSize: '5px',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.65)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-            letterSpacing: '0.2px',
-            whiteSpace: 'nowrap',
-          }}>Reading</span>
+          }}>{weekNum}</span>
         </div>
         <span style={{
           fontSize: '10px',
@@ -632,34 +624,21 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           opacity: 0.5,
         }} />
       )}
-      {fileType === 'reading' && (
+      {fileType === 'reading' && weekNum && (
         <div style={{
           position: 'absolute',
           top: '4px',
           left: '50%',
           transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
           lineHeight: 1,
         }}>
           <span style={{
-            fontSize: '9px',
+            fontSize: '14px',
             fontWeight: 800,
-            color: 'rgba(255,255,255,0.85)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            color: 'rgba(255,255,255,0.9)',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
           }}>
-            R
-          </span>
-          <span style={{
-            fontSize: '5px',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.65)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-            letterSpacing: '0.2px',
-            whiteSpace: 'nowrap',
-          }}>
-            Reading
+            {weekNum}
           </span>
         </div>
       )}
@@ -667,7 +646,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         onClick={(e) => { e.stopPropagation(); onRename(file); }}
         style={{
           position: 'absolute',
-          ...(fileType === 'module' ? { bottom: '4px' } : { top: '22px' }),
+          ...(fileType === 'module' ? { bottom: '4px' } : { top: '20px' }),
           left: '50%',
           transform: 'translateX(-50%)',
           cursor: 'pointer',
@@ -709,7 +688,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : '10px'),
+          fontSize: fileType === 'module' ? '13px' : `${isLifted ? expandedFontSize : Math.max(5, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.78))))}px`,
           fontWeight: 700,
           color: '#e8dcc4',
           textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
@@ -726,7 +705,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           transition: 'font-size 0.2s ease',
           pointerEvents: 'none',
         }}>
-          {isLifted ? expandedTitle : title}
+          {isLifted ? expandedTitle : (fileType === 'reading' ? expandedTitle : title)}
         </span>
       )}
       {weekNum && fileType === 'module' && (
@@ -764,25 +743,9 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           </span>
         </div>
       )}
-      {weekNum && fileType !== 'module' && (
-        <span style={{
-          position: 'absolute',
-          bottom: '4px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: '14px',
-          fontWeight: 800,
-          color: 'rgba(255,255,255,0.85)',
-          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
-          lineHeight: 1,
-          whiteSpace: 'nowrap',
-        }}>
-          {weekNum}
-        </span>
-      )}
       <div style={{
         position: 'absolute',
-        bottom: (weekNum && fileType !== 'module') ? '22px' : '6px',
+        bottom: '6px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: '6px',
