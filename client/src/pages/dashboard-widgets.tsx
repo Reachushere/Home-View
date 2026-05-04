@@ -116,9 +116,17 @@ export function NewsTickerPortal({ headlines, onAlertClick }: { headlines: Array
 }
 
 export const PrioritySelect = memo(function PrioritySelect({ priorityKey, initialValue, totalInSem, draftRef, courseCode, usedValues, onPriorityChange, suffix }: { priorityKey: string; initialValue: number; totalInSem: number; draftRef: React.MutableRefObject<Record<string, number>>; courseCode: string; usedValues: number[]; onPriorityChange: (key: string, val: number) => void; suffix?: string }) {
-  const [val, setVal] = useState(initialValue);
-  useEffect(() => { setVal(initialValue); }, [initialValue]);
   const hasSuffix = suffix === 'A' || suffix === 'B';
+  const clamp = (v: number) => (hasSuffix && v > 2 ? 0 : v);
+  const [val, setVal] = useState(clamp(initialValue));
+  useEffect(() => {
+    const c = clamp(initialValue);
+    setVal(c);
+    if (c !== initialValue) {
+      draftRef.current = { ...draftRef.current, [priorityKey]: c };
+      onPriorityChange(priorityKey, c);
+    }
+  }, [initialValue]);
   return (
     <select
       className="text-[11px] font-semibold bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
@@ -135,7 +143,7 @@ export const PrioritySelect = memo(function PrioritySelect({ priorityKey, initia
       data-testid={`select-priority-${courseCode}${hasSuffix ? `-${suffix}` : ''}`}
     >
       <option value={0}>—</option>
-      {Array.from({ length: totalInSem }, (_, i) => {
+      {Array.from({ length: hasSuffix ? Math.min(totalInSem, 2) : totalInSem }, (_, i) => {
         const n = i + 1;
         const taken = usedValues.includes(n) && val !== n;
         return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{hasSuffix ? `${n}${suffix}` : n}</option>;
