@@ -568,9 +568,14 @@ export function cleanTextForTTS(text: string): string {
 
   console.log("After French filter:", cleanedText.length);
 
-  // References / Bibliography sections
+  // References / Bibliography sections — DO NOT include "Notes" / "Endnotes" /
+  // "Footnotes" here. Module PDFs commonly have a "Notes" subheading partway
+  // through (lecture notes, side notes, footnote markers), and matching them
+  // wiped the entire rest of the document — which surfaced as the bathroom
+  // TTS playing only "[Page 1] [Page 2] [Page 3]…" because every page's body
+  // text had been deleted but the page-break sentinels survived.
   cleanedText = cleanedText
-    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited|Literature\s*Cited|Sources?\s*Cited|Endnotes|Footnotes|Notes)\s*\n[\s\S]*$/gim, '')
+    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited|Literature\s*Cited|Sources?\s*Cited)\s*\n[\s\S]*$/gim, '')
     .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited)\s*(?:\n|$)[\s\S]*$/gim, '')
     .replace(/\b(?:References|Bibliography|Works?\s*Cited|Reference\s*List)\s+(?:[A-Z][a-z]+,?\s+[A-Z]\.[\s\S]*$)/gim, '');
 
