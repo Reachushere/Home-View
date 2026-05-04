@@ -146,7 +146,8 @@ export const PrioritySelect = memo(function PrioritySelect({ priorityKey, initia
       {Array.from({ length: hasSuffix ? Math.min(totalInSem, 2) : totalInSem }, (_, i) => {
         const n = i + 1;
         const taken = usedValues.includes(n) && val !== n;
-        return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{hasSuffix ? `${n}${suffix}` : n}</option>;
+        const label = hasSuffix ? `${suffix === 'A' ? '1' : '2'}${n === 1 ? 'A' : 'B'}` : `${n}`;
+        return <option key={n} value={n} disabled={taken} style={taken ? { color: '#555' } : {}}>{label}</option>;
       })}
     </select>
   );
