@@ -20680,6 +20680,30 @@ document.body.removeChild(a);
     }
   });
 
+  // POST /api/files/:id/play-on-tv - Start the existing video TV playback flow
+  // (cat-lights TV + Nest audio mirroring) for an arbitrary file. Lets the
+  // calendar homework play button broadcast a video to the TV the same way
+  // bathroom-triggered playback does.
+  app.post("/api/files/:id/play-on-tv", async (req, res) => {
+    try {
+      const fileId = Number(req.params.id);
+      const file = await storage.getFile(fileId);
+      if (!file) return res.status(404).json({ error: "File not found" });
+      const name = (file.displayName || file.originalName || '').toLowerCase();
+      const ct = (file.contentType || '').toLowerCase();
+      const isVideo = ct.startsWith('video/') || name.endsWith('.mp4') || name.endsWith('.m4v') || name.endsWith('.mov');
+      if (!isVideo) return res.status(400).json({ error: "File is not a video" });
+      // Fire and forget — flow takes a while to set up TV + Nest.
+      startVideoPlaybackFlow(file, '[Calendar Cast]').catch((e) => {
+        console.error('[Calendar Cast] startVideoPlaybackFlow failed:', e?.message || e);
+      });
+      res.json({ ok: true, fileId, fileName: file.displayName || file.originalName });
+    } catch (err: any) {
+      console.error('[Calendar Cast] error:', err?.message || err);
+      res.status(500).json({ error: err?.message || 'Failed to start TV playback' });
+    }
+  });
+
   // POST /api/webhook/cat-wash-stop - Triggered when toothbrush starts running (idle/charging → running)
   // Stops cat wash playback and saves progress.
   app.post("/api/webhook/cat-wash-stop", async (req, res) => {
