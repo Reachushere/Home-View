@@ -5,8 +5,7 @@ import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, S
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
-import shelfBgImage from '@assets/Bookshelf11_1777882349163.png';
-import movieIconPath from '@assets/Movie_Icon_1777887451930.png';
+import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
@@ -178,97 +177,6 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   if (fl.includes('-module')) return 'module';
   if (fl.includes('-reading')) return 'reading';
   return null;
-}
-
-function isVideoFile(file: { contentType?: string | null; originalName?: string | null; displayName?: string | null }): boolean {
-  if (!file) return false;
-  const ct = (file.contentType || '').toLowerCase();
-  if (ct.startsWith('video/')) return true;
-  const name = (file.originalName || file.displayName || '').toLowerCase();
-  return name.endsWith('.mp4') || name.endsWith('.m4v') || name.endsWith('.mov');
-}
-
-// Inline video player overlay. Resumes from file.lastChunkIndex (seconds),
-// throttles position saves to every ~5s, and finalises on close so the
-// bathroom-light cat-wash flow can pick up exactly where the in-library
-// session left off (and vice versa).
-function LibraryVideoPlayer({ file, onClose, onMinimize }: { file: FileRecord; onClose: () => void; onMinimize: () => void }) {
-  const videoRef = React.useRef<HTMLVideoElement | null>(null);
-  const lastSavedSecRef = React.useRef<number>(file.lastChunkIndex || 0);
-  const durationSecRef = React.useRef<number>(file.totalChunks || 0);
-  const startSec = file.lastChunkIndex || 0;
-  const title = (file.displayName || file.originalName || '').replace(/\.(pdf|mp4|m4v|mov)$/i, '');
-
-  const saveProgress = React.useCallback(async (extra?: Record<string, any>) => {
-    try {
-      const v = videoRef.current;
-      const pos = v ? Math.max(0, Math.round(v.currentTime)) : lastSavedSecRef.current;
-      const dur = v && Number.isFinite(v.duration) ? Math.round(v.duration) : durationSecRef.current;
-      const body: any = { lastChunkIndex: pos, ...(dur > 0 ? { totalChunks: dur } : {}), ...(extra || {}) };
-      await fetch(`/api/files/${file.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      lastSavedSecRef.current = pos;
-    } catch {}
-  }, [file.id]);
-
-  const handleClose = React.useCallback(async () => {
-    const v = videoRef.current;
-    if (v) {
-      const pos = Math.max(0, Math.round(v.currentTime));
-      const dur = Number.isFinite(v.duration) ? Math.round(v.duration) : 0;
-      if (dur > 0 && pos >= dur - 5) {
-        await saveProgress({ listened: true, lastChunkIndex: 0 });
-      } else {
-        await saveProgress();
-      }
-    }
-    onClose();
-  }, [saveProgress, onClose]);
-
-  React.useEffect(() => {
-    return () => {
-      // Best-effort save if user navigates away without clicking close.
-      const v = videoRef.current;
-      if (v && Math.abs(v.currentTime - lastSavedSecRef.current) >= 1) {
-        const pos = Math.max(0, Math.round(v.currentTime));
-        navigator.sendBeacon?.(`/api/files/${file.id}`, new Blob([JSON.stringify({ lastChunkIndex: pos })], { type: 'application/json' }));
-      }
-    };
-  }, [file.id]);
-
-  return (
-    <div data-testid={`video-player-${file.id}`} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}>
-      <div style={{ position: 'absolute', top: 16, left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff', fontSize: 14 }}>
-        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }} title={title}>{title}</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={onMinimize} data-testid={`btn-minimize-video-${file.id}`} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 10px', cursor: 'pointer' }}>—</button>
-          <button onClick={handleClose} data-testid={`btn-close-video-${file.id}`} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
-        </div>
-      </div>
-      <video
-        ref={videoRef}
-        src={`/api/files/${file.id}/download`}
-        controls
-        autoPlay
-        playsInline
-        onLoadedMetadata={(e) => {
-          const v = e.currentTarget;
-          if (Number.isFinite(v.duration)) durationSecRef.current = Math.round(v.duration);
-          if (startSec > 0 && startSec < (v.duration || Infinity) - 1) {
-            try { v.currentTime = startSec; } catch {}
-          }
-        }}
-        onTimeUpdate={(e) => {
-          const v = e.currentTarget;
-          const pos = Math.round(v.currentTime);
-          if (Math.abs(pos - lastSavedSecRef.current) >= 5) {
-            saveProgress();
-          }
-        }}
-        onEnded={() => { saveProgress({ listened: true, lastChunkIndex: 0 }); }}
-        style={{ maxWidth: '92vw', maxHeight: '85vh', background: '#000' }}
-      />
-    </div>
-  );
 }
 
 const LIB_NOTE_FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
@@ -539,14 +447,13 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const fileType = getFileType(file.folder);
   const bookHeight = fileType === 'module' ? shelfHeight - 24 + 50 : shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
-  const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
+  const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const fullTitle = rawFullTitle;
-  const title = truncateSpineTitle(rawFullTitle, 60, !!file.displayName && file.displayName !== file.originalName);
+  const title = truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
   const maxTextHeight = bookHeight - 56;
   const liftedTextHeight = maxTextHeight + 30;
   const expandedFontSize = Math.max(4, Math.min(10, Math.floor(liftedTextHeight / (expandedTitle.length * 0.85))));
-  const fittedTitleFontSize = Math.max(6, Math.min(13, Math.floor(maxTextHeight / Math.max(1, title.length * 0.58))));
 
   const cleanedExpanded = truncateSpineTitle(fullTitle, 80, !!file.displayName && file.displayName !== file.originalName);
   const singleLineFits = cleanedExpanded.length * 0.85 * 7 <= liftedTextHeight;
@@ -624,14 +531,22 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           lineHeight: 1,
         }}>
           <span style={{
-            fontSize: weekNum && String(weekNum).length >= 2 ? '8px' : '10px',
+            fontSize: '9px',
             fontWeight: 800,
             color: 'rgba(255,255,255,0.85)',
             textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-          }}>{weekNum || 'R'}</span>
+          }}>R</span>
+          <span style={{
+            fontSize: '5px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.65)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap',
+          }}>Reading</span>
         </div>
         <span style={{
-          fontSize: `${Math.max(7, Math.min(13, Math.floor((horizBookWidth - 40) / Math.max(1, title.length * 0.55))))}px`,
+          fontSize: '10px',
           fontWeight: 600,
           color: '#ffffff',
           textShadow: '0 1px 2px rgba(0,0,0,0.7)',
@@ -660,108 +575,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   }
 
   const vertHandler = interceptClick || onClick;
-
-  // Video files render as a movie-card icon instead of a book spine. The icon's
-  // top white strip becomes the title bar — same click/hover/lift behaviour as
-  // a normal spine, but visually distinct so MP4s read at a glance.
-  if (isVideoFile(file)) {
-    const cardWidth = Math.max(60, Math.round(spineWidth * 2.0));
-    const aspect = 508 / 416; // movie icon native aspect (w/h)
-    const cardHeight = isLifted ? bookHeight + 30 : bookHeight;
-    const iconRenderHeight = Math.min(cardHeight, Math.round(cardWidth / aspect));
-    const titleStripHeightPct = 0.18; // top white box ≈ 18% of icon height
-    const titleStripPx = Math.max(12, Math.round(iconRenderHeight * titleStripHeightPct));
-    const titleFontPx = Math.max(7, Math.min(11, Math.floor(titleStripPx * 0.62)));
-    return (
-      <div
-        className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
-        onClick={vertHandler}
-        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); vertHandler(); }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          width: `${cardWidth}px`,
-          minWidth: '40px',
-          height: `${cardHeight}px`,
-          cursor: 'pointer',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-          flexShrink: 0,
-          alignSelf: 'flex-end',
-          touchAction: 'manipulation',
-          WebkitTapHighlightColor: 'transparent',
-          transition: 'transform 0.2s ease, filter 0.2s ease',
-          transform: isLifted ? 'translateY(-12px)' : 'none',
-          filter: isSelected ? 'drop-shadow(0 0 12px rgba(212,175,55,0.6))' : (isLifted ? 'drop-shadow(0 8px 18px rgba(0,0,0,0.55))' : 'drop-shadow(1px 1px 3px rgba(0,0,0,0.35))'),
-          ...(extraMarginLeft ? { marginLeft: `${extraMarginLeft}px` } : {}),
-        }}
-        title={file.displayName || file.originalName}
-        data-testid={`book-spine-${file.id}`}
-      >
-        <div style={{ position: 'relative', width: `${cardWidth}px`, height: `${iconRenderHeight}px` }}>
-          <img
-            src={movieIconPath}
-            alt={(file.displayName || file.originalName || 'Movie').replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
-            draggable={false}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}
-          />
-          {/* Title text inside the top white box of the film icon */}
-          <div style={{
-            position: 'absolute',
-            top: '4.5%',
-            left: '6%',
-            right: '23%',
-            height: `${titleStripPx}px`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            paddingLeft: '4px',
-            paddingRight: '4px',
-            overflow: 'hidden',
-            pointerEvents: 'none',
-          }}>
-            <span style={{
-              fontSize: `${titleFontPx}px`,
-              fontWeight: 700,
-              color: '#000',
-              fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              width: '100%',
-              lineHeight: 1.1,
-            }} title={fullTitle}>
-              {isLifted ? expandedTitle : title}
-            </span>
-          </div>
-          <span
-            onClick={(e) => { e.stopPropagation(); onRename(file); }}
-            style={{
-              position: 'absolute',
-              top: '2px',
-              right: '2px',
-              cursor: 'pointer',
-              fontSize: '9px',
-              color: 'rgba(0,0,0,0.55)',
-              zIndex: 5,
-              lineHeight: 1,
-              padding: '1px 3px',
-            }}
-            data-testid={`btn-rename-book-${file.id}`}
-          >✎</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
@@ -838,6 +651,16 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           }}>
             R
           </span>
+          <span style={{
+            fontSize: '5px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.65)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap',
+          }}>
+            Reading
+          </span>
         </div>
       )}
       <span
@@ -886,7 +709,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : `${fittedTitleFontSize}px`),
+          fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : '10px'),
           fontWeight: 700,
           color: '#e8dcc4',
           textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
@@ -1438,7 +1261,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const readerDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const [readerWidth, setReaderWidth] = useState<number | null>(null);
   const resizeRef = useRef<{ startX: number; startWidth: number; side: 'left' | 'right'; startPosX: number } | null>(null);
-  const rawTitle = (file.displayName || file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
+  const rawTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(rawTitle, 80, !!file.displayName && file.displayName !== file.originalName);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
@@ -1592,7 +1415,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
               span.style.textDecorationColor = 'rgba(212,175,55,0.55)';
               span.style.textDecorationThickness = '1px';
               span.style.textUnderlineOffset = '2px';
-              span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}`;
+              span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
               span.addEventListener('click', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -2338,7 +2161,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                         onMouseEnter={e => { if (mf) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                         data-testid={`btn-module-index-${num}`}
-                        title={mf ? (mf.file.displayName || mf.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '') : `Module ${num} — not available`}
+                        title={mf ? (mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '') : `Module ${num} — not available`}
                       >
                         <span style={{ width: '20px', height: '20px', borderRadius: '4px', background: mf ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)', color: mf ? '#D4AF37' : 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>
                           {num}
@@ -3396,36 +3219,6 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           });
         }
       }
-      // Apply manual drag-reorder set on the dashboard's Semesters & Classes
-      // page so library spine order mirrors what the user dragged.
-      try {
-        const rawOrder = localStorage.getItem('manualSemesterCourseOrder');
-        if (rawOrder) {
-          const orderMap = JSON.parse(rawOrder) as Record<string, string[]>;
-          const order = orderMap[key];
-          if (Array.isArray(order) && order.length > 0) {
-            const norm = (c: string) => (c || '').replace(/\s/g, '').toUpperCase();
-            // Only honor the manual order when it covers every course in
-            // this semester. A partial/stale order would otherwise push
-            // missing courses to the bottom and look like the library
-            // disagrees with the semester box. Falling back to slot order
-            // (course1/2/3) keeps spines aligned with the semester box.
-            const courseCodes = courses.map(c => norm(c.code));
-            const orderSet = new Set(order.map(norm));
-            const allCovered = courseCodes.every(c => orderSet.has(c));
-            if (allCovered) {
-              courses.sort((a, b) => {
-                const ia = order.indexOf(norm(a.code));
-                const ib = order.indexOf(norm(b.code));
-                if (ia < 0 && ib < 0) return 0;
-                if (ia < 0) return 1;
-                if (ib < 0) return -1;
-                return ia - ib;
-              });
-            }
-          }
-        }
-      } catch {}
       const isCurrent = i === activeIdx;
       const isFuture = !isCurrent && i > activeIdx;
       const isPast = !isCurrent && activeIdx >= 0 && i < activeIdx;
@@ -4280,7 +4073,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                             <span style={{ fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)', flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{r.fileFormat}</span>
                           )}
                           <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
+                            {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
                           </span>
                         </div>
                         <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
@@ -6034,7 +5827,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                         }}>{r.fileFormat}</span>
                       )}
                       <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '')}
+                        {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
                       </span>
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
@@ -6176,7 +5969,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 bottom: '4px',
                 transform: `translate(${labelRight}px, ${labelShift}px)`,
                 zIndex: 50,
-                left: 'calc(30% + 48px)',
+                left: 'calc(30% + 141px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
@@ -6331,23 +6124,6 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 overflow: isCollapsed ? 'hidden' : 'visible',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
-              {(() => {
-                const weeksInCourse = new Set<number>();
-                courseFiles.forEach(f => {
-                  const m = f.folder?.match(/week-(\d+)/);
-                  if (m) weeksInCourse.add(parseInt(m[1], 10));
-                });
-                const weekCount = Math.max(1, weeksInCourse.size);
-                // Baseline that comfortably fit on the Pi screen: ~9 weeks per
-                // shelf. When there are more weeks, squeeze horizontally so all
-                // 13 (or however many) fit without scrolling off-screen.
-                const fitFactor = Math.min(1, 9 / weekCount);
-                const baseScaleX = courseIdx > 0 ? 0.84 : 0.86;
-                const scaleX = baseScaleX * fitFactor;
-                const transform = courseIdx > 0
-                  ? `scale(1.5) scaleX(${scaleX})`
-                  : `scaleX(${scaleX})`;
-                return (
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'visible' }}>
                 <div style={{
                   display: 'flex',
@@ -6357,7 +6133,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform, transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform, transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.86)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
@@ -6374,25 +6150,17 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                       currentGroup.files.push({ file, fileIdx });
                     });
                     return weekGroups.map((group, groupIdx) => {
-                      // Prefer a non-video module file (slides/PDF) as the
-                      // representative "Module" spine for the week. Videos
-                      // get rendered individually as movie-icons below.
-                      const moduleFileForWeek = (group.files.find(({ file }) => {
+                      const moduleFileForWeek = group.files.find(({ file }) => {
                         const fl = (file.folder || '').toLowerCase();
-                        return fl.includes('-module') && !isVideoFile(file);
-                      })?.file)
-                        || (group.files.find(({ file }) => (file.folder || '').toLowerCase().includes('-module'))?.file)
-                        || null;
+                        return fl.includes('-module');
+                      })?.file || null;
                       return (
                       <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length} moduleFile={moduleFileForWeek} onOpenModule={(mf) => { const color = getBookColor(0, course.code, group.weekNum); handleBookClick(mf, color); }}>
                         {(() => {
-                          // De-dupe non-video module files into a single
-                          // "Module" spine per folder, but ALWAYS show every
-                          // video file individually as its own movie icon.
                           const seenModuleFolders = new Set<string>();
                           return group.files.filter(({ file }) => {
                             const fl = (file.folder || '').toLowerCase();
-                            if (fl.includes('-module') && !isVideoFile(file)) {
+                            if (fl.includes('-module')) {
                               if (seenModuleFolders.has(fl)) return false;
                               seenModuleFolders.add(fl);
                             }
@@ -6428,8 +6196,6 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 </div>
 
               </div>
-                );
-              })()}
               </div>
             </div>
           );})
@@ -6537,19 +6303,6 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           }}
         >
           <div style={{ pointerEvents: 'auto', display: 'contents' }}>
-          {isVideoFile(reader.file) ? (
-            <LibraryVideoPlayer
-              file={reader.file}
-              onClose={() => {
-                setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id));
-                setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
-                queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-              }}
-              onMinimize={() => {
-                setMinimizedReaders(prev => { const next = new Set(prev); next.add(reader.file.id); return next; });
-              }}
-            />
-          ) : (
           <BookReader
             file={reader.file}
             bookColor={reader.color}
@@ -6607,7 +6360,6 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
               }
             } : undefined}
           />
-          )}
           </div>
         </div>
         );
@@ -6625,7 +6377,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           pointerEvents: 'auto',
         }}>
           {openReaders.filter(r => minimizedReaders.has(r.file.id)).map(reader => {
-            const rawTitle = (reader.file.displayName || reader.file.originalName).replace(/\.(pdf|mp4|m4v|mov)$/i, '');
+            const rawTitle = (reader.file.displayName || reader.file.originalName).replace(/\.pdf$/i, '');
             const shortTitle = rawTitle.length > 25 ? rawTitle.substring(0, 24) + '…' : rawTitle;
             return (
               <div
