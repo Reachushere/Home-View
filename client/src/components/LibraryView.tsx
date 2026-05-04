@@ -624,11 +624,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           lineHeight: 1,
         }}>
           <span style={{
-            fontSize: '9px',
+            fontSize: weekNum && String(weekNum).length >= 2 ? '8px' : '10px',
             fontWeight: 800,
             color: 'rgba(255,255,255,0.85)',
             textShadow: '0 1px 2px rgba(0,0,0,0.7)',
-          }}>R</span>
+          }}>{weekNum || 'R'}</span>
         </div>
         <span style={{
           fontSize: `${Math.max(7, Math.min(13, Math.floor((horizBookWidth - 40) / Math.max(1, title.length * 0.55))))}px`,
@@ -6357,17 +6357,25 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                       currentGroup.files.push({ file, fileIdx });
                     });
                     return weekGroups.map((group, groupIdx) => {
-                      const moduleFileForWeek = group.files.find(({ file }) => {
+                      // Prefer a non-video module file (slides/PDF) as the
+                      // representative "Module" spine for the week. Videos
+                      // get rendered individually as movie-icons below.
+                      const moduleFileForWeek = (group.files.find(({ file }) => {
                         const fl = (file.folder || '').toLowerCase();
-                        return fl.includes('-module');
-                      })?.file || null;
+                        return fl.includes('-module') && !isVideoFile(file);
+                      })?.file)
+                        || (group.files.find(({ file }) => (file.folder || '').toLowerCase().includes('-module'))?.file)
+                        || null;
                       return (
                       <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length} moduleFile={moduleFileForWeek} onOpenModule={(mf) => { const color = getBookColor(0, course.code, group.weekNum); handleBookClick(mf, color); }}>
                         {(() => {
+                          // De-dupe non-video module files into a single
+                          // "Module" spine per folder, but ALWAYS show every
+                          // video file individually as its own movie icon.
                           const seenModuleFolders = new Set<string>();
                           return group.files.filter(({ file }) => {
                             const fl = (file.folder || '').toLowerCase();
-                            if (fl.includes('-module')) {
+                            if (fl.includes('-module') && !isVideoFile(file)) {
                               if (seenModuleFolders.has(fl)) return false;
                               seenModuleFolders.add(fl);
                             }
