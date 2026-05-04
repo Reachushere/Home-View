@@ -688,7 +688,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: fileType === 'module' ? '13px' : `${isLifted ? expandedFontSize : (fileType === 'reading' ? Math.max(3, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.62)))) : Math.max(5, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.78)))))}px`,
+          fontSize: fileType === 'module' ? '13px' : `${isLifted ? expandedFontSize : (fileType === 'reading' ? Math.max(3, Math.min(10, Math.floor((maxTextHeight - rawFullTitle.length * 0.6) / Math.max(1, rawFullTitle.length * 1.05)))) : Math.max(5, Math.min(10, Math.floor(maxTextHeight / Math.max(1, rawFullTitle.length * 0.78)))))}px`,
           fontWeight: 700,
           color: '#e8dcc4',
           textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
@@ -5919,7 +5919,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             const labelShift = Math.round(calib.label * shelfScale);
             const labelRight = Math.round((calib.labelRight || 0) * shelfScale);
             return (
-            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', transform: `translateY(${rowShift}px)`, zIndex: courseBooks.length - courseIdx }}>
+            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: `${shelfHeight + 50}px`, transform: `translateY(${rowShift}px)`, zIndex: courseBooks.length - courseIdx }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
