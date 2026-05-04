@@ -14679,7 +14679,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber);
       if (!nextFile) {
@@ -18172,7 +18172,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const allFiles = await storage.getFiles();
           const semesterSettings = await storage.getActiveSemesterSettings();
           const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-          const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+          const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
           const unlistenedFiles = allFiles.filter((f: any) => {
@@ -18530,7 +18530,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
         const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
         const completedFileDesc = describeFileForTTS({ folder: catWashPlaybackState?.fileName || fileName, originalName: fileName }, currentWeekNumber);
 
@@ -19058,7 +19058,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
       
       const nextFile = await findNextFileByPriority(allFiles, currentWeekNumber);
@@ -19693,7 +19693,11 @@ document.body.removeChild(a);
 
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      // CRITICAL: Spring/Summer semesters have no reading week (readingWeekStart=null
+      // in DB). Falling back to a default date (e.g. Feb 16) makes getWeekNumber
+      // subtract 1 from every computed week, turning week 1 into week 0 and breaking
+      // file lookup. Pass null when the semester truly has no reading week.
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
       if (currentWeekNumber < 1) {
         const semStartStr = easternDateStr(semStart);
@@ -20176,7 +20180,11 @@ document.body.removeChild(a);
       console.log(`[Cat Lights][TRACE] Step 3: Calculating week number`);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      // CRITICAL: Spring/Summer semesters have no reading week (readingWeekStart=null
+      // in DB). Falling back to a default date (e.g. Feb 16) makes getWeekNumber
+      // subtract 1 from every computed week, turning week 1 into week 0 and breaking
+      // file lookup. Pass null when the semester truly has no reading week.
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
       console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber}`);
 
@@ -20697,7 +20705,7 @@ document.body.removeChild(a);
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
       currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
       const nextFile = await findNextCatWashFile(storage, currentWeekNumber, fileId);
@@ -21281,7 +21289,7 @@ document.body.removeChild(a);
 
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
-        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+        const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
         const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
         const allFiles = await storage.getFiles();
