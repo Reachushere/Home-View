@@ -6331,6 +6331,23 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 overflow: isCollapsed ? 'hidden' : 'visible',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
+              {(() => {
+                const weeksInCourse = new Set<number>();
+                courseFiles.forEach(f => {
+                  const m = f.folder?.match(/week-(\d+)/);
+                  if (m) weeksInCourse.add(parseInt(m[1], 10));
+                });
+                const weekCount = Math.max(1, weeksInCourse.size);
+                // Baseline that comfortably fit on the Pi screen: ~9 weeks per
+                // shelf. When there are more weeks, squeeze horizontally so all
+                // 13 (or however many) fit without scrolling off-screen.
+                const fitFactor = Math.min(1, 9 / weekCount);
+                const baseScaleX = courseIdx > 0 ? 0.84 : 0.86;
+                const scaleX = baseScaleX * fitFactor;
+                const transform = courseIdx > 0
+                  ? `scale(1.5) scaleX(${scaleX})`
+                  : `scaleX(${scaleX})`;
+                return (
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'visible' }}>
                 <div style={{
                   display: 'flex',
@@ -6340,7 +6357,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.86)', transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform, transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform, transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
@@ -6411,6 +6428,8 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 </div>
 
               </div>
+                );
+              })()}
               </div>
             </div>
           );})
