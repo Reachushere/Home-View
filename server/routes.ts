@@ -25877,7 +25877,7 @@ document.body.removeChild(a);
     }
   });
 
-  app.get("/api/syllabus/paths", async (_req, res) => {
+  app.get("/api/syllabus/paths", async (req, res) => {
     try {
       const row = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
       const paths: Record<string, string> = row.length > 0 ? JSON.parse(row[0].value) : {};
@@ -25887,6 +25887,7 @@ document.body.removeChild(a);
       try {
         const cacheKey = '__syllabusPathsOdCache';
         const g: any = globalThis as any;
+        if (req.query.refresh === '1') (g as any)[cacheKey] = null;
         const cached = g[cacheKey];
         if (cached && Date.now() - cached.t < 5 * 60 * 1000) {
           for (const [k, v] of Object.entries(cached.paths || {})) {
@@ -25927,7 +25928,12 @@ document.body.removeChild(a);
               const code = String(matchedSem[`course${i}Code`] || '').trim();
               if (!code) continue;
               for (const cp of candidateParents) {
-                const matches = cp.children.filter((f: any) => f.folder && f.name.toUpperCase().startsWith(code.toUpperCase()));
+                const codeNorm = code.toUpperCase().replace(/\s+/g, '');
+                const matches = cp.children.filter((f: any) => {
+                  if (!f.folder) return false;
+                  const nameNorm = String(f.name || '').toUpperCase().replace(/\s+/g, '');
+                  return nameNorm.startsWith(codeNorm);
+                });
                 const m = matches.length > 1 ? matches.sort((a: any, b: any) => a.name.length - b.name.length)[0] : matches[0];
                 if (!m) continue;
                 try {
@@ -26080,16 +26086,39 @@ document.body.removeChild(a);
       if (objectPath.startsWith('/School/') || objectPath.startsWith('/Documents/')) {
         const { getAccessToken } = await import('./onedrive');
         const accessToken = await getAccessToken();
+        // Two-step: fetch item metadata to get a pre-signed @microsoft.graph.downloadUrl,
+        // then download from that URL. This is more robust to special chars in
+        // file names than streaming :/content directly.
         const encoded = encodeURIComponent(objectPath).replace(/%2F/g, '/');
-        const odRes = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:${encoded}:/content`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          redirect: 'follow',
-        });
-        if (!odRes.ok) {
-          console.error(`[Syllabus View] OneDrive fetch ${odRes.status} for ${objectPath}`);
-          return res.status(odRes.status).json({ error: 'OneDrive fetch failed' });
+        const metaUrl = `https://graph.microsoft.com/v1.0/me/drive/root:${encoded}?select=id,name,@microsoft.graph.downloadUrl`;
+        const metaRes = await fetch(metaUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+        if (!metaRes.ok) {
+          const body = await metaRes.text().catch(() => '');
+          console.error(`[Syllabus View] OneDrive meta ${metaRes.status} for ${objectPath} :: ${body.slice(0,200)}`);
+          return res.status(metaRes.status).json({ error: `OneDrive meta failed (${metaRes.status})`, path: objectPath });
         }
-        const arrayBuf = await odRes.arrayBuffer();
+        const meta = await metaRes.json();
+        const dl = meta['@microsoft.graph.downloadUrl'];
+        if (!dl) {
+          // Fallback: try :/content directly
+          const odRes = await fetch(`https://graph.microsoft.com/v1.0/me/drive/items/${meta.id}/content`, {
+            headers: { Authorization: `Bearer ${accessToken}` }, redirect: 'follow',
+          });
+          if (!odRes.ok) {
+            console.error(`[Syllabus View] OneDrive content ${odRes.status} for ${objectPath}`);
+            return res.status(odRes.status).json({ error: 'OneDrive content fetch failed' });
+          }
+          const arrayBuf = await odRes.arrayBuffer();
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', 'inline');
+          return res.send(Buffer.from(arrayBuf));
+        }
+        const dlRes = await fetch(dl);
+        if (!dlRes.ok) {
+          console.error(`[Syllabus View] downloadUrl ${dlRes.status} for ${objectPath}`);
+          return res.status(dlRes.status).json({ error: 'OneDrive download failed' });
+        }
+        const arrayBuf = await dlRes.arrayBuffer();
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'inline');
         return res.send(Buffer.from(arrayBuf));
