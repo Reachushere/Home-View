@@ -161,7 +161,21 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
     setPanelZ(++w.__brynTopZ);
   }, []);
   const [dragPos, setDragPos] = useState<{ x: number; y: number }>(() => {
-    try { const s = localStorage.getItem('aiChatBubbleDragPos'); if (s) return JSON.parse(s); } catch {}
+    try {
+      const s = localStorage.getItem('aiChatBubbleDragPos');
+      if (s) {
+        const p = JSON.parse(s);
+        // Clamp to viewport so a stale offscreen position doesn't make the
+        // panel invisible (this looks like "Study Assist isn't opening").
+        if (typeof p?.x === 'number' && typeof p?.y === 'number') {
+          const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
+          const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
+          const x = Math.max(-(vw - 120), Math.min(120, p.x));
+          const y = Math.max(-(vh - 120), Math.min(120, p.y));
+          return { x, y };
+        }
+      }
+    } catch {}
     return { x: 0, y: 0 };
   });
   const dragStateRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
@@ -192,7 +206,19 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [chatSize, setChatSize] = useState<{ w: number; h: number }>(() => {
-    try { const s = localStorage.getItem('aiChatBubbleSize'); if (s) return JSON.parse(s); } catch {}
+    try {
+      const s = localStorage.getItem('aiChatBubbleSize');
+      if (s) {
+        const p = JSON.parse(s);
+        if (typeof p?.w === 'number' && typeof p?.h === 'number') {
+          const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
+          const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
+          const w = p.w > 0 ? Math.max(320, Math.min(vw - 24, p.w)) : 0;
+          const h = p.h > 0 ? Math.max(280, Math.min(vh - 24, p.h)) : 0;
+          return { w, h };
+        }
+      }
+    } catch {}
     return { w: 0, h: 0 };
   });
   useEffect(() => { try { localStorage.setItem('aiChatBubbleSize', JSON.stringify(chatSize)); } catch {} }, [chatSize]);
