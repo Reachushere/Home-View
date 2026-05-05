@@ -15,7 +15,7 @@ export interface IStorage {
   getFile(id: number): Promise<FileRecord | undefined>;
   getFileByPath(objectPath: string): Promise<FileRecord | undefined>;
   createFile(file: InsertFile): Promise<FileRecord>;
-  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date }): Promise<FileRecord>;
+  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date; captionsStatus?: string | null; captionsError?: string | null; captionsGeneratedAt?: Date | null }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   getAllSemesterSettings(): Promise<SemesterSettings[]>;
@@ -267,7 +267,7 @@ export class DatabaseStorage implements IStorage {
     return file;
   }
 
-  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date }): Promise<FileRecord> {
+  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number; checkedChunks?: string; ttsAudioUrl?: string; ttsGeneratedAt?: Date; objectPath?: string; extractedText?: string; preparedAudioPaths?: string; preparedAt?: Date; captionsStatus?: string | null; captionsError?: string | null; captionsGeneratedAt?: Date | null }): Promise<FileRecord> {
     const setData: Record<string, unknown> = {};
     if (updates.displayName !== undefined) {
       setData.displayName = updates.displayName;
@@ -304,6 +304,15 @@ export class DatabaseStorage implements IStorage {
     }
     if (updates.preparedAt !== undefined) {
       setData.preparedAt = updates.preparedAt;
+    }
+    if (updates.captionsStatus !== undefined) {
+      setData.captionsStatus = updates.captionsStatus;
+    }
+    if (updates.captionsError !== undefined) {
+      setData.captionsError = updates.captionsError;
+    }
+    if (updates.captionsGeneratedAt !== undefined) {
+      setData.captionsGeneratedAt = updates.captionsGeneratedAt;
     }
     const [updated] = await db
       .update(files)
