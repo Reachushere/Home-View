@@ -18,10 +18,14 @@ export default function VideoPlayerPage() {
   const [fileName, setFileName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
-  // Captions: poll /captions/status until ready, then mount <track>.
+  // Captions: poll /captions/status until ready, fetch the VTT text, parse it,
+  // and render our own overlay (Silk on the Fire Stick doesn't reliably draw
+  // the native <track> UI, so we paint the active cue ourselves at the top).
   const [captionsStatus, setCaptionsStatus] = useState<string>("none");
   const [captionsUrl, setCaptionsUrl] = useState<string | null>(null);
   const [captionsQueuePos, setCaptionsQueuePos] = useState<number | null>(null);
+  const cuesRef = useRef<{ start: number; end: number; text: string }[]>([]);
+  const [activeCue, setActiveCue] = useState<string>("");
 
   const videoUrl = `/api/files/${fileId}/download${auth ? `?auth=${encodeURIComponent(auth)}` : ""}`;
 
@@ -106,22 +110,77 @@ export default function VideoPlayerPage() {
     return () => { cancelled = true; if (id) clearInterval(id); };
   }, [fileId, auth]);
 
-  // Auto-enable captions on the <track> the moment it loads (browsers default to
-  // 'disabled' for muted videos).
+  // Fetch + parse the VTT once it's ready, then drive the overlay from
+  // currentTime via rAF (rock-solid on Silk; avoids the native track UI).
   useEffect(() => {
     if (!captionsUrl) return;
-    const v = videoRef.current;
-    if (!v) return;
-    const enable = () => {
-      for (let i = 0; i < v.textTracks.length; i++) {
-        const t = v.textTracks[i];
-        if (t.kind === "subtitles" || t.kind === "captions") t.mode = "showing";
+    let cancelled = false;
+    fetch(captionsUrl, { credentials: "include" })
+      .then((r) => (r.ok ? r.text() : ""))
+      .then((txt) => {
+        if (cancelled || !txt) return;
+        const parseTs = (s: string) => {
+          const p = s.trim().split(":");
+          let h = 0, m = 0, sec = 0;
+          if (p.length === 3) { h = +p[0]; m = +p[1]; sec = parseFloat(p[2]); }
+          else if (p.length === 2) { m = +p[0]; sec = parseFloat(p[1]); }
+          else { sec = parseFloat(p[0]); }
+          return h * 3600 + m * 60 + (Number.isFinite(sec) ? sec : 0);
+        };
+        const lines = txt.replace(/\r/g, "").split("\n");
+        const cues: { start: number; end: number; text: string }[] = [];
+        let i = 0;
+        while (i < lines.length) {
+          const ln = lines[i];
+          if (ln.includes("-->")) {
+            const [a, b] = ln.split("-->").map((s) => s.trim().split(" ")[0]);
+            const start = parseTs(a);
+            const end = parseTs(b);
+            i++;
+            const buf: string[] = [];
+            while (i < lines.length && lines[i].trim() !== "") { buf.push(lines[i]); i++; }
+            if (buf.length) cues.push({ start, end, text: buf.join("\n") });
+          }
+          i++;
+        }
+        cuesRef.current = cues;
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [captionsUrl]);
+
+  // Drive the active-cue selector at ~10Hz from the video clock.
+  useEffect(() => {
+    let raf = 0;
+    let lastIdx = -1;
+    let lastTick = 0;
+    const tick = (t: number) => {
+      raf = requestAnimationFrame(tick);
+      if (t - lastTick < 100) return;
+      lastTick = t;
+      const v = videoRef.current;
+      const cues = cuesRef.current;
+      if (!v || cues.length === 0) return;
+      const now = v.currentTime;
+      // Cues are sorted by start; quick scan from lastIdx forward, fall back to full.
+      let idx = -1;
+      const scan = (from: number) => {
+        for (let j = from; j < cues.length; j++) {
+          if (now >= cues[j].start && now <= cues[j].end) return j;
+          if (cues[j].start > now) return -1;
+        }
+        return -1;
+      };
+      idx = scan(Math.max(0, lastIdx));
+      if (idx === -1 && lastIdx > 0) idx = scan(0);
+      if (idx !== lastIdx) {
+        lastIdx = idx;
+        setActiveCue(idx === -1 ? "" : cues[idx].text);
       }
     };
-    enable();
-    const t = setTimeout(enable, 250);
-    return () => clearTimeout(t);
-  }, [captionsUrl]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     if (!ready) return;
@@ -198,7 +257,6 @@ export default function VideoPlayerPage() {
         muted={muted}
         playsInline
         controls={false}
-        crossOrigin="anonymous"
         data-testid="video-element"
         style={{
           position: "absolute",
@@ -208,19 +266,44 @@ export default function VideoPlayerPage() {
           objectFit: "contain",
           background: "#000",
         }}
-      >
-        {captionsUrl && (
-          <track
-            key={captionsUrl}
-            src={captionsUrl}
-            kind="subtitles"
-            srcLang="en"
-            label="English"
-            default
-            data-testid="track-captions"
-          />
-        )}
-      </video>
+      />
+
+      {/* Custom captions overlay — pinned to TOP of the screen as requested.
+           Big, high-contrast, drawn above all other overlays. */}
+      {activeCue && (
+        <div
+          data-testid="overlay-captions"
+          style={{
+            position: "absolute",
+            top: "5%",
+            left: "5%",
+            right: "5%",
+            display: "flex",
+            justifyContent: "center",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(0,0,0,0.78)",
+              color: "#fff",
+              padding: "10px 18px",
+              borderRadius: 8,
+              fontSize: "min(4vw, 38px)",
+              fontWeight: 600,
+              lineHeight: 1.25,
+              textAlign: "center",
+              maxWidth: "100%",
+              whiteSpace: "pre-wrap",
+              textShadow: "0 2px 4px rgba(0,0,0,0.9)",
+              letterSpacing: "0.2px",
+            }}
+          >
+            {activeCue}
+          </div>
+        </div>
+      )}
 
       {/* Captions status badge — top-right, hides once captions are showing. */}
       {captionsStatus !== "ready" && captionsStatus !== "none" && (
