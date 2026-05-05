@@ -19077,9 +19077,16 @@ export default function Dashboard() {
                   const isTodayTask = !!(a as any)._isTodayTask;
                   return (
                     <span key={`${a.id}-${i}`} className="inline-flex items-center gap-1.5 mx-8" data-testid={`announcement-${a.id}-${i}`}>
-                      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle' }}>
-                        <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
-                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 0 2px rgba(0,0,0,0.5)', left: '50%', top: '50%', transform: 'translate(calc(-50% + -1px), calc(-50% + 3px))', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
+                      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle', height: '27px' }}>
+                        {/* TMU blue+yellow boxes — restored. The previous
+                            tmuBoxesLogo PNG asset got truncated to 1.4KB and
+                            rendered as a broken image, which is why the
+                            colored prefix vanished from every D2L item. */}
+                        <span style={{ display: 'inline-flex', height: '24px', width: '50px', boxShadow: '0 0 4px rgba(0,0,0,0.4)' }}>
+                          <span style={{ flex: 1, background: '#004C9C', borderTopLeftRadius: '2px', borderBottomLeftRadius: '2px' }} />
+                          <span style={{ flex: 1, background: '#FFC72C', borderTopRightRadius: '2px', borderBottomRightRadius: '2px' }} />
+                        </span>
+                        <span className="font-bold" style={{ position: 'absolute', color: '#ffffff', fontSize: '8px', letterSpacing: '0.5px', textAlign: 'center', lineHeight: '1', textShadow: '0 1px 2px rgba(0,0,0,0.7)', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{(() => {
                         const cn = a.courseName || 'Custom';
                         if (cn === 'Custom') {
                           return <span style={{ fontSize: '8px', fontWeight: 600, letterSpacing: '0.2px', lineHeight: '1', whiteSpace: 'nowrap', transform: 'scaleX(1)' }}>Reminder</span>;
@@ -19100,8 +19107,9 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src={tmuBoxesLogo} alt="TMU" style={{ height: '27px', width: 'auto', objectFit: 'contain' }} />
+              <span style={{ display: 'inline-flex', height: '24px', width: '50px', boxShadow: '0 0 4px rgba(0,0,0,0.4)' }}>
+                <span style={{ flex: 1, background: '#004C9C', borderTopLeftRadius: '2px', borderBottomLeftRadius: '2px' }} />
+                <span style={{ flex: 1, background: '#FFC72C', borderTopRightRadius: '2px', borderBottomRightRadius: '2px' }} />
               </span>
               <span className="text-[16px] text-white/40 ml-2">No announcements</span>
             </div>
