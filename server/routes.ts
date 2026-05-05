@@ -14699,6 +14699,75 @@ Always cite which file/document each finding comes from. Be thorough but concise
     res.json({ pendingCommands: cmds, deviceCount: devices.length });
   });
 
+  // Diagnostic: shows EVERY week-N file in the active semester with its
+  // module/video classification + which one the picker would actually choose,
+  // so you can tell from your phone exactly why a misfire happened.
+  // Hit:  https://uni-cal.app/api/cat-wash/debug-week?auth=<SITE_PASSWORD>
+  app.get("/api/cat-wash/debug-week", async (req, res) => {
+    const authParam = (req.query.auth as string) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+      const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
+      const wkOverride = req.query.week ? parseInt(req.query.week as string, 10) : NaN;
+      const currentWeekNumber = !isNaN(wkOverride) ? wkOverride : getWeekNumber(torontoDate(), semStart, rwStart);
+
+      const allFiles = await storage.getFiles();
+      const VIDEO_EXTS = ['.mp4', '.m4v', '.mov', '.mkv', '.webm', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.3gp'];
+      const isVid = (f: any) => {
+        const ct = (f.contentType || '').toLowerCase();
+        if (ct.startsWith('video/')) return true;
+        const cs = [f.originalName, f.displayName, f.objectPath, f.folder].filter(Boolean).map((s: string) => s.toLowerCase());
+        return cs.some((c: string) => VIDEO_EXTS.some(ext => c.endsWith(ext) || c.includes(`${ext}?`) || c.includes(`${ext}/`)));
+      };
+      const isMod = (f: any) => {
+        if (isVid(f)) return true;
+        return [f.folder, f.originalName, f.displayName, f.objectPath].filter(Boolean).join(' ').toLowerCase().includes('module');
+      };
+      const weekFiles = allFiles
+        .filter((f: any) => {
+          const m = (f.folder || '').match(/week-(\d+)/i);
+          return m && parseInt(m[1], 10) === currentWeekNumber;
+        })
+        .map((f: any) => ({
+          id: f.id,
+          folder: f.folder,
+          displayName: f.displayName,
+          originalName: f.originalName,
+          objectPath: f.objectPath,
+          contentType: f.contentType,
+          listened: f.listened,
+          lastChunkIndex: f.lastChunkIndex,
+          totalChunks: f.totalChunks,
+          isVideo: isVid(f),
+          isModule: isMod(f),
+        }));
+
+      const picked = await findNextCatWashFile(storage, currentWeekNumber);
+      res.json({
+        weekNumber: currentWeekNumber,
+        activeCourses: [semesterSettings?.course1Code, semesterSettings?.course2Code, semesterSettings?.course3Code].filter(Boolean),
+        weekFileCount: weekFiles.length,
+        weekFiles,
+        wouldPick: picked ? {
+          id: picked.id,
+          folder: picked.folder,
+          displayName: picked.displayName,
+          originalName: picked.originalName,
+          objectPath: picked.objectPath,
+          isVideo: isVid(picked),
+          isModule: isMod(picked),
+          wouldRouteTo: isVid(picked) ? 'video flow (TV mp4 + Nest mirror)' : 'pdf-reader flow (Fire Stick browser + tablet pdf-reader)',
+        } : null,
+      });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message, stack: e.stack });
+    }
+  });
+
   app.get("/api/cat-wash/find-next", async (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
@@ -17962,17 +18031,32 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   };
 
   function describeFileForTTS(file: any, weekNumber: number): string {
-    const folder = (file.folder || '').toLowerCase();
-    const origName = (file.originalName || '').toLowerCase();
-    const dispName = (file.displayName || '').toLowerCase();
-    const combinedName = `${origName} ${dispName}`;
-    const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || combinedName.match(/([a-z]{3,5}\s?\d{3})/i);
+    // Search EVERY name-bearing field for course code + module marker.
+    // OneDrive-synced files often have the code/keyword only in objectPath
+    // — without checking it, the prompt comes out as the bare "your Module
+    // for week 1" with no course name (which is exactly what Bryn heard).
+    const blobLower = [file.folder, file.originalName, file.displayName, file.objectPath]
+      .filter(Boolean)
+      .map((s: string) => s.toLowerCase())
+      .join(' ');
+    const codeMatch = blobLower.match(/([a-z]{3,5}\s?\d{3})/i);
     const courseCode = codeMatch ? codeMatch[1].toUpperCase().replace(/\s/g, '') : '';
-    const spokenName = TTS_COURSE_NAMES[courseCode] || courseCode || '';
-    const isModule = folder.includes('module') || origName.includes('module') || dispName.includes('module');
+    let spokenName = TTS_COURSE_NAMES[courseCode] || courseCode || '';
+    if (!spokenName && courseCode === '' && file.folder) {
+      // Last-chance: try matching active-semester codes by suffix against the blob
+      // (handles "CPHL110"/"PHL110" mismatches). Not async-safe here, so we just
+      // settle for the blob-based course code lookup above.
+    }
+    // Treat videos AND anything mentioning "module" as a Module — keeps the
+    // spoken description aligned with the picker's classification.
+    const isModule = isVideoFile(file) || blobLower.includes('module');
     const fileType = isModule ? 'Module' : 'Reading';
     if (spokenName) {
       return `your ${spokenName} ${fileType} for week ${weekNumber}`;
+    }
+    if (courseCode) {
+      // Prefer pronouncing the course code over going silent on it
+      return `your ${courseCode} ${fileType} for week ${weekNumber}`;
     }
     return `your ${fileType} for week ${weekNumber}`;
   }
@@ -19661,10 +19745,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       file: f,
       pri: await getCoursePriorityForFile(f),
       mod: isModuleFile(f) ? 0 : 1,
+      // Within the module pool, prefer the lecture VIDEO over module PDFs.
+      // Phil 110's module folder contains both the mp4 lecture AND module
+      // PDFs; without this tiebreak the picker can pick a PDF and route it
+      // to /pdf-reader (TV shows uni-cal.app blank, tablet shows blank
+      // pdf-reader page) instead of starting the video flow.
+      vid: isVideoFile(f) ? 0 : 1,
     })));
     candidatesWithPri.sort((a, b) => {
       if (a.pri !== b.pri) return a.pri - b.pri;
-      return a.mod - b.mod;
+      if (a.mod !== b.mod) return a.mod - b.mod;
+      return a.vid - b.vid;
     });
     const orderedFiles = candidatesWithPri.map(c => c.file);
 
