@@ -17610,7 +17610,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     // seconds" and totalChunks as "duration in seconds". This keeps progress
     // bars meaningful without a schema migration.
     const resumeSec = Math.max(0, fileToPlay.lastChunkIndex || 0);
-    const videoUrl = `${appUrl}/api/files/${fileToPlay.id}/download?auth=${authParam}`;
+    // Point Silk at our own /video-player page instead of the raw mp4. The raw
+    // mp4 in Silk shows a focused play button that DPAD_CENTER and
+    // KEYCODE_MEDIA_PLAY didn't reliably trigger (Bryn reported the TV stayed
+    // on the OK/play button). Our player page autoplays MUTED (Chromium
+    // always allows muted autoplay), keeps a progress bar visible the whole
+    // time, and POSTs position back to the server every 5s so we can show
+    // real progress in the dashboard.
+    const videoUrl = `${appUrl}/video-player/${fileToPlay.id}?auth=${authParam}&t=${resumeSec}&muted=true`;
 
     catWashTrace('VideoFlow', `STARTING file=${fileName} id=${fileToPlay.id} resumeSec=${resumeSec}`, { logPrefix });
     console.log(`${logPrefix} [Video] Starting MP4 playback: ${fileName} from ${resumeSec}s`);
@@ -17714,21 +17721,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
     console.log(`${logPrefix} [Video] Silk launched on Fire Stick — waiting for video element to load`);
 
-    // Step 2: Silk shows the mp4 with the play button focused but doesn't
-    // autoplay (Chromium policy blocks autoplay-with-sound w/o gesture).
-    // Wait for Silk to render the video element, then press the play button
-    // a couple times to be safe (DPAD_CENTER activates focused button,
-    // KEYCODE_MEDIA_PLAY is a backup that hits any HTML5 video player).
-    await new Promise(r => setTimeout(r, 4000));
-    try {
-      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'Video Silk Press Play');
-      await new Promise(r => setTimeout(r, 600));
-      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_MEDIA_PLAY' }, 'Video Silk MediaPlay');
-    } catch (e: any) {
-      console.warn(`${logPrefix} [Video] play key press failed: ${e.message}`);
-    }
-    console.log(`${logPrefix} [Video] Play key sent — giving TV ~2s to actually start before Nest joins`);
-    await new Promise(r => setTimeout(r, 2000));
+    // Step 2: our /video-player page autoplays muted automatically (Chromium
+    // always allows muted autoplay — no key press needed). Wait briefly for
+    // Silk to render and the video element to start ticking before Nest
+    // joins so audio + video stay roughly in sync.
+    await new Promise(r => setTimeout(r, 6000));
 
     // Step 3: NOW start Nest audio (so it doesn't begin before the TV video
     // is actually playing — was a sync/UX issue before).
@@ -21408,6 +21405,44 @@ document.body.removeChild(a);
   });
 
   // POST /api/cat-wash/update-progress - Tablet reports its playback progress
+  // Posted every 5s by the /video-player page running in Silk on the Fire
+  // Stick. Keeps the dashboard's Cat Wash progress bar in sync with the
+  // actual video position on the TV (instead of relying on wall-clock
+  // estimation, which drifted whenever Bryn paused or seeked).
+  app.post("/api/cat-wash/video-position", async (req, res) => {
+    try {
+      const fileId = Number(req.body?.fileId);
+      const positionSec = Math.max(0, Math.round(Number(req.body?.positionSec) || 0));
+      const durationSec = Math.max(0, Math.round(Number(req.body?.durationSec) || 0));
+      const playing = !!req.body?.playing;
+      if (!fileId) return res.status(400).json({ error: 'fileId required' });
+
+      if (catWashPlaybackState && catWashPlaybackState.fileId === fileId) {
+        catWashPlaybackState.videoPositionSec = positionSec;
+        catWashPlaybackState.chunkIndex = positionSec;
+        if (durationSec > 0) {
+          catWashPlaybackState.videoDurationSec = durationSec;
+          catWashPlaybackState.totalChunks = durationSec;
+        }
+        // Reset chunkStartedAt so the dashboard's wall-clock estimator stays
+        // in sync with the actual TV position between updates.
+        catWashPlaybackState.chunkStartedAt = new Date();
+        catWashPlaybackState.videoStartedAtMs = Date.now() - positionSec * 1000;
+      }
+
+      // Persist to disk so a reload/reboot resumes from the right spot.
+      try {
+        const updates: any = { lastChunkIndex: positionSec };
+        if (durationSec > 0) updates.totalChunks = durationSec;
+        await storage.updateFile(fileId, updates);
+      } catch {}
+
+      res.json({ ok: true, playing, positionSec, durationSec });
+    } catch (e: any) {
+      res.status(500).json({ error: e?.message || 'failed' });
+    }
+  });
+
   app.post("/api/cat-wash/update-progress", async (req, res) => {
     const { fileId, chunkIndex, totalChunks, words, wordIndex, completed } = req.body;
 
