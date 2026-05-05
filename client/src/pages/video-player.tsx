@@ -18,6 +18,10 @@ export default function VideoPlayerPage() {
   const [fileName, setFileName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
+  // Captions: poll /captions/status until ready, then mount <track>.
+  const [captionsStatus, setCaptionsStatus] = useState<string>("none");
+  const [captionsUrl, setCaptionsUrl] = useState<string | null>(null);
+  const [captionsQueuePos, setCaptionsQueuePos] = useState<number | null>(null);
 
   const videoUrl = `/api/files/${fileId}/download${auth ? `?auth=${encodeURIComponent(auth)}` : ""}`;
 
@@ -67,6 +71,57 @@ export default function VideoPlayerPage() {
       v.removeEventListener("error", onErr);
     };
   }, [startSec, tryPlay]);
+
+  // Captions: kick off generation on first load, poll status until ready.
+  useEffect(() => {
+    if (!Number.isFinite(fileId) || fileId <= 0) return;
+    let cancelled = false;
+    const a = auth ? `?auth=${encodeURIComponent(auth)}` : "";
+    // Fire-and-forget enqueue — backend skips if already ready/processing.
+    fetch(`/api/files/${fileId}/captions/enqueue${a}`, { method: "POST", credentials: "include" }).catch(() => {});
+    const tick = async () => {
+      try {
+        const r = await fetch(`/api/files/${fileId}/captions/status${a}`, { credentials: "include" });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (cancelled) return;
+        setCaptionsStatus(d.status || "none");
+        setCaptionsQueuePos(typeof d.queuePosition === "number" ? d.queuePosition : null);
+        if (d.ready && d.vttUrl) {
+          setCaptionsUrl(d.vttUrl + a);
+          return true;
+        }
+      } catch {}
+      return false;
+    };
+    let id: any = null;
+    (async () => {
+      const done = await tick();
+      if (done || cancelled) return;
+      id = setInterval(async () => {
+        const done2 = await tick();
+        if (done2 && id) { clearInterval(id); id = null; }
+      }, 8000);
+    })();
+    return () => { cancelled = true; if (id) clearInterval(id); };
+  }, [fileId, auth]);
+
+  // Auto-enable captions on the <track> the moment it loads (browsers default to
+  // 'disabled' for muted videos).
+  useEffect(() => {
+    if (!captionsUrl) return;
+    const v = videoRef.current;
+    if (!v) return;
+    const enable = () => {
+      for (let i = 0; i < v.textTracks.length; i++) {
+        const t = v.textTracks[i];
+        if (t.kind === "subtitles" || t.kind === "captions") t.mode = "showing";
+      }
+    };
+    enable();
+    const t = setTimeout(enable, 250);
+    return () => clearTimeout(t);
+  }, [captionsUrl]);
 
   useEffect(() => {
     if (!ready) return;
@@ -143,6 +198,7 @@ export default function VideoPlayerPage() {
         muted={muted}
         playsInline
         controls={false}
+        crossOrigin="anonymous"
         data-testid="video-element"
         style={{
           position: "absolute",
@@ -152,7 +208,47 @@ export default function VideoPlayerPage() {
           objectFit: "contain",
           background: "#000",
         }}
-      />
+      >
+        {captionsUrl && (
+          <track
+            key={captionsUrl}
+            src={captionsUrl}
+            kind="subtitles"
+            srcLang="en"
+            label="English"
+            default
+            data-testid="track-captions"
+          />
+        )}
+      </video>
+
+      {/* Captions status badge — top-right, hides once captions are showing. */}
+      {captionsStatus !== "ready" && captionsStatus !== "none" && (
+        <div
+          data-testid="badge-captions-status"
+          style={{
+            position: "absolute",
+            top: 14,
+            right: 14,
+            padding: "6px 10px",
+            background: "rgba(0,0,0,0.65)",
+            border: "1px solid rgba(255,255,255,0.18)",
+            borderRadius: 6,
+            fontSize: 12,
+            color: "#fff",
+            zIndex: 6,
+            pointerEvents: "none",
+          }}
+        >
+          {captionsStatus === "processing"
+            ? "Captions: generating…"
+            : captionsStatus === "pending"
+              ? `Captions: queued${captionsQueuePos !== null ? ` (#${captionsQueuePos + 1})` : ""}`
+              : captionsStatus === "failed"
+                ? "Captions: failed"
+                : `Captions: ${captionsStatus}`}
+        </div>
+      )}
 
       {!playing && ready && (
         <div
