@@ -15314,15 +15314,22 @@ export default function Dashboard() {
                                           lastWeek={lastWeek}
                                           moduleBoxColor={(() => {
                                             const sObj: any = slotMatch?.sem;
+                                            // Match the actual calendar's Module box color
+                                            // (gradient start) instead of falling back to a
+                                            // hard-coded blue. Bryn wants every Module box in
+                                            // the pipeline diagram to be the SAME color as the
+                                            // course's Module box on the main calendar.
                                             return (sObj && slot ? sObj[`course${slot}ModuleBoxColor`] : null)
                                               || (c as any).moduleBoxColor
-                                              || '#3b82f6';
+                                              || getCourseGradientColors(c.code).start;
                                           })()}
                                           readingBoxColor={(() => {
                                             const sObj: any = slotMatch?.sem;
+                                            // Match the calendar's Reading box color
+                                            // (gradient end) — same parity rule as above.
                                             return (sObj && slot ? sObj[`course${slot}ReadingBoxColor`] : null)
                                               || (c as any).readingBoxColor
-                                              || '#a855f7';
+                                              || getCourseGradientColors(c.code).end;
                                           })()}
                                           onOpenWizard={(issueKey, opts) => setSemFlowWizard({ courseCode: c.code, issue: opts?.weekNum ? 'week_upload' : issueKey, step: 0, phase: 'primary', weekNum: opts?.weekNum, uploadType: opts?.uploadType })}
                                           onOpenCourseDetails={() => startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: c.name || '', certKey: c.code, semKey: expandedSemKey, openInEdit: true }))}
