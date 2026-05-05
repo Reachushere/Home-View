@@ -14747,9 +14747,29 @@ Always cite which file/document each finding comes from. Be thorough but concise
         }));
 
       const picked = await findNextCatWashFile(storage, currentWeekNumber);
+      // Add extraction-failed flag + active-semester flag to each file so we
+      // can see WHY a module was silently skipped.
+      const activeCodes = new Set(
+        [semesterSettings?.course1Code, semesterSettings?.course2Code, semesterSettings?.course3Code]
+          .filter(Boolean)
+          .map((c: any) => c.toUpperCase().replace(/\s/g, ''))
+      );
+      const inActiveSem = (f: any) => {
+        const blob = [f.folder, f.originalName, f.displayName, f.objectPath].filter(Boolean).join(' ').toUpperCase().replace(/\s/g, '');
+        for (const ac of activeCodes) {
+          if (blob.includes(ac as string)) return true;
+          if ((ac as string).length >= 5 && blob.includes((ac as string).replace(/^C/, ''))) return true;
+        }
+        return false;
+      };
+      for (const wf of weekFiles as any[]) {
+        wf.extractionFailed = extractionFailedFileIds.has(wf.id);
+        wf.inActiveSemester = inActiveSem(wf);
+      }
       res.json({
         weekNumber: currentWeekNumber,
         activeCourses: [semesterSettings?.course1Code, semesterSettings?.course2Code, semesterSettings?.course3Code].filter(Boolean),
+        extractionFailedFileIds: [...extractionFailedFileIds],
         weekFileCount: weekFiles.length,
         weekFiles,
         wouldPick: picked ? {
