@@ -14822,6 +14822,28 @@ Always cite which file/document each finding comes from. Be thorough but concise
     }
   });
 
+  // Clear the in-memory extraction-failed skip list. Files end up here when
+  // PDF text extraction throws once, then they're silently passed over forever
+  // (until the next pm2 restart). One transient parser hiccup shouldn't kill
+  // a file permanently. Hit this from any browser to retry them all:
+  //   https://uni-cal.app/api/cat-wash/clear-failed?auth=<SITE_PASSWORD>
+  app.post("/api/cat-wash/clear-failed", (req, res) => {
+    const authParam = (req.query.auth as string) || (req.body && req.body.auth) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) return res.status(401).json({ error: "Unauthorized" });
+    const cleared = [...extractionFailedFileIds];
+    extractionFailedFileIds.clear();
+    console.log(`[CatWash] Cleared extractionFailedFileIds: [${cleared.join(', ')}]`);
+    res.json({ ok: true, cleared });
+  });
+  app.get("/api/cat-wash/clear-failed", (req, res) => {
+    const authParam = (req.query.auth as string) || '';
+    if (authParam !== (process.env.SITE_PASSWORD || '')) return res.status(401).json({ error: "Unauthorized" });
+    const cleared = [...extractionFailedFileIds];
+    extractionFailedFileIds.clear();
+    console.log(`[CatWash] Cleared extractionFailedFileIds (GET): [${cleared.join(', ')}]`);
+    res.json({ ok: true, cleared });
+  });
+
   app.get("/api/cat-wash/find-next", async (req, res) => {
     const authParam = (req.query.auth as string) || '';
     if (authParam !== (process.env.SITE_PASSWORD || '')) {
