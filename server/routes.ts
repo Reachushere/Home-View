@@ -15375,6 +15375,100 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     console.log(`[Startup] file_pages migration note: ${e.message}`);
   }
 
+  // ───── Closed-caption columns + auto-enqueue all videos missing VTTs ─────
+  try {
+    await db.execute(sql`ALTER TABLE files ADD COLUMN IF NOT EXISTS captions_status TEXT DEFAULT 'none'`);
+    await db.execute(sql`ALTER TABLE files ADD COLUMN IF NOT EXISTS captions_error TEXT`);
+    await db.execute(sql`ALTER TABLE files ADD COLUMN IF NOT EXISTS captions_generated_at TIMESTAMP`);
+    console.log(`[Startup] captions columns ensured on files`);
+  } catch (e: any) {
+    console.log(`[Startup] captions migration note: ${e.message}`);
+  }
+  try {
+    const { enqueueAllVideosNeedingCaptions } = await import('./captions');
+    // Defer the scan a bit so the HTTP server is up (the worker hits localhost
+    // for /api/files/:id/download). 30s gives Pi reboots time to settle.
+    setTimeout(async () => {
+      try {
+        const r = await enqueueAllVideosNeedingCaptions();
+        console.log(`[Captions] Startup scan: enqueued ${r.enqueued} of ${r.scanned} files`);
+      } catch (e: any) {
+        console.log(`[Captions] Startup scan failed: ${e.message}`);
+      }
+    }, 30_000).unref?.();
+  } catch (e: any) {
+    console.log(`[Captions] Startup hook failed: ${e.message}`);
+  }
+
+  // ───── Caption endpoints ─────
+  app.get("/api/files/:id/captions.vtt", async (req, res) => {
+    try {
+      const fileId = Number(req.params.id);
+      const { captionsVttPath } = await import('./captions');
+      const p = captionsVttPath(fileId);
+      if (!fs.existsSync(p)) return res.status(404).type('text/plain').send('captions not ready');
+      res.setHeader('Content-Type', 'text/vtt; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=300');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      fs.createReadStream(p).pipe(res);
+    } catch (e: any) {
+      res.status(500).json({ error: String(e?.message || e) });
+    }
+  });
+
+  app.get("/api/files/:id/captions/status", async (req, res) => {
+    try {
+      const fileId = Number(req.params.id);
+      const file = await storage.getFile(fileId);
+      if (!file) return res.status(404).json({ error: 'file not found' });
+      const { captionsVttPath, getQueueState } = await import('./captions');
+      const exists = fs.existsSync(captionsVttPath(fileId));
+      const status = (file as any).captionsStatus || (exists ? 'ready' : 'none');
+      const q = getQueueState();
+      const queuePos = q.pending.indexOf(fileId);
+      res.json({
+        fileId,
+        status,
+        ready: status === 'ready' && exists,
+        error: (file as any).captionsError || null,
+        generatedAt: (file as any).captionsGeneratedAt || null,
+        vttUrl: exists ? `/api/files/${fileId}/captions.vtt` : null,
+        queuePosition: queuePos >= 0 ? queuePos : null,
+        queueSize: q.size,
+        workerRunning: q.running,
+      });
+    } catch (e: any) {
+      res.status(500).json({ error: String(e?.message || e) });
+    }
+  });
+
+  app.post("/api/files/:id/captions/enqueue", async (req, res) => {
+    try {
+      const fileId = Number(req.params.id);
+      const force = req.body?.force === true || req.query?.force === '1';
+      const file = await storage.getFile(fileId);
+      if (!file) return res.status(404).json({ error: 'file not found' });
+      const { enqueueCaptions, isVideoFile } = await import('./captions');
+      if (!isVideoFile(file)) return res.status(400).json({ error: 'not a video file' });
+      enqueueCaptions(fileId, { force });
+      res.json({ success: true, fileId, force });
+    } catch (e: any) {
+      res.status(500).json({ error: String(e?.message || e) });
+    }
+  });
+
+  app.post("/api/captions/enqueue-all", async (req, res) => {
+    try {
+      const force = req.body?.force === true || req.query?.force === '1';
+      const courseCodeFilter = String(req.body?.courseCode || req.query?.courseCode || '') || undefined;
+      const { enqueueAllVideosNeedingCaptions } = await import('./captions');
+      const r = await enqueueAllVideosNeedingCaptions({ force, courseCodeFilter });
+      res.json({ success: true, ...r });
+    } catch (e: any) {
+      res.status(500).json({ error: String(e?.message || e) });
+    }
+  });
+
   const SERVER_START_TIME = Date.now();
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
   console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
