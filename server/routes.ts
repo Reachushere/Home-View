@@ -16810,7 +16810,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   if (subFolder) {
                     const subFiles = await listOneDriveItems(subFolder.path);
                     for (const file of subFiles) {
-                      if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                      if (file.type !== 'file') continue;
+                      const lowerName = file.name.toLowerCase();
+                      const isPdf = lowerName.endsWith('.pdf');
+                      const isVideo = lowerName.endsWith('.mp4') || lowerName.endsWith('.m4v') || lowerName.endsWith('.mov') || lowerName.endsWith('.mkv') || lowerName.endsWith('.webm');
+                      // Accept BOTH pdfs and videos. The periodic library
+                      // sync used to be pdf-only, which silently dropped any
+                      // mp4/mov dropped into a module folder — so the bathroom
+                      // automation could never see Phil's lecture videos.
+                      if (!isPdf && !isVideo) continue;
                       odNamesInFolder.add(file.name);
                       const key = `${folderName}::${file.name}`;
                       if (existingSet.has(key)) continue;
@@ -16833,17 +16841,28 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                           console.log(`${logPrefix} Download failed for ${file.name}, using onedrive:// ref: ${dlErr.message}`);
                         }
                       }
-                      await storage.createFile({
+                      const contentType = isVideo
+                        ? (lowerName.endsWith('.mov') ? 'video/quicktime'
+                          : lowerName.endsWith('.mkv') ? 'video/x-matroska'
+                          : lowerName.endsWith('.webm') ? 'video/webm'
+                          : 'video/mp4')
+                        : 'application/pdf';
+                      const newFile = await storage.createFile({
                         originalName: file.name,
                         displayName: file.name,
                         objectPath,
-                        contentType: 'application/pdf',
+                        contentType,
                         size: file.size || 0,
                         folder: folderName,
                         listened: false,
                       });
                       existingSet.add(key);
                       totalSynced++;
+                      console.log(`${logPrefix} Synced new ${isVideo ? 'video' : 'pdf'}: ${file.name} → ${folderName}`);
+                      if (newFile?.id && !isVideo) {
+                        // Videos play directly on TV — no TTS prep needed.
+                        try { queueFileForPreparation(newFile.id); } catch {}
+                      }
                     }
                   }
                   // Prune stale DB rows for files no longer in this OneDrive subfolder.
