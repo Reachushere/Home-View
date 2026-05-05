@@ -86,17 +86,17 @@ export default function VideoPlayerPage() {
     const tick = async () => {
       try {
         const r = await fetch(`/api/files/${fileId}/captions/status${a}`, { credentials: "include" });
-        if (!r.ok) return;
+        if (!r.ok) return false;
         const d = await r.json();
-        if (cancelled) return;
+        if (cancelled) return false;
         setCaptionsStatus(d.status || "none");
         setCaptionsQueuePos(typeof d.queuePosition === "number" ? d.queuePosition : null);
-        if (d.ready && d.vttUrl) {
-          setCaptionsUrl(d.vttUrl + a);
-          return true;
-        }
-      } catch {}
-      return false;
+        // Set the URL as soon as ANY VTT exists (even a partial flush mid-
+        // transcription) so captions stream in while Whisper is still running.
+        if (d.vttUrl) setCaptionsUrl(d.vttUrl + a + (a ? "&" : "?") + "v=" + Date.now());
+        // Stop polling only once status is fully 'ready'.
+        return d.status === "ready";
+      } catch { return false; }
     };
     let id: any = null;
     (async () => {
@@ -105,7 +105,7 @@ export default function VideoPlayerPage() {
       id = setInterval(async () => {
         const done2 = await tick();
         if (done2 && id) { clearInterval(id); id = null; }
-      }, 8000);
+      }, 10000);
     })();
     return () => { cancelled = true; if (id) clearInterval(id); };
   }, [fileId, auth]);
