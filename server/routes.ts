@@ -17666,29 +17666,47 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.55 }, 'Video Nest Vol'),
     ]);
 
-    // Play_media on TV (video) and Nest (audio extracted by Nest from same MP4).
+    // Nest gets play_media (Cast supports arbitrary mp4 URLs).
+    // Samsung TV's play_media is unreliable for arbitrary URLs (it stays on
+    // whatever HDMI/Prime page it was on), so we route the video through
+    // Silk on the Fire Stick — same path the PDF flow uses, just pointed at
+    // the raw mp4 download. Chromium-based Silk plays mp4 inline fullscreen.
     const playResults = await Promise.allSettled([
-      haServiceCallSafe('media_player/play_media', {
-        entity_id: CAT_TV_ENTITY,
-        media_content_id: videoUrl,
-        media_content_type: 'video/mp4',
-      }, 'Video TV Play'),
       haServiceCallSafe('media_player/play_media', {
         entity_id: NEST_SPEAKER_ENTITY,
         media_content_id: videoUrl,
         media_content_type: 'video/mp4',
       }, 'Video Nest Play'),
+      (async () => {
+        try {
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Video Silk ForceStop');
+          await new Promise(r => setTimeout(r, 400));
+          const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${videoUrl}" com.amazon.cloud9`;
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: adbCmd }, 'Video Silk Launch');
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'Video Silk Immersive');
+        } catch (e: any) {
+          console.warn(`${logPrefix} [Video] Silk launch failed: ${e.message}`);
+        }
+      })(),
     ]);
-    console.log(`${logPrefix} [Video] play_media dispatched (TV + Nest)`);
+    console.log(`${logPrefix} [Video] dispatched (Nest play_media + Silk on Fire Stick)`);
 
-    // Seek both to resume position (after a short delay so HA registers the play).
+    // Clear stale tablet URL — the tablet may still be showing a deleted
+    // pdf-reader URL from a previous run. Send a navigate to the root holding
+    // page so it doesn't display the wrong file.
+    try {
+      const tabletHoldUrl = `${appUrl}/?catWashHold=video&fileId=${fileToPlay.id}&auth=${authParam}`;
+      await setTabletCommand({ action: 'navigate', url: tabletHoldUrl, timestamp: Date.now() }, true, 'master');
+    } catch (e: any) {
+      console.warn(`${logPrefix} [Video] tablet hold navigate failed: ${e.message}`);
+    }
+
+    // Seek Nest to resume position (Silk plays from the start; resume on
+    // the TV side would need a player page with #t=Ns — future improvement).
     if (resumeSec > 0) {
       await new Promise(r => setTimeout(r, 1500));
-      await Promise.allSettled([
-        haServiceCallSafe('media_player/media_seek', { entity_id: CAT_TV_ENTITY, seek_position: resumeSec }, 'Video TV Seek'),
-        haServiceCallSafe('media_player/media_seek', { entity_id: NEST_SPEAKER_ENTITY, seek_position: resumeSec }, 'Video Nest Seek'),
-      ]);
-      console.log(`${logPrefix} [Video] Seeked both players to ${resumeSec}s`);
+      await haServiceCallSafe('media_player/media_seek', { entity_id: NEST_SPEAKER_ENTITY, seek_position: resumeSec }, 'Video Nest Seek');
+      console.log(`${logPrefix} [Video] Seeked Nest to ${resumeSec}s`);
     }
     catWashPlaybackState.videoStartedAtMs = Date.now();
 
