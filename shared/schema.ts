@@ -265,6 +265,11 @@ export const files = pgTable("files", {
   extractedText: text("extracted_text"),
   preparedAudioPaths: text("prepared_audio_paths"),
   preparedAt: timestamp("prepared_at"),
+  // Closed-caption fields. captionsStatus values:
+  //   'none' | 'pending' | 'processing' | 'ready' | 'failed'
+  captionsStatus: text("captions_status").default('none'),
+  captionsError: text("captions_error"),
+  captionsGeneratedAt: timestamp("captions_generated_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
