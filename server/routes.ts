@@ -14746,6 +14746,36 @@ Always cite which file/document each finding comes from. Be thorough but concise
           isModule: isMod(f),
         }));
 
+      // Dump EVERY file that mentions a Phil-110 code anywhere, regardless
+      // of folder convention or week — so we can see whether the mp4 exists
+      // at all and what folder it's actually under (the picker only looks at
+      // files whose `folder` matches `week-N-...`, so files imported via
+      // OneDrive sync or with non-standard folders are invisible to it).
+      const phlFiles = allFiles.filter((f: any) => {
+        const blob = [f.folder, f.originalName, f.displayName, f.objectPath]
+          .filter(Boolean).join(' ').toUpperCase();
+        return blob.includes('PHL110') || blob.includes('CPHL110') || blob.includes('PHIL');
+      }).map((f: any) => ({
+        id: f.id, folder: f.folder, displayName: f.displayName,
+        originalName: f.originalName, objectPath: f.objectPath,
+        contentType: f.contentType, listened: f.listened,
+        weekFromFolder: (f.folder || '').match(/week-(\d+)/i)?.[1] || null,
+      }));
+
+      // Every video file in the system — folder/path/contentType-based.
+      const VIDEO_EXTS2 = ['.mp4', '.m4v', '.mov', '.mkv', '.webm', '.avi', '.wmv', '.flv'];
+      const allVideoFiles = allFiles.filter((f: any) => {
+        const ct = (f.contentType || '').toLowerCase();
+        if (ct.startsWith('video/')) return true;
+        const cs = [f.originalName, f.displayName, f.objectPath, f.folder]
+          .filter(Boolean).map((s: string) => s.toLowerCase());
+        return cs.some((c: string) => VIDEO_EXTS2.some(ext => c.endsWith(ext)));
+      }).map((f: any) => ({
+        id: f.id, folder: f.folder, displayName: f.displayName,
+        originalName: f.originalName, objectPath: f.objectPath,
+        contentType: f.contentType, listened: f.listened,
+      }));
+
       const picked = await findNextCatWashFile(storage, currentWeekNumber);
       // Add extraction-failed flag + active-semester flag to each file so we
       // can see WHY a module was silently skipped.
@@ -14770,6 +14800,10 @@ Always cite which file/document each finding comes from. Be thorough but concise
         weekNumber: currentWeekNumber,
         activeCourses: [semesterSettings?.course1Code, semesterSettings?.course2Code, semesterSettings?.course3Code].filter(Boolean),
         extractionFailedFileIds: [...extractionFailedFileIds],
+        phlFileCount: phlFiles.length,
+        phlFiles,
+        allVideoFileCount: allVideoFiles.length,
+        allVideoFiles,
         weekFileCount: weekFiles.length,
         weekFiles,
         wouldPick: picked ? {
