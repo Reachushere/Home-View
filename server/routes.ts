@@ -17663,37 +17663,53 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     await Promise.allSettled([
       haServiceCallSafe('media_player/volume_set', { entity_id: CAT_TV_ENTITY, volume_level: 0 }, 'Video TV Mute'),
       haServiceCallSafe('media_player/volume_mute', { entity_id: CAT_TV_ENTITY, is_volume_muted: true }, 'Video TV MuteFlag'),
-      haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.55 }, 'Video Nest Vol'),
+      // Match the confirmation TTS volume (0.75) — 0.55 was too quiet next to
+      // the "see you next time Bryn" voice.
+      haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Video Nest Vol'),
     ]);
 
-    // Nest gets play_media (Cast supports arbitrary mp4 URLs).
+    // Step 1: launch Silk on the Fire Stick pointed at the mp4 (TV side).
     // Samsung TV's play_media is unreliable for arbitrary URLs (it stays on
-    // whatever HDMI/Prime page it was on), so we route the video through
-    // Silk on the Fire Stick — same path the PDF flow uses, just pointed at
-    // the raw mp4 download. Chromium-based Silk plays mp4 inline fullscreen.
-    const playResults = await Promise.allSettled([
-      haServiceCallSafe('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY,
-        media_content_id: videoUrl,
-        media_content_type: 'video/mp4',
-      }, 'Video Nest Play'),
-      (async () => {
-        try {
-          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Video Silk ForceStop');
-          await new Promise(r => setTimeout(r, 400));
-          const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${videoUrl}" com.amazon.cloud9`;
-          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: adbCmd }, 'Video Silk Launch');
-          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'Video Silk Immersive');
-        } catch (e: any) {
-          console.warn(`${logPrefix} [Video] Silk launch failed: ${e.message}`);
-        }
-      })(),
-    ]);
-    console.log(`${logPrefix} [Video] dispatched (Nest play_media + Silk on Fire Stick)`);
+    // whatever HDMI/Prime page it was on), so we route through Silk —
+    // Chromium-based, plays mp4 inline fullscreen.
+    try {
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Video Silk ForceStop');
+      await new Promise(r => setTimeout(r, 400));
+      const adbCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d "${videoUrl}" com.amazon.cloud9`;
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: adbCmd }, 'Video Silk Launch');
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'settings put global policy_control immersive.full=com.amazon.cloud9' }, 'Video Silk Immersive');
+    } catch (e: any) {
+      console.warn(`${logPrefix} [Video] Silk launch failed: ${e.message}`);
+    }
+    console.log(`${logPrefix} [Video] Silk launched on Fire Stick — waiting for video element to load`);
+
+    // Step 2: Silk shows the mp4 with the play button focused but doesn't
+    // autoplay (Chromium policy blocks autoplay-with-sound w/o gesture).
+    // Wait for Silk to render the video element, then press the play button
+    // a couple times to be safe (DPAD_CENTER activates focused button,
+    // KEYCODE_MEDIA_PLAY is a backup that hits any HTML5 video player).
+    await new Promise(r => setTimeout(r, 4000));
+    try {
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_DPAD_CENTER' }, 'Video Silk Press Play');
+      await new Promise(r => setTimeout(r, 600));
+      await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_MEDIA_PLAY' }, 'Video Silk MediaPlay');
+    } catch (e: any) {
+      console.warn(`${logPrefix} [Video] play key press failed: ${e.message}`);
+    }
+    console.log(`${logPrefix} [Video] Play key sent — giving TV ~2s to actually start before Nest joins`);
+    await new Promise(r => setTimeout(r, 2000));
+
+    // Step 3: NOW start Nest audio (so it doesn't begin before the TV video
+    // is actually playing — was a sync/UX issue before).
+    await haServiceCallSafe('media_player/play_media', {
+      entity_id: NEST_SPEAKER_ENTITY,
+      media_content_id: videoUrl,
+      media_content_type: 'video/mp4',
+    }, 'Video Nest Play');
+    console.log(`${logPrefix} [Video] Nest play_media dispatched`);
 
     // Clear stale tablet URL — the tablet may still be showing a deleted
-    // pdf-reader URL from a previous run. Send a navigate to the root holding
-    // page so it doesn't display the wrong file.
+    // pdf-reader URL from a previous run.
     try {
       const tabletHoldUrl = `${appUrl}/?catWashHold=video&fileId=${fileToPlay.id}&auth=${authParam}`;
       await setTabletCommand({ action: 'navigate', url: tabletHoldUrl, timestamp: Date.now() }, true, 'master');
