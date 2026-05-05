@@ -8,7 +8,7 @@ import { files as filesTable } from '@shared/schema';
 
 const CAPTIONS_DIR = path.join(process.cwd(), 'persistent-uploads', 'captions');
 const TMP_DIR = path.join(process.cwd(), 'persistent-uploads', 'captions-tmp');
-const CHUNK_SECONDS = 20 * 60;
+const CHUNK_SECONDS = 5 * 60;
 const VIDEO_EXTS = new Set(['.mp4', '.m4v', '.mov', '.mkv', '.webm', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.3gp']);
 
 function ensureDirs() {
@@ -281,6 +281,16 @@ async function processFile(fileId: number) {
       const { cues } = shiftVttCues(vttRaw, start);
       for (const c of cues) outParts.push(c, '');
       try { fs.unlinkSync(audioOut); } catch {}
+      // Flush a partial VTT after EACH chunk so the player sees captions
+      // streaming in instead of waiting for the whole movie to finish.
+      try {
+        if (outParts.length > 2) {
+          fs.writeFileSync(outVtt, outParts.join('\n'), 'utf8');
+          console.log(`[Captions] file ${fileId}: partial VTT flushed after chunk ${chunkIdx} (${cues.length} new cues)`);
+        }
+      } catch (we: any) {
+        console.warn(`[Captions] file ${fileId}: partial flush failed: ${we?.message || we}`);
+      }
     } catch (e: any) {
       console.error(`[Captions] file ${fileId} chunk ${chunkIdx} failed: ${e?.message || e}`);
       try { fs.unlinkSync(audioOut); } catch {}
