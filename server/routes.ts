@@ -17610,14 +17610,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     // seconds" and totalChunks as "duration in seconds". This keeps progress
     // bars meaningful without a schema migration.
     const resumeSec = Math.max(0, fileToPlay.lastChunkIndex || 0);
-    // Point Silk at our own /video-player page instead of the raw mp4. The raw
-    // mp4 in Silk shows a focused play button that DPAD_CENTER and
-    // KEYCODE_MEDIA_PLAY didn't reliably trigger (Bryn reported the TV stayed
-    // on the OK/play button). Our player page autoplays MUTED (Chromium
-    // always allows muted autoplay), keeps a progress bar visible the whole
-    // time, and POSTs position back to the server every 5s so we can show
-    // real progress in the dashboard.
-    const videoUrl = `${appUrl}/video-player/${fileToPlay.id}?auth=${authParam}&t=${resumeSec}&muted=true`;
+    // Two URLs:
+    //   silkUrl  → HTML player page (autoplay-muted + progress bar). Used by
+    //              Silk on the Fire Stick so the TV actually starts instead
+    //              of sitting on the OK button.
+    //   audioUrl → raw mp4 download. Used by the Nest because Cast/Nest
+    //              cannot extract audio from an HTML page — pointing it at
+    //              silkUrl was why audio went silent (Bryn reported TV
+    //              played but Nest had no sound).
+    const silkUrl = `${appUrl}/video-player/${fileToPlay.id}?auth=${authParam}&t=${resumeSec}&muted=true`;
+    const audioUrl = `${appUrl}/api/files/${fileToPlay.id}/download?auth=${authParam}`;
+    const videoUrl = silkUrl;
 
     catWashTrace('VideoFlow', `STARTING file=${fileName} id=${fileToPlay.id} resumeSec=${resumeSec}`, { logPrefix });
     console.log(`${logPrefix} [Video] Starting MP4 playback: ${fileName} from ${resumeSec}s`);
@@ -17731,7 +17734,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     // is actually playing — was a sync/UX issue before).
     await haServiceCallSafe('media_player/play_media', {
       entity_id: NEST_SPEAKER_ENTITY,
-      media_content_id: videoUrl,
+      media_content_id: audioUrl,
       media_content_type: 'video/mp4',
     }, 'Video Nest Play');
     console.log(`${logPrefix} [Video] Nest play_media dispatched`);
