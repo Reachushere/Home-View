@@ -171,6 +171,58 @@ export default function DevPlainPage() {
         Each button fetches the endpoint(s) and shows the result in the textarea below. Click <b>Copy</b> on a button to also copy to clipboard. Click the textarea to select all.
       </div>
 
+      <div style={{
+        border: "2px solid rgba(244,63,94,0.45)",
+        background: "linear-gradient(180deg, rgba(244,63,94,0.18), rgba(244,63,94,0.08))",
+        borderRadius: 10,
+        padding: 14,
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      }}>
+        <div style={{
+          fontSize: 15,
+          fontWeight: 800,
+          color: "#fda4af",
+          letterSpacing: "0.5px",
+        }}>
+          CHATGPT DEBUG EXPORT
+        </div>
+
+        <div style={{
+          fontSize: 12,
+          color: "#f5c2c7",
+          lineHeight: 1.45,
+        }}>
+          Generates a complete ChatGPT-ready debugging package including status,
+          diagnostics, build info, recent errors, performance, flow snapshot,
+          file map, and Cat Lights trace information.
+        </div>
+
+        <button
+          type="button"
+          data-testid="button-chatgpt-debug-pack"
+          disabled={!!busy}
+          onClick={() => runSection(COMBO_PACKS[0], true)}
+          style={{
+            background: "rgba(244,63,94,0.30)",
+            color: "#ffe4e6",
+            border: "2px solid rgba(251,113,133,0.75)",
+            borderRadius: 8,
+            padding: "18px 20px",
+            fontSize: 18,
+            fontWeight: 900,
+            cursor: "pointer",
+            fontFamily: "ui-monospace, monospace",
+            letterSpacing: "0.6px",
+            textTransform: "uppercase",
+            boxShadow: "0 0 18px rgba(244,63,94,0.18)",
+          }}
+        >
+          {busy === "debug" ? "COLLECTING DEBUG PACK…" : "📋 COPY CHATGPT DEBUG PACK"}
+        </button>
+      </div>
+
       <div>
         <div style={{ fontSize: 12, color: "#888", marginBottom: 6, fontWeight: 700 }}>COMBO PACKS</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 8 }}>

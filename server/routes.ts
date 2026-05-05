@@ -21234,7 +21234,39 @@ document.body.removeChild(a);
             console.log(`[Cat Lights] No confirmation received but CPPA playback already active — skipping CHUM FM`);
             return;
           }
-          console.log(`[Cat Lights] No confirmation received — playing CHUM FM on Echo speakers`);
+          console.log(`[Cat Lights] First prompt not confirmed — checking for alternate course before CHUM FM`);
+
+          const altFile = await findNextFileByPriority(await storage.getFiles(), currentWeekNumber, nextFile.id);
+
+          if (altFile) {
+            const altDesc = describeFileForTTS(altFile, currentWeekNumber);
+            const altPrompt = `Okay Bryn, would you like to listen to  instead?`;
+
+            try {
+              await haServiceCallSafe('media_player/volume_set', {
+                entity_id: CAT_WR_HA_VOICE_ENTITY,
+                volume_level: 0.50
+              }, 'Cat Lights Alt Vol');
+
+              await haServiceCall('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: altPrompt
+              }, 'Cat Lights Alt Prompt');
+
+              catLightsLateConfirmFile = altFile;
+              catLightsLateConfirmWeek = currentWeekNumber;
+              catLightsLateConfirmExpiry = Date.now() + 10 * 60 * 1000;
+
+              console.log(`[Cat Lights] Alternate course prompt sent`);
+              catLightsPromptPending = false;
+              return;
+            } catch (e: any) {
+              console.warn(`[Cat Lights] Alternate prompt failed: `);
+            }
+          }
+
+          console.log(`[Cat Lights] No alternate file available — playing CHUM FM on Echo speakers`);
           catLightsLateConfirmFile = nextFile;
           catLightsLateConfirmWeek = currentWeekNumber;
           catLightsLateConfirmExpiry = Date.now() + 10 * 60 * 1000;
