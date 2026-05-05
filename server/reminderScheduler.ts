@@ -1,6 +1,6 @@
 import { storage } from "./storage";
 import { sendTaskReminder, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendDailyDigest, type TaskReminder } from "./email";
-import { getIsTravellingMode } from "./routes";
+import { getIsTravellingMode } from "./helpers/ttsSession";
 import { db } from "./db";
 import { appState } from "@shared/schema";
 import { eq } from "drizzle-orm";
